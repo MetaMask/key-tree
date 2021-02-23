@@ -37,7 +37,7 @@ test('deriveKeyPath - full path', (t) => {
     t.strictEqual(
       multipath,
       `bip39:${mnemonic}/bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:${index}`,
-      'matches expected multipath'
+      'matches expected multipath',
     );
     return deriveKeyFromPath(multipath);
   });
@@ -106,7 +106,7 @@ test('deriveKeyPath - input validation', (t) => {
       deriveKeyFromPath('bip32:1', parentKey.toString('utf8'));
     },
     { message: 'Parent key must be a Buffer if specified.' },
-    'should throw expected error'
+    'should throw expected error',
   );
 
   t.end();
@@ -117,7 +117,7 @@ test('ethereum key test - direct derive', (t) => {
   let parentKey = null;
   parentKey = bip39Derive(
     parentKey,
-    `romance hurry grit huge rifle ordinary loud toss sound congress upset twist`
+    `romance hurry grit huge rifle ordinary loud toss sound congress upset twist`,
   );
   parentKey = bip32Derive(parentKey, `44'`);
   parentKey = bip32Derive(parentKey, `60'`);
