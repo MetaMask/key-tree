@@ -112,7 +112,7 @@ test('deriveKeyPath - input validation', (t) => {
   t.end();
 });
 
-test('ethereum key test - direct derive', (t) => {
+test('bip32Derive', (t) => {
   // generate parent key
   let parentKey = null;
   parentKey = bip39Derive(
