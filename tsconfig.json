@@ -3,11 +3,11 @@
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "inlineSourceMap": true,
     "module": "CommonJS",
     "outDir": "./dist",
     "resolveJsonModule": true,
     "skipLibCheck": false,
+    "sourceMap": true,
     "strict": true,
     "target": "ES2017",
     "typeRoots": ["./node_modules/@types", "./src/types"]

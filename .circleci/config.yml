@@ -4,15 +4,15 @@ workflows:
   build-test:
     jobs:
       - prep-deps
-      - test-build:
+      - prep-builds:
           requires:
             - prep-deps
       - test-lint:
           requires:
-            - test-build
+            - prep-builds
       - test-unit:
           requires:
-            - test-build
+            - prep-builds
       - all-tests-pass:
           requires:
             - test-lint
@@ -38,7 +38,7 @@ jobs:
           - node_modules
           - build-artifacts
 
-  test-build:
+  prep-builds:
     docker:
       - image: circleci/node:12
     steps:
