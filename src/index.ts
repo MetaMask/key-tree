@@ -30,11 +30,15 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
  * - If the path starts with a BIP-39 segment, a parent key may NOT be provided.
  * - The path cannot exceed 5 BIP-32 segments in length, optionally preceded by
  *   a single BIP-39 segment.
- * 
+ *
  * WARNING: It is the consumer's responsibility to ensure that the path is valid
  * relative to its parent key.
  *
- * @param pathSegment - A full or partial HD path.
+ * @param pathSegment - A full or partial HD path, e.g.:
+ * bip39:SEED_PHRASE/bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:0
+ *
+ * BIP-39 seed phrases must be lowercase, space-delimited, and 12-24 words long.
+ *
  * @param parentKey - The parent key of the given path segment, if any.
  * @returns The derived key.
  */
