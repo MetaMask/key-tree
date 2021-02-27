@@ -1,6 +1,11 @@
 import bip39 from 'bip39';
-import derivers from './derivers';
+import { derivers, Deriver } from './derivers';
 
+/**
+ * Converts the given BIP-39 mnemonic to a cryptographic seed.
+ * @param mnemonic - The BIP-39 mnemonic.
+ * @returns The cryptographic seed corresponding to the given mnemonic.
+ */
 export function mnemonicToSeed(mnemonic: string): Buffer {
   return bip39.mnemonicToSeed(mnemonic);
 }
@@ -18,11 +23,11 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
  */
 
 /**
- * @param {string} pathSegment - A full or leaf HD path segment. If full,
+ * @param pathSegment - A full or leaf HD path segment. If full,
  * optionally preceded by "bip39:<SPACE_DELIMITED_SEED_PHRASE>/".
- * @param {Buffer} [parentKey] - The parent key of the given path segment.
+ * @param parentKey - The parent key of the given path segment, if any.
  */
-export function deriveKeyFromPath(pathSegment: string, parentKey: Buffer) {
+export function deriveKeyFromPath(pathSegment: string, parentKey?: Buffer) {
   validateDeriveKeyParams(pathSegment, parentKey);
 
   let key = parentKey;
@@ -33,8 +38,8 @@ export function deriveKeyFromPath(pathSegment: string, parentKey: Buffer) {
     if (!(hasDeriver(pathType))) {
       throw new Error(`Unknown derivation type "${pathType}"`);
     }
-    const deriver = derivers[pathType];
-    const childKey = deriver.deriveChildKey(key, pathValue);
+    const deriver = derivers[pathType] as Deriver;
+    const childKey = deriver.deriveChildKey(pathValue, key);
     // continue deriving from child key
     key = childKey;
   });
@@ -67,7 +72,7 @@ const BIP_39_PATH_REGEX = /^bip39:(\w+){1}( \w+){11,23}$/u;
  */
 const MULTI_PATH_REGEX = /^(bip39:(\w+){1}( \w+){11,23}\/)?(bip32:\d+'?\/){0,4}(bip32:\d+'?)$/u;
 
-function validateDeriveKeyParams(pathSegment: string, parentKey: Buffer) {
+function validateDeriveKeyParams(pathSegment: string, parentKey?: Buffer) {
   // The path segment must be one of the following:
   // - A lone BIP-32 path segment
   // - A lone BIP-39 path segment
