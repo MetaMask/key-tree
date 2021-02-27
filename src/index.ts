@@ -23,11 +23,22 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
  */
 
 /**
- * @param pathSegment - A full or leaf HD path segment. If full,
- * optionally preceded by "bip39:<SPACE_DELIMITED_SEED_PHRASE>/".
+ * Takes a full or partial HD path string and returns the key corresponding to
+ * the given path, with the following constraints:
+ *
+ * - If the path starts with a BIP-32 segment, a parent key must be provided.
+ * - If the path starts with a BIP-39 segment, a parent key may NOT be provided.
+ * - The path cannot exceed 5 BIP-32 segments in length, optionally preceded by
+ *   a single BIP-39 segment.
+ * 
+ * WARNING: It is the consumer's responsibility to ensure that the path is valid
+ * relative to its parent key.
+ *
+ * @param pathSegment - A full or partial HD path.
  * @param parentKey - The parent key of the given path segment, if any.
+ * @returns The derived key.
  */
-export function deriveKeyFromPath(pathSegment: string, parentKey?: Buffer) {
+export function deriveKeyFromPath(pathSegment: string, parentKey?: Buffer): Buffer {
   validateDeriveKeyParams(pathSegment, parentKey);
 
   let key = parentKey;
@@ -44,7 +55,7 @@ export function deriveKeyFromPath(pathSegment: string, parentKey?: Buffer) {
     key = childKey;
   });
 
-  return key;
+  return key as Buffer;
 }
 
 function hasDeriver(pathType: string): pathType is keyof typeof derivers {
