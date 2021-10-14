@@ -8,10 +8,6 @@ import {
   MIN_HD_TREE_DEPTH,
   MAX_HD_TREE_DEPTH,
   HDTreeDepth,
-  AnonymizedHDPathTuple,
-  ANONYMIZED_ROOT,
-  BIP_39,
-  UNKNOWN_NODE_TOKEN,
   KEY_BUFFER_LENGTH,
 } from './constants';
 import {
@@ -57,7 +53,6 @@ function validateHDTreeDepth(
 interface HDPathOptions {
   depth: HDTreeDepth;
   entropy?: Buffer | string;
-  anonymizedPath?: AnonymizedHDPathTuple;
   derivationPath?: HDPathTuple | HDPathString;
 }
 
@@ -83,28 +78,16 @@ export class HDTreeNode {
   public readonly entropy: string;
 
   /**
-   * The path to the node, including the root and the node itself.
-   * The derivation schema of any node along the path may or may not be known.
-   */
-  public readonly path: AnonymizedHDPathTuple;
-
-  /**
    * @param options - Options bag.
    * @param options.depth -
    * @param options.entropy -
    * @param options.derivationPath -
    */
-  constructor({
-    depth,
-    entropy,
-    derivationPath,
-    anonymizedPath,
-  }: HDPathOptions) {
+  constructor({ depth, entropy, derivationPath }: HDPathOptions) {
     HDTreeNode._validateConstructorParameters({
       depth,
       entropy,
       derivationPath,
-      anonymizedPath,
     });
 
     let stringEntropy, bufferEntropy;
@@ -131,11 +114,6 @@ export class HDTreeNode {
           ? segmentStringToTuple(derivationPath).length
           : derivationPath.length,
       );
-
-      this.path = HDTreeNode._getAnonymizedPath({
-        depth,
-        derivationPath,
-      });
     } else {
       if (!stringEntropy) {
         throw new Error(
@@ -143,8 +121,6 @@ export class HDTreeNode {
         );
       }
       this.entropy = stringEntropy;
-      this.path = HDTreeNode._getAnonymizedPath({ depth, anonymizedPath });
-
       validateHDTreeDepth(depth, null);
     }
     this.depth = depth;
@@ -153,30 +129,16 @@ export class HDTreeNode {
   }
 
   private static _validateConstructorParameters({
-    depth,
     entropy,
     derivationPath,
-    anonymizedPath,
-  }: HDPathOptions) {
-    if (derivationPath && anonymizedPath) {
-      throw new Error(
-        'Invalid parameters: May not specify derivationPath and anonymizedPath',
-      );
-    }
-
+  }: Partial<HDPathOptions>) {
     if (derivationPath === '') {
       throw new Error(
         'Invalid derivation path: May not specify the empty string.',
       );
     }
 
-    if (anonymizedPath && anonymizedPath.length !== depth) {
-      throw new Error(
-        'Invalid anonymized path: The anonymized path length must match the specified depth.',
-      );
-    }
-
-    if (entropy) {
+    if (entropy !== undefined && entropy !== null) {
       if (typeof entropy !== 'string' && !Buffer.isBuffer(entropy)) {
         throw new Error(
           `Invalid entropy: Must be a Buffer or string if specified. Received: "${typeof entropy}"`,
@@ -223,103 +185,16 @@ export class HDTreeNode {
     const options = {
       depth: newDepth,
       entropy: newEntropy,
-      // This performs some validation that we want.
-      anonymizedPath: HDTreeNode._getAnonymizedPath({
-        depth: newDepth,
-        anonymizedPath: [...this.path, ...path] as AnonymizedHDPathTuple,
-      }),
     };
     return new HDTreeNode(options);
   }
 
-  private static _getAnonymizedPath({
-    depth,
-    derivationPath,
-    anonymizedPath,
-  }: Omit<HDPathOptions, 'entropy'>): AnonymizedHDPathTuple {
-    if (!derivationPath && !anonymizedPath) {
-      return getUnknownHDPathRepresentation(depth);
-    }
-
-    if (derivationPath && anonymizedPath) {
-      throw new Error('Invalid _getAnonymizedPath parameters.');
-    }
-
-    if (derivationPath) {
-      const _derivationPath =
-        typeof derivationPath === 'string'
-          ? segmentStringToTuple(derivationPath)
-          : derivationPath;
-      return anonymizeHDPath(_derivationPath);
-    }
-
-    if (anonymizedPath) {
-      if (anonymizedPath.length - 1 !== depth) {
-        throw new Error(
-          'Invalid anonymized path: path length does not match the specified depth.',
-        );
-      }
-      validateAnonymizedHDPath(anonymizedPath);
-      return anonymizedPath;
-    }
-    /** istanbul ignore next: unreachable */
-    throw new Error('Invalid _getAnonymizedPath parameters.');
-  }
-
-  serialize(): Pick<HDTreeNode, 'depth' | 'entropy' | 'path'> {
+  toJSON(): Pick<HDTreeNode, 'depth' | 'entropy'> {
     return {
       depth: this.depth,
       entropy: this.entropy,
-      path: this.path,
     };
   }
-}
-
-function anonymizeHDPath(
-  path: HDPathTuple | AnonymizedHDPathTuple,
-): AnonymizedHDPathTuple {
-  const [, ..._path] = path;
-  let anonymizedPath: string[];
-
-  if (path[0] === ANONYMIZED_ROOT) {
-    anonymizedPath = path;
-  } else {
-    anonymizedPath = [ANONYMIZED_ROOT];
-    _path.forEach((node) => {
-      anonymizedPath.push(node);
-    });
-  }
-
-  validateAnonymizedHDPath(anonymizedPath);
-  return anonymizedPath as AnonymizedHDPathTuple;
-}
-
-function validateAnonymizedHDPath(path: string[]) {
-  if (path.length > MAX_HD_TREE_DEPTH) {
-    throw new Error(
-      `Anonymized path is too long. The max is 5, found: "${path.length}"`,
-    );
-  }
-
-  path.forEach((node) => {
-    if (node.includes(BIP_39)) {
-      throw new Error('Intermediary HD Tree node potentially toxic.');
-    }
-  });
-}
-
-function getUnknownHDPathRepresentation(
-  depth: HDTreeDepth,
-): AnonymizedHDPathTuple {
-  const path = [];
-  for (let i = 0; i <= depth; i++) {
-    if (i === depth) {
-      path.unshift(ANONYMIZED_ROOT);
-    } else {
-      path.unshift(UNKNOWN_NODE_TOKEN);
-    }
-  }
-  return path as AnonymizedHDPathTuple;
 }
 
 function isValidBufferEntropy(buffer: Buffer): boolean {

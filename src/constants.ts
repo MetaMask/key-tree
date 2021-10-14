@@ -54,50 +54,6 @@ export type PartialHDPathString =
   | PartialHDPathString4
   | PartialHDPathString5;
 
-export const ANONYMIZED_ROOT = 'm' as const;
-export const UNKNOWN_NODE_TOKEN = 'bip32:?' as const;
-
-export type AnonymizedRootNode = typeof ANONYMIZED_ROOT;
-export type UnknownHDNode = typeof UNKNOWN_NODE_TOKEN;
-export type AnonymizedIntermediaryNode = BIP32Node | UnknownHDNode;
-
-type AnonymizedHDPathTuple0 = [AnonymizedRootNode];
-type AnonymizedHDPathTuple1 = [AnonymizedRootNode, AnonymizedIntermediaryNode];
-type AnonymizedHDPathTuple2 = [
-  AnonymizedRootNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-];
-type AnonymizedHDPathTuple3 = [
-  AnonymizedRootNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-];
-type AnonymizedHDPathTuple4 = [
-  AnonymizedRootNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-];
-type AnonymizedHDPathTuple5 = [
-  AnonymizedRootNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-  AnonymizedIntermediaryNode,
-];
-
-export type AnonymizedHDPathTuple =
-  | AnonymizedHDPathTuple0
-  | AnonymizedHDPathTuple1
-  | AnonymizedHDPathTuple2
-  | AnonymizedHDPathTuple3
-  | AnonymizedHDPathTuple4
-  | AnonymizedHDPathTuple5;
-
 type HDPathTuple0 = [BIP39Node];
 type HDPathTuple1 = [BIP39Node, BIP32Node];
 type HDPathTuple2 = [BIP39Node, BIP32Node, BIP32Node];
