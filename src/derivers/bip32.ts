@@ -1,9 +1,7 @@
-// node
 import crypto from 'crypto';
-import assert from 'assert';
-// npm
 import secp256k1 from 'secp256k1';
 import createKeccakHash from 'keccak';
+import { KEY_BUFFER_LENGTH } from '../constants';
 
 const HARDENED_OFFSET = 0x80000000;
 
@@ -23,9 +21,7 @@ export function privateKeyToEthAddress(keyBuffer: Buffer) {
  * @param bits
  */
 function keccak(a: string | Buffer, bits: KeccakBits = '256'): Buffer {
-  return createKeccakHash(`keccak${bits}` as any)
-    .update(a)
-    .digest();
+  return createKeccakHash(`keccak${bits}`).update(a).digest();
 }
 
 /**
@@ -49,9 +45,17 @@ export function deriveChildKey(pathPart: string, parentKey: Buffer): Buffer {
   const isHardened = pathPart.includes(`'`);
   const indexPart = pathPart.split(`'`)[0];
   const childIndex = parseInt(indexPart, 10);
-  assert(childIndex < HARDENED_OFFSET, 'Invalid index');
-  assert(Boolean(parentKey), 'Must provide parentKey');
-  assert(parentKey.length === 64, 'Parent key invalid length');
+  if (childIndex >= HARDENED_OFFSET) {
+    throw new Error('Invalid index');
+  }
+
+  if (!parentKey) {
+    throw new Error('Must provide parentKey');
+  }
+
+  if (parentKey.length !== KEY_BUFFER_LENGTH) {
+    throw new Error('Parent key invalid length');
+  }
 
   const parentPrivateKey = parentKey.slice(0, 32);
   const parentExtraEntropy = parentKey.slice(32);

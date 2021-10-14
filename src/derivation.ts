@@ -1,5 +1,12 @@
 import bip39 from 'bip39';
+import {
+  BIP_39,
+  HDTreeDepth,
+  MIN_HD_TREE_DEPTH,
+  PATH_SEPARATOR,
+} from './constants';
 import { derivers, Deriver } from './derivers';
+import { bufferToHexString } from './utils';
 
 /**
  * Converts the given BIP-39 mnemonic to a cryptographic seed.
@@ -23,14 +30,22 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
  * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
  */
 
+export function deriveStringKeyFromPath(
+  pathSegment: string,
+  parentKey?: Buffer,
+  depth?: HDTreeDepth,
+): string {
+  return bufferToHexString(deriveKeyFromPath(pathSegment, parentKey, depth));
+}
+
 /**
  * Takes a full or partial HD path string and returns the key corresponding to
  * the given path, with the following constraints:
  *
- * - If the path starts with a BIP-32 segment, a parent key must be provided.
- * - If the path starts with a BIP-39 segment, a parent key may NOT be provided.
- * - The path cannot exceed 5 BIP-32 segments in length, optionally preceded by
- *   a single BIP-39 segment.
+ * - If the path starts with a BIP-32 node, a parent key must be provided.
+ * - If the path starts with a BIP-39 node, a parent key must NOT be provided.
+ * - The path cannot exceed 5 BIP-32 nodes in length, optionally preceded by
+ *   a single BIP-39 node.
  *
  * WARNING: It is the consumer's responsibility to ensure that the path is valid
  * relative to its parent key.
@@ -45,16 +60,20 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
 export function deriveKeyFromPath(
   pathSegment: string,
   parentKey?: Buffer,
+  depth?: HDTreeDepth,
 ): Buffer {
-  validateDeriveKeyParams(pathSegment, parentKey);
+  if (parentKey && !Buffer.isBuffer(parentKey)) {
+    throw new Error('Parent key must be a Buffer if specified.');
+  }
+  validatePathSegment(pathSegment, Boolean(parentKey), depth);
 
   let key = parentKey;
 
   // derive through each part of path
-  pathSegment.split('/').forEach((path) => {
+  pathSegment.split(PATH_SEPARATOR).forEach((path) => {
     const [pathType, pathValue] = path.split(':');
     if (!hasDeriver(pathType)) {
-      throw new Error(`Unknown derivation type "${pathType}"`);
+      throw new Error(`Unknown derivation type: "${pathType}"`);
     }
     const deriver = derivers[pathType] as Deriver;
     const childKey = deriver.deriveChildKey(pathValue, key);
@@ -95,14 +114,18 @@ const MULTI_PATH_REGEX =
   /^(bip39:([a-z]+){1}( [a-z]+){11,23}\/)?(bip32:\d+'?\/){0,4}(bip32:\d+'?)$/u;
 
 /**
- * @param pathSegment
- * @param parentKey
+ * The path segment must be one of the following:
+ * - A lone BIP-32 path node
+ * - A lone BIP-39 path node
+ * - A multipath
+ *
+ * @param pathSegment - The path segment string to validate.
  */
-function validateDeriveKeyParams(pathSegment: string, parentKey?: Buffer) {
-  // The path segment must be one of the following:
-  // - A lone BIP-32 path segment
-  // - A lone BIP-39 path segment
-  // - A multipath
+export function validatePathSegment(
+  pathSegment: string,
+  hasEntropy: boolean,
+  depth?: HDTreeDepth,
+) {
   if (
     !(
       BIP_32_PATH_REGEX.test(pathSegment) ||
@@ -110,25 +133,25 @@ function validateDeriveKeyParams(pathSegment: string, parentKey?: Buffer) {
       MULTI_PATH_REGEX.test(pathSegment)
     )
   ) {
-    throw new Error('Invalid HD path segment: The path segment is malformed.');
+    throw new Error('Invalid HD path segment: The path segment is malformed..');
   }
 
-  // BIP-39 segments can only initiate HD paths
-  if (BIP_39_PATH_REGEX.test(pathSegment) && parentKey) {
+  if (depth === MIN_HD_TREE_DEPTH && !BIP_39_PATH_REGEX.test(pathSegment)) {
     throw new Error(
-      'Invalid derivation parameters: May not specify parent entropy if the path segment starts with a BIP-39 node.',
+      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_HD_TREE_DEPTH}. Received: "${pathSegment}"`,
     );
   }
 
-  // BIP-32 segments cannot initiate HD paths
-  if (!pathSegment.startsWith('bip39') && !parentKey) {
+  const startsWithBip39 = pathSegment.startsWith(BIP_39);
+  if (!hasEntropy && !startsWithBip39) {
     throw new Error(
       'Invalid derivation parameters: Must specify parent entropy if the first node of the path segment is not a BIP-39 node.',
     );
   }
 
-  // The parent key must be a Buffer
-  if (parentKey && !Buffer.isBuffer(parentKey)) {
-    throw new Error('Parent key must be a Buffer if specified.');
+  if (hasEntropy && startsWithBip39) {
+    throw new Error(
+      'Invalid derivation parameters: May not specify parent entropy if the path segment starts with a BIP-39 node.',
+    );
   }
 }

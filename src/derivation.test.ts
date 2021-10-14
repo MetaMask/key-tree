@@ -1,5 +1,5 @@
 import { derivers } from './derivers';
-import { deriveKeyFromPath } from '.';
+import { deriveKeyFromPath } from './derivation';
 
 const {
   bip32: {

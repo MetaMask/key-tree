@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import bip39 from 'bip39';
 
+// This magic constant is analogous to a salt, and is consistent across all
+// major BIP-32 implementations.
 const ROOT_BASE_SECRET = Buffer.from('Bitcoin seed', 'utf8');
 
 /**
