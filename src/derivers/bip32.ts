@@ -25,19 +25,6 @@ function keccak(a: string | Buffer, bits: KeccakBits = '256'): Buffer {
 }
 
 /**
- * @param bip32Path
- */
-export function bip32PathToMultipath(bip32Path: string): string {
-  let pathParts = bip32Path.trim().split('/');
-  // strip "m" noop
-  if (pathParts[0].toLowerCase() === 'm') {
-    pathParts = pathParts.slice(1);
-  }
-  const multipath = pathParts.map((part) => `bip32:${part}`).join('/');
-  return multipath;
-}
-
-/**
  * @param pathPart
  * @param parentKey
  */

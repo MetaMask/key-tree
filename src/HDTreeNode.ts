@@ -1,33 +1,20 @@
 import { deriveKeyFromPath, deriveStringKeyFromPath } from './derivation';
 import {
-  BIP32Node,
   HDPathTuple,
-  HDPathString,
-  PartialHDPathString,
-  PATH_SEPARATOR,
   MIN_HD_TREE_DEPTH,
   MAX_HD_TREE_DEPTH,
   HDTreeDepth,
   KEY_BUFFER_LENGTH,
+  PartialHDPathTuple,
+  BASE_64_ENTROPY_LENGTH,
 } from './constants';
 import {
-  bufferToHexString,
-  getHexBuffer,
+  bufferToBase64String,
+  base64StringToBuffer,
+  hexStringToBuffer,
   isValidHexString,
   stripHexPrefix,
 } from './utils';
-
-type AddedHDPathSegmentTuple = BIP32Node[];
-
-function segmentStringToTuple(segment: HDPathString): HDPathTuple {
-  return segment.split(PATH_SEPARATOR) as HDPathTuple;
-}
-
-function segmentTupleToString(
-  segment: HDPathTuple | AddedHDPathSegmentTuple,
-): HDPathString | PartialHDPathString {
-  return segment.join(PATH_SEPARATOR) as HDPathString | PartialHDPathString;
-}
 
 function validateHDTreeDepth(
   depth: number,
@@ -53,7 +40,7 @@ function validateHDTreeDepth(
 interface HDPathOptions {
   depth: HDTreeDepth;
   entropy?: Buffer | string;
-  derivationPath?: HDPathTuple | HDPathString;
+  derivationPath?: HDPathTuple;
 }
 
 /**
@@ -73,7 +60,8 @@ export class HDTreeNode {
   public readonly depth: HDTreeDepth;
 
   /**
-   * The entropy of the HD tree node. Cryptographically, the node itself.
+   * The entropy of the HD tree node, as a Base64 string. Cryptographically, the
+   * node itself.
    */
   public readonly entropy: string;
 
@@ -84,36 +72,16 @@ export class HDTreeNode {
    * @param options.derivationPath -
    */
   constructor({ depth, entropy, derivationPath }: HDPathOptions) {
-    HDTreeNode._validateConstructorParameters({
-      depth,
-      entropy,
-      derivationPath,
-    });
-
-    let stringEntropy, bufferEntropy;
-    if (entropy) {
-      if (typeof entropy === 'string') {
-        stringEntropy = entropy;
-        bufferEntropy = getHexBuffer(entropy);
-      } else {
-        bufferEntropy = entropy;
-        stringEntropy = bufferToHexString(entropy);
-      }
-    }
+    const [bufferEntropy, stringEntropy] = this._parseEntropy(entropy);
 
     if (derivationPath) {
-      const stringPath =
-        typeof derivationPath === 'string'
-          ? derivationPath
-          : segmentTupleToString(derivationPath);
-      this.entropy = deriveStringKeyFromPath(stringPath, bufferEntropy, depth);
-
-      validateHDTreeDepth(
+      this.entropy = deriveStringKeyFromPath(
+        derivationPath,
+        bufferEntropy,
         depth,
-        typeof derivationPath === 'string'
-          ? segmentStringToTuple(derivationPath).length
-          : derivationPath.length,
       );
+
+      validateHDTreeDepth(depth, derivationPath.length);
     } else {
       if (!stringEntropy) {
         throw new Error(
@@ -128,45 +96,51 @@ export class HDTreeNode {
     Object.freeze(this);
   }
 
-  private static _validateConstructorParameters({
-    entropy,
-    derivationPath,
-  }: Partial<HDPathOptions>) {
-    if (derivationPath === '') {
-      throw new Error(
-        'Invalid derivation path: May not specify the empty string.',
-      );
+  private _parseEntropy(entropy: unknown) {
+    if (entropy === undefined || entropy === null) {
+      return [undefined, undefined];
     }
 
-    if (entropy !== undefined && entropy !== null) {
-      if (typeof entropy !== 'string' && !Buffer.isBuffer(entropy)) {
+    let bufferEntropy: Buffer;
+    let stringEntropy: string;
+    if (typeof entropy === 'string') {
+      if (isValidHexStringEntropy(entropy)) {
+        bufferEntropy = hexStringToBuffer(entropy);
+        stringEntropy = bufferToBase64String(bufferEntropy);
+      } else if (isValidBase64StringEntropy(entropy)) {
+        stringEntropy = entropy;
+        bufferEntropy = base64StringToBuffer(entropy);
+      } else {
         throw new Error(
-          `Invalid entropy: Must be a Buffer or string if specified. Received: "${typeof entropy}"`,
+          'Invalid string entropy: Must be a 64-byte hexadecimal or base64 string.',
         );
       }
-
-      if (Buffer.isBuffer(entropy) && !isValidBufferEntropy(entropy)) {
+    } else if (Buffer.isBuffer(entropy)) {
+      if (!isValidBufferEntropy(entropy)) {
         throw new Error(
           'Invalid buffer entropy: Must be a 64-byte, non-empty Buffer.',
         );
       }
 
-      if (typeof entropy === 'string' && !isValidStringEntropy(entropy)) {
-        throw new Error(
-          'Invalid string entropy: Must be a 64-character, nonzero hexadecimal string.',
-        );
-      }
+      bufferEntropy = entropy;
+      stringEntropy = bufferToBase64String(entropy);
+    } else {
+      throw new Error(
+        `Invalid entropy: Must be a Buffer or string if specified. Received: "${typeof entropy}"`,
+      );
     }
+
+    return [bufferEntropy, stringEntropy] as const;
   }
 
-  public derive(path: AddedHDPathSegmentTuple): HDTreeNode {
+  public derive(path: PartialHDPathTuple): HDTreeNode {
     if (this.depth === MAX_HD_TREE_DEPTH) {
       throw new Error(
         'Unable to derive: This HD Tree Path already ends with a leaf node.',
       );
     }
 
-    if (path.length === 0) {
+    if ((path as any).length === 0) {
       throw new Error(
         'Invalid HD derivation path: Deriving a path of length 0 is not defined.',
       );
@@ -175,11 +149,9 @@ export class HDTreeNode {
     const newDepth = (this.depth + path.length) as HDTreeDepth;
     validateHDTreeDepth(newDepth, null);
 
-    const newStringPath = segmentTupleToString(path);
-
     const newEntropy = deriveKeyFromPath(
-      newStringPath,
-      getHexBuffer(this.entropy),
+      path,
+      base64StringToBuffer(this.entropy),
     );
 
     const options = {
@@ -210,7 +182,17 @@ function isValidBufferEntropy(buffer: Buffer): boolean {
   return false;
 }
 
-function isValidStringEntropy(stringEntropy: string): boolean {
+const BASE_64_ZERO =
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==' as const;
+
+const BASE_64_REGEX =
+  /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/u;
+
+function isValidBase64String(input: string) {
+  return BASE_64_REGEX.test(input);
+}
+
+function isValidHexStringEntropy(stringEntropy: string): boolean {
   if (!isValidHexString(stringEntropy)) {
     return false;
   }
@@ -221,6 +203,21 @@ function isValidStringEntropy(stringEntropy: string): boolean {
   }
 
   if (/^0+$/iu.test(stripped)) {
+    return false;
+  }
+  return true;
+}
+
+function isValidBase64StringEntropy(stringEntropy: string): boolean {
+  if (!isValidBase64String(stringEntropy)) {
+    return false;
+  }
+
+  if (stringEntropy.length !== BASE_64_ENTROPY_LENGTH) {
+    return false;
+  }
+
+  if (stringEntropy === BASE_64_ZERO) {
     return false;
   }
   return true;

@@ -1,16 +1,25 @@
-import { derivers } from './derivers';
+import { FullHDPathTuple, HDPathTuple, PartialHDPathTuple } from './constants';
 import { deriveKeyFromPath } from './derivation';
+import { derivers } from './derivers';
 
 const {
-  bip32: {
-    deriveChildKey: bip32Derive,
-    privateKeyToEthAddress,
-    bip32PathToMultipath,
-  },
+  bip32: { deriveChildKey: bip32Derive, privateKeyToEthAddress },
   bip39: { deriveChildKey: bip39Derive, bip39MnemonicToMultipath },
 } = derivers;
 
-const defaultEthereumPath = `m/44'/60'/0'/0`;
+const defaultEthereumPath = ['m', `44'`, `60'`, `0'`, `0`];
+
+/**
+ * @param bip32Path
+ */
+function bip32PathToMultipath(path: string[]): PartialHDPathTuple {
+  let pathParts = [...path];
+  // strip "m" noop
+  if (pathParts[0].toLowerCase() === 'm') {
+    pathParts = pathParts.slice(1);
+  }
+  return pathParts.map((part) => `bip32:${part}`) as PartialHDPathTuple;
+}
 
 const mnemonic =
   'romance hurry grit huge rifle ordinary loud toss sound congress upset twist';
@@ -32,12 +41,20 @@ describe('derivation', () => {
   it('deriveKeyFromPath - full path', () => {
     // generate keys
     const keys = expectedAddresses.map((_, index) => {
-      const bip32Part = bip32PathToMultipath(`${defaultEthereumPath}/${index}`);
+      const bip32Part = bip32PathToMultipath([
+        ...defaultEthereumPath,
+        String(index),
+      ]);
       const bip39Part = bip39MnemonicToMultipath(mnemonic);
-      const multipath = `${bip39Part}/${bip32Part}`;
-      expect(multipath).toStrictEqual(
-        `bip39:${mnemonic}/bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:${index}`,
-      );
+      const multipath = [bip39Part, ...bip32Part] as HDPathTuple;
+      expect(multipath).toStrictEqual([
+        `bip39:${mnemonic}`,
+        `bip32:44'`,
+        `bip32:60'`,
+        `bip32:0'`,
+        `bip32:0`,
+        `bip32:${index}`,
+      ]);
       return deriveKeyFromPath(multipath);
     });
 
@@ -50,12 +67,12 @@ describe('derivation', () => {
 
   it('deriveKeyFromPath - parent key reuse', () => {
     // generate parent key
-    const bip32Part = bip32PathToMultipath(`${defaultEthereumPath}`);
+    const bip32Part = bip32PathToMultipath(defaultEthereumPath);
     const bip39Part = bip39MnemonicToMultipath(mnemonic);
-    const multipath = `${bip39Part}/${bip32Part}`;
+    const multipath = [bip39Part, ...bip32Part] as HDPathTuple;
     const parentKey = deriveKeyFromPath(multipath);
     const keys = expectedAddresses.map((_, index) => {
-      return deriveKeyFromPath(`bip32:${index}`, parentKey);
+      return deriveKeyFromPath([`bip32:${index}`], parentKey);
     });
 
     // validate addresses
@@ -67,50 +84,66 @@ describe('derivation', () => {
 
   it('deriveKeyFromPath - input validation', () => {
     // generate parent key
-    const bip32Part = bip32PathToMultipath(`${defaultEthereumPath}`);
+    const bip32Part = bip32PathToMultipath(defaultEthereumPath);
     const bip39Part = bip39MnemonicToMultipath(mnemonic);
-    const multipath = `${bip39Part}/${bip32Part}`;
+    const multipath = [bip39Part, ...bip32Part] as FullHDPathTuple;
     const parentKey = deriveKeyFromPath(multipath);
 
     // Malformed multipaths are disallowed
     expect(() => {
-      deriveKeyFromPath(multipath.replace(/bip39/u, `foo`));
+      const [, ...rest] = multipath;
+      deriveKeyFromPath([bip39Part.replace('bip39', 'foo') as any, ...rest]);
     }).toThrow(/Invalid HD path segment: The path segment is malformed\./u);
 
     expect(() => {
-      deriveKeyFromPath(multipath.replace(/bip32/u, `bar`));
+      const [, bip32Part1, ...rest] = multipath;
+      deriveKeyFromPath([
+        bip39Part,
+        bip32Part1.replace('bip32', 'bar') as any,
+        ...rest,
+      ]);
     }).toThrow(/Invalid HD path segment: The path segment is malformed\./u);
 
     expect(() => {
-      deriveKeyFromPath(multipath.replace(/44'/u, `xyz'`));
+      const [, bip32Part1, ...rest] = multipath;
+      deriveKeyFromPath([
+        bip39Part,
+        bip32Part1.replace(`44'`, 'xyz') as any,
+        ...rest,
+      ]);
     }).toThrow(/Invalid HD path segment: The path segment is malformed\./u);
 
     expect(() => {
-      deriveKeyFromPath(multipath.replace(/'/u, `"`));
+      const [, bip32Part1, ...rest] = multipath;
+      deriveKeyFromPath([
+        bip39Part,
+        bip32Part1.replace(`'`, '"') as any,
+        ...rest,
+      ]);
     }).toThrow(/Invalid HD path segment: The path segment is malformed\./u);
 
     // bip39 seed phrase component must be completely lowercase
     expect(() => {
-      deriveKeyFromPath(bip39Part.replace('r', 'R'));
+      deriveKeyFromPath([bip39Part.replace('r', 'R') as any]);
     }).toThrow(/Invalid HD path segment: The path segment is malformed\./u);
 
     // Multipaths that start with bip39 segment require _no_ parentKey
     expect(() => {
-      deriveKeyFromPath(bip39Part, parentKey);
+      deriveKeyFromPath([bip39Part], parentKey);
     }).toThrow(
       /Invalid derivation parameters: May not specify parent entropy if the path segment starts with a BIP-39 node\./u,
     );
 
     // Multipaths that start with bip32 segment require parentKey
     expect(() => {
-      deriveKeyFromPath('bip32:1');
+      deriveKeyFromPath(['bip32:1']);
     }).toThrow(
       /Invalid derivation parameters: Must specify parent entropy if the first node of the path segment is not a BIP-39 node\./u,
     );
 
     // parentKey must be a buffer if specified
     expect(() => {
-      deriveKeyFromPath('bip32:1', parentKey.toString('base64') as any);
+      deriveKeyFromPath(['bip32:1'], parentKey.toString('base64') as any);
     }).toThrow('Parent key must be a Buffer if specified.');
   });
 

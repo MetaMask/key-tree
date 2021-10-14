@@ -1,5 +1,7 @@
 export const KEY_BUFFER_LENGTH = 64 as const;
 
+export const BASE_64_ENTROPY_LENGTH = 88 as const;
+
 export const PATH_SEPARATOR = '/';
 
 export const BIP_39 = 'bip39';
@@ -13,7 +15,7 @@ export type HDTreeDepth = MinHDTreeDepth | 1 | 2 | 3 | 4 | MaxHDTreeDepth;
 
 export type SingleQuoteChar = `'`;
 
-export type BIP39Node = `bip39:${number}`;
+export type BIP39Node = `bip39:${string}`;
 export type BIP32Node = `bip32:${number}${SingleQuoteChar | ''}`;
 
 type HDPathString0 = BIP39Node;
@@ -54,14 +56,20 @@ export type PartialHDPathString =
   | PartialHDPathString4
   | PartialHDPathString5;
 
-type HDPathTuple0 = [BIP39Node];
-type HDPathTuple1 = [BIP39Node, BIP32Node];
-type HDPathTuple2 = [BIP39Node, BIP32Node, BIP32Node];
-type HDPathTuple3 = [BIP39Node, BIP32Node, BIP32Node, BIP32Node];
+type RootedHDPathTuple0 = [BIP39Node];
+type RootedHDPathTuple1 = [BIP39Node, BIP32Node];
+type RootedHDPathTuple2 = [BIP39Node, BIP32Node, BIP32Node];
+type RootedHDPathTuple3 = [BIP39Node, BIP32Node, BIP32Node, BIP32Node];
 
-type HDPathTuple4 = [BIP39Node, BIP32Node, BIP32Node, BIP32Node, BIP32Node];
+type RootedHDPathTuple4 = [
+  BIP39Node,
+  BIP32Node,
+  BIP32Node,
+  BIP32Node,
+  BIP32Node,
+];
 
-type HDPathTuple5 = [
+type RootedHDPathTuple5 = [
   BIP39Node,
   BIP32Node,
   BIP32Node,
@@ -70,10 +78,33 @@ type HDPathTuple5 = [
   BIP32Node,
 ];
 
-export type HDPathTuple =
-  | HDPathTuple0
-  | HDPathTuple1
-  | HDPathTuple2
-  | HDPathTuple3
-  | HDPathTuple4
-  | HDPathTuple5;
+export type RootedHDPathTuple =
+  | RootedHDPathTuple0
+  | RootedHDPathTuple1
+  | RootedHDPathTuple2
+  | RootedHDPathTuple3
+  | RootedHDPathTuple4
+  | RootedHDPathTuple5;
+
+type PartialHDPathTuple1 = [BIP32Node];
+type PartialHDPathTuple2 = [BIP32Node, BIP32Node];
+type PartialHDPathTuple3 = [BIP32Node, BIP32Node, BIP32Node];
+type PartialHDPathTuple4 = [BIP32Node, BIP32Node, BIP32Node, BIP32Node];
+type PartialHDPathTuple5 = [
+  BIP32Node,
+  BIP32Node,
+  BIP32Node,
+  BIP32Node,
+  BIP32Node,
+];
+
+export type PartialHDPathTuple =
+  | PartialHDPathTuple1
+  | PartialHDPathTuple2
+  | PartialHDPathTuple3
+  | PartialHDPathTuple4
+  | PartialHDPathTuple5;
+
+export type HDPathTuple = RootedHDPathTuple | PartialHDPathTuple;
+
+export type FullHDPathTuple = RootedHDPathTuple5;

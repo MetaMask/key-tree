@@ -1,12 +1,12 @@
 import bip39 from 'bip39';
 import {
-  BIP_39,
+  HDPathTuple,
   HDTreeDepth,
+  MAX_HD_TREE_DEPTH,
   MIN_HD_TREE_DEPTH,
-  PATH_SEPARATOR,
 } from './constants';
 import { derivers, Deriver } from './derivers';
-import { bufferToHexString } from './utils';
+import { bufferToBase64String } from './utils';
 
 /**
  * Converts the given BIP-39 mnemonic to a cryptographic seed.
@@ -31,11 +31,11 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
  */
 
 export function deriveStringKeyFromPath(
-  pathSegment: string,
+  pathSegment: HDPathTuple,
   parentKey?: Buffer,
   depth?: HDTreeDepth,
 ): string {
-  return bufferToHexString(deriveKeyFromPath(pathSegment, parentKey, depth));
+  return bufferToBase64String(deriveKeyFromPath(pathSegment, parentKey, depth));
 }
 
 /**
@@ -58,7 +58,7 @@ export function deriveStringKeyFromPath(
  * @returns The derived key.
  */
 export function deriveKeyFromPath(
-  pathSegment: string,
+  pathSegment: HDPathTuple,
   parentKey?: Buffer,
   depth?: HDTreeDepth,
 ): Buffer {
@@ -70,8 +70,8 @@ export function deriveKeyFromPath(
   let key = parentKey;
 
   // derive through each part of path
-  pathSegment.split(PATH_SEPARATOR).forEach((path) => {
-    const [pathType, pathValue] = path.split(':');
+  pathSegment.forEach((node) => {
+    const [pathType, pathValue] = node.split(':');
     if (!hasDeriver(pathType)) {
       throw new Error(`Unknown derivation type: "${pathType}"`);
     }
@@ -106,14 +106,6 @@ const BIP_32_PATH_REGEX = /^bip32:\d+'?$/u;
 const BIP_39_PATH_REGEX = /^bip39:([a-z]+){1}( [a-z]+){11,23}$/u;
 
 /**
- * e.g.
- * -  bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:0
- * -  bip39:<SPACE_DELMITED_SEED_PHRASE>/bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:0
- */
-const MULTI_PATH_REGEX =
-  /^(bip39:([a-z]+){1}( [a-z]+){11,23}\/)?(bip32:\d+'?\/){0,4}(bip32:\d+'?)$/u;
-
-/**
  * The path segment must be one of the following:
  * - A lone BIP-32 path node
  * - A lone BIP-39 path node
@@ -122,27 +114,41 @@ const MULTI_PATH_REGEX =
  * @param pathSegment - The path segment string to validate.
  */
 export function validatePathSegment(
-  pathSegment: string,
+  pathSegment: HDPathTuple,
   hasEntropy: boolean,
   depth?: HDTreeDepth,
 ) {
-  if (
-    !(
-      BIP_32_PATH_REGEX.test(pathSegment) ||
-      BIP_39_PATH_REGEX.test(pathSegment) ||
-      MULTI_PATH_REGEX.test(pathSegment)
-    )
-  ) {
-    throw new Error('Invalid HD path segment: The path segment is malformed..');
+  if ((pathSegment as any).length === 0) {
+    throw new Error(`Invalid HD path segment: The segment must not be empty.`);
   }
 
-  if (depth === MIN_HD_TREE_DEPTH && !BIP_39_PATH_REGEX.test(pathSegment)) {
+  if (pathSegment.length - 1 > MAX_HD_TREE_DEPTH) {
+    throw new Error(
+      `Invalid HD path segment: The segment cannot exceed a 0-indexed depth of 5.`,
+    );
+  }
+
+  let startsWithBip39 = false;
+  pathSegment.forEach((node, index) => {
+    if (index === 0) {
+      startsWithBip39 = BIP_39_PATH_REGEX.test(node);
+      if (!startsWithBip39 && !BIP_32_PATH_REGEX.test(node)) {
+        throw getMalformedError();
+      }
+    } else if (!BIP_32_PATH_REGEX.test(node)) {
+      throw getMalformedError();
+    }
+  });
+
+  if (
+    depth === MIN_HD_TREE_DEPTH &&
+    (!startsWithBip39 || pathSegment.length !== 1)
+  ) {
     throw new Error(
       `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_HD_TREE_DEPTH}. Received: "${pathSegment}"`,
     );
   }
 
-  const startsWithBip39 = pathSegment.startsWith(BIP_39);
   if (!hasEntropy && !startsWithBip39) {
     throw new Error(
       'Invalid derivation parameters: Must specify parent entropy if the first node of the path segment is not a BIP-39 node.',
@@ -154,4 +160,8 @@ export function validatePathSegment(
       'Invalid derivation parameters: May not specify parent entropy if the path segment starts with a BIP-39 node.',
     );
   }
+}
+
+function getMalformedError() {
+  throw new Error('Invalid HD path segment: The path segment is malformed.');
 }
