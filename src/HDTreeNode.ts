@@ -4,38 +4,16 @@ import {
   MIN_HD_TREE_DEPTH,
   MAX_HD_TREE_DEPTH,
   HDTreeDepth,
-  KEY_BUFFER_LENGTH,
   PartialHDPathTuple,
-  BASE_64_ENTROPY_LENGTH,
 } from './constants';
 import {
   bufferToBase64String,
   base64StringToBuffer,
   hexStringToBuffer,
-  isValidHexString,
-  stripHexPrefix,
+  isValidHexStringEntropy,
+  isValidBase64StringEntropy,
+  isValidBufferEntropy,
 } from './utils';
-
-function validateHDTreeDepth(
-  depth: number,
-  derivationPathLength: number | null,
-) {
-  if (
-    !Number.isInteger(depth) ||
-    depth < MIN_HD_TREE_DEPTH ||
-    depth > MAX_HD_TREE_DEPTH
-  ) {
-    throw new Error(
-      `Invalid HD Tree Path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "${depth}"`,
-    );
-  }
-
-  if (derivationPathLength !== null && depth !== derivationPathLength - 1) {
-    throw new Error(
-      `Invalid HD Tree Path depth: The specified depth does not correspond to the length of the provided HD path: "${derivationPathLength}"`,
-    );
-  }
-}
 
 interface HDPathOptions {
   depth: HDTreeDepth;
@@ -53,6 +31,9 @@ interface HDPathOptions {
  *   must be a BIP39 segment.
  */
 
+/**
+ * TODO
+ */
 export class HDTreeNode {
   /**
    * The depth of the HD tree node.
@@ -72,7 +53,7 @@ export class HDTreeNode {
    * @param options.derivationPath -
    */
   constructor({ depth, entropy, derivationPath }: HDPathOptions) {
-    const [bufferEntropy, stringEntropy] = this._parseEntropy(entropy);
+    const [bufferEntropy, stringEntropy] = HDTreeNode._parseEntropy(entropy);
 
     if (derivationPath) {
       this.entropy = deriveStringKeyFromPath(
@@ -81,7 +62,7 @@ export class HDTreeNode {
         depth,
       );
 
-      validateHDTreeDepth(depth, derivationPath.length);
+      HDTreeNode._validateHDTreeDepth(depth, derivationPath.length);
     } else {
       if (!stringEntropy) {
         throw new Error(
@@ -89,14 +70,14 @@ export class HDTreeNode {
         );
       }
       this.entropy = stringEntropy;
-      validateHDTreeDepth(depth, null);
+      HDTreeNode._validateHDTreeDepth(depth, null);
     }
     this.depth = depth;
 
     Object.freeze(this);
   }
 
-  private _parseEntropy(entropy: unknown) {
+  private static _parseEntropy(entropy: unknown) {
     if (entropy === undefined || entropy === null) {
       return [undefined, undefined];
     }
@@ -133,10 +114,31 @@ export class HDTreeNode {
     return [bufferEntropy, stringEntropy] as const;
   }
 
+  private static _validateHDTreeDepth(
+    depth: number,
+    derivationPathLength: number | null,
+  ) {
+    if (
+      !Number.isInteger(depth) ||
+      depth < MIN_HD_TREE_DEPTH ||
+      depth > MAX_HD_TREE_DEPTH
+    ) {
+      throw new Error(
+        `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "${depth}"`,
+      );
+    }
+
+    if (derivationPathLength !== null && depth !== derivationPathLength - 1) {
+      throw new Error(
+        `Invalid HD tree path depth: The specified depth does not correspond to the length of the provided HD path: "${derivationPathLength}"`,
+      );
+    }
+  }
+
   public derive(path: PartialHDPathTuple): HDTreeNode {
     if (this.depth === MAX_HD_TREE_DEPTH) {
       throw new Error(
-        'Unable to derive: This HD Tree Path already ends with a leaf node.',
+        'Illegal operation: This HD tree path already ends with a leaf node.',
       );
     }
 
@@ -147,7 +149,7 @@ export class HDTreeNode {
     }
 
     const newDepth = (this.depth + path.length) as HDTreeDepth;
-    validateHDTreeDepth(newDepth, null);
+    HDTreeNode._validateHDTreeDepth(newDepth, null);
 
     const newEntropy = deriveKeyFromPath(
       path,
@@ -167,58 +169,4 @@ export class HDTreeNode {
       entropy: this.entropy,
     };
   }
-}
-
-function isValidBufferEntropy(buffer: Buffer): boolean {
-  if (buffer.length !== KEY_BUFFER_LENGTH) {
-    return false;
-  }
-
-  for (const byte of buffer) {
-    if (byte !== 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
-const BASE_64_ZERO =
-  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==' as const;
-
-const BASE_64_REGEX =
-  /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/u;
-
-function isValidBase64String(input: string) {
-  return BASE_64_REGEX.test(input);
-}
-
-function isValidHexStringEntropy(stringEntropy: string): boolean {
-  if (!isValidHexString(stringEntropy)) {
-    return false;
-  }
-
-  const stripped = stripHexPrefix(stringEntropy);
-  if (stripped.length !== KEY_BUFFER_LENGTH) {
-    return false;
-  }
-
-  if (/^0+$/iu.test(stripped)) {
-    return false;
-  }
-  return true;
-}
-
-function isValidBase64StringEntropy(stringEntropy: string): boolean {
-  if (!isValidBase64String(stringEntropy)) {
-    return false;
-  }
-
-  if (stringEntropy.length !== BASE_64_ENTROPY_LENGTH) {
-    return false;
-  }
-
-  if (stringEntropy === BASE_64_ZERO) {
-    return false;
-  }
-  return true;
 }

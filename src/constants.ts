@@ -2,9 +2,12 @@ export const KEY_BUFFER_LENGTH = 64 as const;
 
 export const BASE_64_ENTROPY_LENGTH = 88 as const;
 
-export const PATH_SEPARATOR = '/';
+export const BASE_64_ZERO =
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==' as const;
 
-export const BIP_39 = 'bip39';
+// Source: https://stackoverflow.com/a/475217
+export const BASE_64_REGEX =
+  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/u;
 
 export const MIN_HD_TREE_DEPTH = 0 as const;
 export const MAX_HD_TREE_DEPTH = 5 as const;
@@ -13,10 +16,10 @@ export type MinHDTreeDepth = typeof MIN_HD_TREE_DEPTH;
 export type MaxHDTreeDepth = typeof MAX_HD_TREE_DEPTH;
 export type HDTreeDepth = MinHDTreeDepth | 1 | 2 | 3 | 4 | MaxHDTreeDepth;
 
-export type SingleQuoteChar = `'`;
+type SingleQuote = `'`;
 
 export type BIP39Node = `bip39:${string}`;
-export type BIP32Node = `bip32:${number}${SingleQuoteChar | ''}`;
+export type BIP32Node = `bip32:${number}${SingleQuote | ''}`;
 
 type HDPathString0 = BIP39Node;
 type HDPathString1 = `${BIP39Node}/${BIP32Node}`;
