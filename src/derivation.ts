@@ -115,7 +115,7 @@ const BIP_39_PATH_REGEX = /^bip39:([a-z]+){1}( [a-z]+){11,23}$/u;
  */
 export function validatePathSegment(
   pathSegment: HDPathTuple,
-  hasEntropy: boolean,
+  hasKey: boolean,
   depth?: HDTreeDepth,
 ) {
   if ((pathSegment as any).length === 0) {
@@ -149,15 +149,15 @@ export function validatePathSegment(
     );
   }
 
-  if (!hasEntropy && !startsWithBip39) {
+  if (!hasKey && !startsWithBip39) {
     throw new Error(
-      'Invalid derivation parameters: Must specify parent entropy if the first node of the path segment is not a BIP-39 node.',
+      'Invalid derivation parameters: Must specify parent key if the first node of the path segment is not a BIP-39 node.',
     );
   }
 
-  if (hasEntropy && startsWithBip39) {
+  if (hasKey && startsWithBip39) {
     throw new Error(
-      'Invalid derivation parameters: May not specify parent entropy if the path segment starts with a BIP-39 node.',
+      'Invalid derivation parameters: May not specify parent key if the path segment starts with a BIP-39 node.',
     );
   }
 }

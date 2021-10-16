@@ -3,6 +3,16 @@ module.exports = {
 
   extends: ['@metamask/eslint-config'],
 
+  rules: {
+    camelcase: [
+      'error',
+      {
+        properties: 'never',
+        allow: ['^UNSAFE_', 'coin_type', 'address_index'],
+      },
+    ],
+  },
+
   overrides: [
     {
       files: ['*.d.ts'],

@@ -1,9 +1,76 @@
 import {
-  BASE_64_ENTROPY_LENGTH,
+  BASE_64_KEY_LENGTH,
   BASE_64_REGEX,
   BASE_64_ZERO,
   KEY_BUFFER_LENGTH,
+  BIP44PurposeNode,
+  UnhardenedBIP32Node,
+  CoinTypeHDPathString,
+  AddressHDPathString,
+  CoinTypeToAddressTuple,
+  HardenedBIP32Node,
 } from './constants';
+
+export function getBIP44CoinTypePathString(
+  coin_type: number,
+): CoinTypeHDPathString {
+  return `m / ${BIP44PurposeNode} / ${getUnhardenedBIP32Node(coin_type)}'`;
+}
+
+interface BIP44PathIndices {
+  coin_type: number;
+  account?: number;
+  change?: number;
+  address_index: number;
+}
+
+export type CoinTypeToAddressIndices = Pick<
+  BIP44PathIndices,
+  'account' | 'change' | 'address_index'
+>;
+
+export function getBIP44AddressPathString(
+  coinTypePath: CoinTypeHDPathString,
+  indices: CoinTypeToAddressIndices,
+): AddressHDPathString {
+  return `${coinTypePath} / ${getHardenedBIP32Node(
+    indices.account || 0,
+  )} / ${getUnhardenedBIP32Node(
+    indices.change || 0,
+  )} / ${getUnhardenedBIP32Node(indices.address_index)}`;
+}
+
+export function getBIP44AddressPathTuple({
+  account = 0,
+  change = 0,
+  address_index,
+}: CoinTypeToAddressIndices): CoinTypeToAddressTuple {
+  return [
+    getHardenedBIP32Node(account),
+    getUnhardenedBIP32Node(change),
+    getUnhardenedBIP32Node(address_index),
+  ] as const;
+}
+
+export function getHardenedBIP32Node(index: number): HardenedBIP32Node {
+  return `${getUnhardenedBIP32Node(index)}'`;
+}
+
+export function getUnhardenedBIP32Node(index: number): UnhardenedBIP32Node {
+  validateBIP32Index(index);
+
+  return `bip32:${index}`;
+}
+
+export function validateBIP32Index(addressIndex: number) {
+  if (!isValidBIP32Index(addressIndex)) {
+    throw new Error(`Invalid BIP-32 index: Must be a non-negative integer.`);
+  }
+}
+
+export function isValidBIP32Index(index: number): boolean {
+  return Number.isInteger(index) && index >= 0;
+}
 
 export function stripHexPrefix(hexString: string): string {
   return hexString.replace(/^0x/iu, '');
@@ -25,7 +92,7 @@ export function bufferToBase64String(input: Buffer) {
   return input.toString('base64');
 }
 
-export function isValidBufferEntropy(buffer: Buffer): boolean {
+export function isValidBufferKey(buffer: Buffer): boolean {
   if (buffer.length !== KEY_BUFFER_LENGTH) {
     return false;
   }
@@ -42,12 +109,12 @@ function isValidBase64String(input: string) {
   return BASE_64_REGEX.test(input);
 }
 
-export function isValidHexStringEntropy(stringEntropy: string): boolean {
-  if (!isValidHexString(stringEntropy)) {
+export function isValidHexStringKey(stringKey: string): boolean {
+  if (!isValidHexString(stringKey)) {
     return false;
   }
 
-  const stripped = stripHexPrefix(stringEntropy);
+  const stripped = stripHexPrefix(stringKey);
   if (stripped.length !== KEY_BUFFER_LENGTH) {
     return false;
   }
@@ -58,16 +125,16 @@ export function isValidHexStringEntropy(stringEntropy: string): boolean {
   return true;
 }
 
-export function isValidBase64StringEntropy(stringEntropy: string): boolean {
-  if (!isValidBase64String(stringEntropy)) {
+export function isValidBase64StringKey(stringKey: string): boolean {
+  if (!isValidBase64String(stringKey)) {
     return false;
   }
 
-  if (stringEntropy.length !== BASE_64_ENTROPY_LENGTH) {
+  if (stringKey.length !== BASE_64_KEY_LENGTH) {
     return false;
   }
 
-  if (stringEntropy === BASE_64_ZERO) {
+  if (stringKey === BASE_64_ZERO) {
     return false;
   }
   return true;

@@ -18,7 +18,9 @@ function bip32PathToMultipath(path: string[]): PartialHDPathTuple {
   if (pathParts[0].toLowerCase() === 'm') {
     pathParts = pathParts.slice(1);
   }
-  return pathParts.map((part) => `bip32:${part}`) as PartialHDPathTuple;
+  return pathParts.map(
+    (part) => `bip32:${part}`,
+  ) as unknown as PartialHDPathTuple;
 }
 
 const mnemonic =
@@ -131,19 +133,19 @@ describe('derivation', () => {
     expect(() => {
       deriveKeyFromPath([bip39Part], parentKey);
     }).toThrow(
-      /Invalid derivation parameters: May not specify parent entropy if the path segment starts with a BIP-39 node\./u,
+      /Invalid derivation parameters: May not specify parent key if the path segment starts with a BIP-39 node\./u,
     );
 
     // Multipaths that start with bip32 segment require parentKey
     expect(() => {
-      deriveKeyFromPath(['bip32:1']);
+      deriveKeyFromPath([`bip32:1'`]);
     }).toThrow(
-      /Invalid derivation parameters: Must specify parent entropy if the first node of the path segment is not a BIP-39 node\./u,
+      /Invalid derivation parameters: Must specify parent key if the first node of the path segment is not a BIP-39 node\./u,
     );
 
     // parentKey must be a buffer if specified
     expect(() => {
-      deriveKeyFromPath(['bip32:1'], parentKey.toString('base64') as any);
+      deriveKeyFromPath([`bip32:1'`], parentKey.toString('base64') as any);
     }).toThrow('Parent key must be a Buffer if specified.');
   });
 
