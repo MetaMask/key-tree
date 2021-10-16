@@ -1,1 +1,1 @@
-export * from './HDTreeNode';
+export * from './BIP44Node';

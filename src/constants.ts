@@ -9,28 +9,26 @@ export const BASE_64_ZERO =
 export const BASE_64_REGEX =
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/u;
 
-export const MIN_HD_TREE_DEPTH = 0 as const;
-export const MAX_HD_TREE_DEPTH = 5 as const;
+export const MIN_BIP_44_DEPTH = 0 as const;
+export const MAX_BIP_44_DEPTH = 5 as const;
 
-export type MinHDTreeDepth = typeof MIN_HD_TREE_DEPTH;
-export type MaxHDTreeDepth = typeof MAX_HD_TREE_DEPTH;
-export type HDTreeDepth = MinHDTreeDepth | 1 | 2 | 3 | 4 | MaxHDTreeDepth;
+export type MinBIP44Depth = typeof MIN_BIP_44_DEPTH;
+export type MaxBIP44Depth = typeof MAX_BIP_44_DEPTH;
+export type BIP44Depth = MinBIP44Depth | 1 | 2 | 3 | 4 | MaxBIP44Depth;
 
-type SingleQuote = `'`;
-
-// BIP-32 derivation path:
+// BIP-44 derivation path:
 // m / purpose' / coin_type' / account' / change / address_index
 //
 // Per BIP-43 / BIP-44, "purpose" should always be "44":
 // m / 44' / coin_type' / account' / change / address_index
 //
-// The Ethereum "coin_type" is "60". Here's an example Ethereum HD path for
-// "account 0":
+// The Ethereum "coin_type" is "60". Its "account" and "change" indices are
+// always "0". Here's an example Ethereum HD path for account "0":
 // m  / 44' / 60' / 0' / 0 / 0
 
 export type AnonymizedBIP39Node = 'm';
 export type BIP39Node = `bip39:${string}`;
-export type HardenedBIP32Node = `bip32:${number}${SingleQuote}`;
+export type HardenedBIP32Node = `bip32:${number}'`;
 export type UnhardenedBIP32Node = `bip32:${number}`;
 export type BIP32Node = HardenedBIP32Node | UnhardenedBIP32Node;
 
@@ -44,6 +42,7 @@ type HDPathString4 = `${HDPathString3} / ${UnhardenedBIP32Node}`;
 type HDPathString5 = `${HDPathString4} / ${UnhardenedBIP32Node}`;
 
 export type CoinTypeHDPathString = HDPathString2;
+export type ChangeHDPathString = HDPathString4;
 export type AddressHDPathString = HDPathString5;
 
 export type HDPathString =

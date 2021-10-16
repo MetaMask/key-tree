@@ -3,14 +3,14 @@ import {
   BIP44PurposeNode,
   CoinTypeHDPathString,
   HardenedBIP32Node,
-  HDTreeDepth,
+  BIP44Depth,
 } from './constants';
 import {
-  JsonHDTreeNode,
-  HDTreeNode,
-  HDTreeNodeInterface,
+  JsonBIP44Node,
+  BIP44Node,
+  BIP44NodeInterface,
   deriveChildNode,
-} from './HDTreeNode';
+} from './BIP44Node';
 import {
   base64StringToBuffer,
   getBIP44AddressPathTuple,
@@ -19,6 +19,7 @@ import {
   CoinTypeToAddressIndices,
   getHardenedBIP32Node,
   getUnhardenedBIP32Node,
+  getBIP44ChangePathString,
 } from './utils';
 
 export type CoinTypeHDPathTuple = [
@@ -28,22 +29,25 @@ export type CoinTypeHDPathTuple = [
 ];
 export const COIN_TYPE_DEPTH = 2;
 
-export type JsonBIP44CoinTypeNode = JsonHDTreeNode & {
+export type JsonBIP44CoinTypeNode = JsonBIP44Node & {
   readonly coin_type: number;
   readonly path: CoinTypeHDPathString;
 };
 
-export type BIP44CoinTypeNodeInterface = HDTreeNodeInterface & {
+export type BIP44CoinTypeNodeInterface = BIP44NodeInterface & {
   readonly coin_type: number;
   readonly path: CoinTypeHDPathString;
 };
 
 const InnerNode = Symbol('_node');
 
+/**
+ * `m / purpose' / coin_type' / account' / change / address_index`
+ */
 export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
-  private readonly [InnerNode]: HDTreeNode;
+  private readonly [InnerNode]: BIP44Node;
 
-  public get depth(): HDTreeDepth {
+  public get depth(): BIP44Depth {
     return this[InnerNode].depth;
   }
 
@@ -55,15 +59,12 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 
   public readonly coin_type: number;
 
-  constructor(
-    nodeOrArray: CoinTypeHDPathTuple | HDTreeNode,
-    coin_type: number,
-  ) {
+  constructor(nodeOrArray: CoinTypeHDPathTuple | BIP44Node, coin_type: number) {
     this.path = getBIP44CoinTypePathString(coin_type);
     this.coin_type = coin_type;
 
     if (Array.isArray(nodeOrArray)) {
-      this[InnerNode] = new HDTreeNode({
+      this[InnerNode] = new BIP44Node({
         depth: COIN_TYPE_DEPTH,
         derivationPath: nodeOrArray,
       });
@@ -75,6 +76,9 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     Object.freeze(this);
   }
 
+  /**
+   * `m / purpose' / coin_type' / account' / change / address_index`
+   */
   deriveBIP44AddressKey({
     account = 0,
     change = 0,
@@ -102,12 +106,26 @@ function validateCoinTypeNodeDepth(depth: number) {
   }
 }
 
+/**
+ * Validates a `coin_type` Base64 string key. "Parent" is in the name because
+ * it's also in the message that's thrown on validation failure.
+ *
+ * @param parentKey The `coin_type` key to validate.
+ */
 function validateCoinTypeParentKey(parentKey: string) {
   if (!isValidBase64StringKey(parentKey)) {
     throw new Error(`Invalid parent key: Must be a 64-byte Base64 string.`);
   }
 }
 
+/**
+ * `m / purpose' / coin_type' / account' / change / address_index`
+ *
+ * @param parentKeyOrNode - The `coin_type` parent key to derive from.
+ * @param indices - The `account`, `change`, and `address_index` used for
+ * derivation.
+ * @returns The derived `address_index` key for the specified derivation path.
+ */
 export function deriveBIP44AddressKey(
   parentKeyOrNode: string | BIP44CoinTypeNode | JsonBIP44CoinTypeNode,
   { account = 0, change = 0, address_index }: CoinTypeToAddressIndices,
@@ -127,12 +145,22 @@ export function deriveBIP44AddressKey(
   ).key;
 }
 
+/**
+ * `m / purpose' / coin_type' / account' / change / address_index`
+ *
+ * @param node - The {@link BIP44CoinTypeNode} to derive address keys from.
+ * This node contains a BIP-44 key of depth 2, `coin_type`.
+ * @param accountAndChangeIndices - The `account` and `change` indices that
+ * will be used to derive addresses.
+ * @returns The deriver function for the derivation path specified by the
+ * `coin_type` node, `account`, and `change` indices.
+ */
 export function getBIP44AddressKeyDeriver(
   node: BIP44CoinTypeNode | JsonBIP44CoinTypeNode,
   accountAndChangeIndices?: Omit<CoinTypeToAddressIndices, 'address_index'>,
 ) {
   const { account = 0, change = 0 } = accountAndChangeIndices || {};
-  const { key, depth, coin_type } = node;
+  const { key, depth } = node;
   validateCoinTypeNodeDepth(depth);
   validateCoinTypeParentKey(key);
 
@@ -149,9 +177,10 @@ export function getBIP44AddressKeyDeriver(
     ]).key;
   };
 
-  bip44AddressKeyDeriver.coin_type = coin_type;
-  bip44AddressKeyDeriver.account = account;
-  bip44AddressKeyDeriver.change = change;
+  bip44AddressKeyDeriver.path = getBIP44ChangePathString(node.path, {
+    account,
+    change,
+  });
   Object.freeze(bip44AddressKeyDeriver);
   return bip44AddressKeyDeriver;
 }

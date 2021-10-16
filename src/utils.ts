@@ -9,6 +9,7 @@ import {
   AddressHDPathString,
   CoinTypeToAddressTuple,
   HardenedBIP32Node,
+  ChangeHDPathString,
 } from './constants';
 
 export function getBIP44CoinTypePathString(
@@ -38,6 +39,15 @@ export function getBIP44AddressPathString(
   )} / ${getUnhardenedBIP32Node(
     indices.change || 0,
   )} / ${getUnhardenedBIP32Node(indices.address_index)}`;
+}
+
+export function getBIP44ChangePathString(
+  coinTypePath: CoinTypeHDPathString,
+  indices: Omit<CoinTypeToAddressIndices, 'address_index'>,
+): ChangeHDPathString {
+  return `${coinTypePath} / ${getHardenedBIP32Node(
+    indices.account || 0,
+  )} / ${getUnhardenedBIP32Node(indices.change || 0)}`;
 }
 
 export function getBIP44AddressPathTuple({

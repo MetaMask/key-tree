@@ -1,9 +1,9 @@
 import bip39 from 'bip39';
 import {
   HDPathTuple,
-  HDTreeDepth,
-  MAX_HD_TREE_DEPTH,
-  MIN_HD_TREE_DEPTH,
+  BIP44Depth,
+  MAX_BIP_44_DEPTH,
+  MIN_BIP_44_DEPTH,
 } from './constants';
 import { derivers, Deriver } from './derivers';
 import { bufferToBase64String } from './utils';
@@ -33,7 +33,7 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
 export function deriveStringKeyFromPath(
   pathSegment: HDPathTuple,
   parentKey?: Buffer,
-  depth?: HDTreeDepth,
+  depth?: BIP44Depth,
 ): string {
   return bufferToBase64String(deriveKeyFromPath(pathSegment, parentKey, depth));
 }
@@ -60,7 +60,7 @@ export function deriveStringKeyFromPath(
 export function deriveKeyFromPath(
   pathSegment: HDPathTuple,
   parentKey?: Buffer,
-  depth?: HDTreeDepth,
+  depth?: BIP44Depth,
 ): Buffer {
   if (parentKey && !Buffer.isBuffer(parentKey)) {
     throw new Error('Parent key must be a Buffer if specified.');
@@ -116,13 +116,13 @@ const BIP_39_PATH_REGEX = /^bip39:([a-z]+){1}( [a-z]+){11,23}$/u;
 export function validatePathSegment(
   pathSegment: HDPathTuple,
   hasKey: boolean,
-  depth?: HDTreeDepth,
+  depth?: BIP44Depth,
 ) {
   if ((pathSegment as any).length === 0) {
     throw new Error(`Invalid HD path segment: The segment must not be empty.`);
   }
 
-  if (pathSegment.length - 1 > MAX_HD_TREE_DEPTH) {
+  if (pathSegment.length - 1 > MAX_BIP_44_DEPTH) {
     throw new Error(
       `Invalid HD path segment: The segment cannot exceed a 0-indexed depth of 5.`,
     );
@@ -141,11 +141,11 @@ export function validatePathSegment(
   });
 
   if (
-    depth === MIN_HD_TREE_DEPTH &&
+    depth === MIN_BIP_44_DEPTH &&
     (!startsWithBip39 || pathSegment.length !== 1)
   ) {
     throw new Error(
-      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_HD_TREE_DEPTH}. Received: "${pathSegment}"`,
+      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_BIP_44_DEPTH}. Received: "${pathSegment}"`,
     );
   }
 

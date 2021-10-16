@@ -1,9 +1,9 @@
 import { deriveKeyFromPath, deriveStringKeyFromPath } from './derivation';
 import {
   HDPathTuple,
-  MIN_HD_TREE_DEPTH,
-  MAX_HD_TREE_DEPTH,
-  HDTreeDepth,
+  MIN_BIP_44_DEPTH,
+  MAX_BIP_44_DEPTH,
+  BIP44Depth,
   PartialHDPathTuple,
 } from './constants';
 import {
@@ -15,17 +15,40 @@ import {
   isValidBufferKey,
 } from './utils';
 
-export interface JsonHDTreeNode {
-  readonly depth: HDTreeDepth;
+/**
+ * A wrapper for BIP-44 Hierarchical Deterministic (HD) tree nodes, i.e.
+ * cryptographic keys used to generate keypairs and addresses for cryptocurrency
+ * protocols.
+ */
+export interface JsonBIP44Node {
+  /**
+   * The 0-indexed BIP-44 path depth of this node.
+   *
+   * A BIP-44 path is of the form:
+   *
+   * `m / purpose' / coin_type' / account' / change / address_index`
+   *
+   * With the following indices:
+   *
+   * `0 / 1 / 2 / 3 / 4 / 5`
+   */
+  readonly depth: BIP44Depth;
+
+  /**
+   * The Base64 string representation of the key material for this node.
+   */
   readonly key: string;
 }
 
-export type HDTreeNodeInterface = JsonHDTreeNode & {
-  toJSON(): JsonHDTreeNode;
+export type BIP44NodeInterface = JsonBIP44Node & {
+  /**
+   * @returns A JSON-compatible representation of this node's data fields.
+   */
+  toJSON(): JsonBIP44Node;
 };
 
 interface HDPathOptions {
-  readonly depth: HDTreeDepth;
+  readonly depth: BIP44Depth;
   readonly key?: Buffer | string;
   readonly derivationPath?: HDPathTuple;
 }
@@ -41,22 +64,15 @@ interface HDPathOptions {
  */
 
 /**
- * TODO
+ * `m / purpose' / coin_type' / account' / change / address_index`
  */
-export class HDTreeNode implements HDTreeNodeInterface {
-  /**
-   * The depth of the HD tree node.
-   */
-  public readonly depth: HDTreeDepth;
+export class BIP44Node implements BIP44NodeInterface {
+  public readonly depth: BIP44Depth;
 
-  /**
-   * The key of the HD tree node, as a Base64 string. Cryptographically, the
-   * node itself.
-   */
   public readonly key: string;
 
   /**
-   * The key of the HD tree node, as a Node.js Buffer.
+   * The key of the BIP-44 node, as a Node.js Buffer.
    */
   public get keyAsBuffer(): Buffer {
     return base64StringToBuffer(this.key);
@@ -69,12 +85,12 @@ export class HDTreeNode implements HDTreeNodeInterface {
    * @param options.derivationPath -
    */
   constructor({ depth, key, derivationPath }: HDPathOptions) {
-    const [bufferKey, stringKey] = HDTreeNode._parseKey(key);
+    const [bufferKey, stringKey] = BIP44Node._parseKey(key);
 
     if (derivationPath) {
       this.key = deriveStringKeyFromPath(derivationPath, bufferKey, depth);
 
-      validateHDTreeDepth(depth, derivationPath.length);
+      validateBIP44Depth(depth, derivationPath.length);
     } else {
       if (!stringKey) {
         throw new Error(
@@ -82,7 +98,7 @@ export class HDTreeNode implements HDTreeNodeInterface {
         );
       }
       this.key = stringKey;
-      validateHDTreeDepth(depth, null);
+      validateBIP44Depth(depth, null);
     }
     this.depth = depth;
 
@@ -126,8 +142,11 @@ export class HDTreeNode implements HDTreeNodeInterface {
     return [bufferKey, stringKey] as const;
   }
 
-  public derive(path: PartialHDPathTuple): HDTreeNode {
-    if (this.depth === MAX_HD_TREE_DEPTH) {
+  /**
+   * `m / purpose' / coin_type' / account' / change / address_index`
+   */
+  public derive(path: PartialHDPathTuple): BIP44Node {
+    if (this.depth === MAX_BIP_44_DEPTH) {
       throw new Error(
         'Illegal operation: This HD tree path already ends with a leaf node.',
       );
@@ -136,7 +155,7 @@ export class HDTreeNode implements HDTreeNodeInterface {
     return deriveChildNode(this.keyAsBuffer, this.depth, path);
   }
 
-  toJSON(): JsonHDTreeNode {
+  toJSON(): JsonBIP44Node {
     return {
       depth: this.depth,
       key: this.key,
@@ -146,7 +165,7 @@ export class HDTreeNode implements HDTreeNodeInterface {
 
 export function deriveChildNode(
   parentKey: Buffer,
-  parentDepth: HDTreeDepth,
+  parentDepth: BIP44Depth,
   pathToChild: PartialHDPathTuple,
 ) {
   if ((pathToChild as any).length === 0) {
@@ -155,25 +174,25 @@ export function deriveChildNode(
     );
   }
 
-  const newDepth = (parentDepth + pathToChild.length) as HDTreeDepth;
-  validateHDTreeDepth(newDepth, null);
+  const newDepth = (parentDepth + pathToChild.length) as BIP44Depth;
+  validateBIP44Depth(newDepth, null);
 
   const childKey = deriveKeyFromPath(pathToChild, parentKey);
 
-  return new HDTreeNode({
+  return new BIP44Node({
     depth: newDepth,
     key: childKey,
   });
 }
 
-function validateHDTreeDepth(
+function validateBIP44Depth(
   depth: number,
   derivationPathLength: number | null,
 ) {
   if (
     !Number.isInteger(depth) ||
-    depth < MIN_HD_TREE_DEPTH ||
-    depth > MAX_HD_TREE_DEPTH
+    depth < MIN_BIP_44_DEPTH ||
+    depth > MAX_BIP_44_DEPTH
   ) {
     throw new Error(
       `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "${depth}"`,
