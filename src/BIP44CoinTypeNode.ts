@@ -129,8 +129,9 @@ export function deriveBIP44AddressKey(
 
 export function getBIP44AddressKeyDeriver(
   node: BIP44CoinTypeNode | JsonBIP44CoinTypeNode,
-  { account = 0, change = 0 }: Omit<CoinTypeToAddressIndices, 'address_index'>,
+  accountAndChangeIndices?: Omit<CoinTypeToAddressIndices, 'address_index'>,
 ) {
+  const { account = 0, change = 0 } = accountAndChangeIndices || {};
   const { key, depth, coin_type } = node;
   validateCoinTypeNodeDepth(depth);
   validateCoinTypeParentKey(key);
