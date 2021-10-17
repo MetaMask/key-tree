@@ -47,7 +47,7 @@ export type BIP44NodeInterface = JsonBIP44Node & {
   toJSON(): JsonBIP44Node;
 };
 
-interface HDPathOptions {
+interface BIP44NodeOptions {
   readonly depth: BIP44Depth;
   readonly key?: Buffer | string;
   readonly derivationPath?: HDPathTuple;
@@ -84,7 +84,7 @@ export class BIP44Node implements BIP44NodeInterface {
    * @param options.key -
    * @param options.derivationPath -
    */
-  constructor({ depth, key, derivationPath }: HDPathOptions) {
+  constructor({ depth, key, derivationPath }: BIP44NodeOptions) {
     const [bufferKey, stringKey] = BIP44Node._parseKey(key);
 
     if (derivationPath) {

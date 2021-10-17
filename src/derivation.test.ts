@@ -2,6 +2,14 @@ import { FullHDPathTuple, HDPathTuple, PartialHDPathTuple } from './constants';
 import { deriveKeyFromPath } from './derivation';
 import { derivers } from './derivers';
 
+// TODO: Import for further derivation tests
+// import crypto from 'crypto';
+// import { hdkey } from 'ethereumjs-wallet';
+// import { BIP44Node } from './BIP44Node';
+// import { getBIP44AddressKeyDeriver } from './BIP44CoinTypeNode';
+// import { privateKeyToEthAddress } from './derivers/bip32';
+// import { base64StringToBuffer } from './utils';
+
 const {
   bip32: { deriveChildKey: bip32Derive, privateKeyToEthAddress },
   bip39: { deriveChildKey: bip39Derive, bip39MnemonicToMultipath },
