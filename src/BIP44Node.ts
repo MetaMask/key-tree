@@ -1,4 +1,4 @@
-import { deriveKeyFromPath, deriveStringKeyFromPath } from './derivation';
+import { deriveKeyFromPath } from './derivation';
 import {
   HDPathTuple,
   MIN_BIP_44_DEPTH,
@@ -69,14 +69,14 @@ interface BIP44NodeOptions {
 export class BIP44Node implements BIP44NodeInterface {
   public readonly depth: BIP44Depth;
 
-  public readonly key: string;
+  public get key(): string {
+    return bufferToBase64String(this.keyBuffer);
+  }
 
   /**
-   * The key of the BIP-44 node, as a Node.js Buffer.
+   * The key of the BIP-44 node, as a Node.js Buffer or a browser equivalent.
    */
-  public get keyAsBuffer(): Buffer {
-    return base64StringToBuffer(this.key);
-  }
+  public readonly keyBuffer: Buffer;
 
   /**
    * @param options - Options bag.
@@ -85,19 +85,19 @@ export class BIP44Node implements BIP44NodeInterface {
    * @param options.derivationPath -
    */
   constructor({ depth, key, derivationPath }: BIP44NodeOptions) {
-    const [bufferKey, stringKey] = BIP44Node._parseKey(key);
+    const _key = BIP44Node._parseKey(key);
 
     if (derivationPath) {
-      this.key = deriveStringKeyFromPath(derivationPath, bufferKey, depth);
+      this.keyBuffer = deriveKeyFromPath(derivationPath, _key, depth);
 
       validateBIP44Depth(depth, derivationPath.length);
     } else {
-      if (!stringKey) {
+      if (!_key) {
         throw new Error(
           'Invalid parameters: Must specify key if no derivation path is specified.',
         );
       }
-      this.key = stringKey;
+      this.keyBuffer = _key;
       validateBIP44Depth(depth, null);
     }
     this.depth = depth;
@@ -107,24 +107,11 @@ export class BIP44Node implements BIP44NodeInterface {
 
   private static _parseKey(key: unknown) {
     if (key === undefined || key === null) {
-      return [undefined, undefined];
+      return undefined;
     }
 
     let bufferKey: Buffer;
-    let stringKey: string;
-    if (typeof key === 'string') {
-      if (isValidHexStringKey(key)) {
-        bufferKey = hexStringToBuffer(key);
-        stringKey = bufferToBase64String(bufferKey);
-      } else if (isValidBase64StringKey(key)) {
-        stringKey = key;
-        bufferKey = base64StringToBuffer(key);
-      } else {
-        throw new Error(
-          'Invalid string key: Must be a 64-byte hexadecimal or Base64 string.',
-        );
-      }
-    } else if (Buffer.isBuffer(key)) {
+    if (Buffer.isBuffer(key)) {
       if (!isValidBufferKey(key)) {
         throw new Error(
           'Invalid buffer key: Must be a 64-byte, non-empty Buffer.',
@@ -132,14 +119,23 @@ export class BIP44Node implements BIP44NodeInterface {
       }
 
       bufferKey = key;
-      stringKey = bufferToBase64String(key);
+    } else if (typeof key === 'string') {
+      if (isValidHexStringKey(key)) {
+        bufferKey = hexStringToBuffer(key);
+      } else if (isValidBase64StringKey(key)) {
+        bufferKey = base64StringToBuffer(key);
+      } else {
+        throw new Error(
+          'Invalid string key: Must be a 64-byte hexadecimal or Base64 string.',
+        );
+      }
     } else {
       throw new Error(
         `Invalid key: Must be a Buffer or string if specified. Received: "${typeof key}"`,
       );
     }
 
-    return [bufferKey, stringKey] as const;
+    return bufferKey;
   }
 
   /**
@@ -152,7 +148,7 @@ export class BIP44Node implements BIP44NodeInterface {
       );
     }
 
-    return deriveChildNode(this.keyAsBuffer, this.depth, path);
+    return deriveChildNode(this.keyBuffer, this.depth, path);
   }
 
   toJSON(): JsonBIP44Node {

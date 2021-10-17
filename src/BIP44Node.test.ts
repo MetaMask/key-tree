@@ -28,8 +28,8 @@ describe('BIP44Node', () => {
     });
   });
 
-  describe('BIP44Node.keyAsBuffer', () => {
-    it.todo('returns the node key as a Buffer');
+  describe('BIP44Node.key', () => {
+    it.todo('returns the node key as a Base64 string');
   });
 
   describe('BIP44Node.toJSON', () => {
@@ -187,7 +187,7 @@ describe('derivation', () => {
       privateKeyToEthAddress(base64StringToBuffer(account0Key)).toString('hex'),
     ).toStrictEqual(childfixturehd.getWallet().getAddressString().slice(2));
 
-    expect(node.keyAsBuffer.slice(0, 32).toString('base64')).toStrictEqual(
+    expect(node.keyBuffer.slice(0, 32).toString('base64')).toStrictEqual(
       fixtureKey.toString('base64'),
     );
     // console.log(fixtureKey)
