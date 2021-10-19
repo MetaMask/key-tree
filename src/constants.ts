@@ -5,6 +5,8 @@ export const BASE_64_KEY_LENGTH = 88 as const;
 export const BASE_64_ZERO =
   'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==' as const;
 
+export const HEXADECIMAL_KEY_LENGTH = 128 as const;
+
 // Source: https://stackoverflow.com/a/475217
 export const BASE_64_REGEX =
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/u;

@@ -10,6 +10,7 @@ import {
   CoinTypeToAddressTuple,
   HardenedBIP32Node,
   ChangeHDPathString,
+  HEXADECIMAL_KEY_LENGTH,
 } from './constants';
 
 export function getBIP44CoinTypePathString(
@@ -125,7 +126,7 @@ export function isValidHexStringKey(stringKey: string): boolean {
   }
 
   const stripped = stripHexPrefix(stringKey);
-  if (stripped.length !== KEY_BUFFER_LENGTH) {
+  if (stripped.length !== HEXADECIMAL_KEY_LENGTH) {
     return false;
   }
 

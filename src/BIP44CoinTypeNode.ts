@@ -55,11 +55,18 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     return this[InnerNode].key;
   }
 
+  public get keyBuffer(): Buffer {
+    return this[InnerNode].keyBuffer;
+  }
+
   public readonly path: CoinTypeHDPathString;
 
   public readonly coin_type: number;
 
-  constructor(nodeOrArray: CoinTypeHDPathTuple | BIP44Node, coin_type: number) {
+  constructor(
+    nodeOrArray: CoinTypeHDPathTuple | BIP44Node | JsonBIP44Node,
+    coin_type: number,
+  ) {
     this.path = getBIP44CoinTypePathString(coin_type);
     this.coin_type = coin_type;
 
@@ -70,7 +77,15 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
       });
     } else {
       validateCoinTypeNodeDepth(nodeOrArray.depth);
-      this[InnerNode] = nodeOrArray;
+      validateCoinTypeParentKey(nodeOrArray.key);
+
+      this[InnerNode] =
+        nodeOrArray instanceof BIP44Node
+          ? nodeOrArray
+          : new BIP44Node({
+              depth: COIN_TYPE_DEPTH,
+              key: nodeOrArray.key,
+            });
     }
 
     Object.freeze(this);
@@ -167,14 +182,17 @@ export function getBIP44AddressKeyDeriver(
   const accountNode = getHardenedBIP32Node(account);
   const changeNode = getUnhardenedBIP32Node(change);
 
-  const parentKeyBuffer = base64StringToBuffer(key);
+  const parentKeyBuffer =
+    node instanceof BIP44CoinTypeNode
+      ? node.keyBuffer
+      : base64StringToBuffer(key);
 
-  const bip44AddressKeyDeriver = (address_index: number): string => {
+  const bip44AddressKeyDeriver = (address_index: number): Buffer => {
     return deriveChildNode(parentKeyBuffer, COIN_TYPE_DEPTH, [
       accountNode,
       changeNode,
       getUnhardenedBIP32Node(address_index),
-    ]).key;
+    ]).keyBuffer;
   };
 
   bip44AddressKeyDeriver.path = getBIP44ChangePathString(node.path, {

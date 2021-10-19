@@ -1,10 +1,10 @@
 import { deriveKeyFromPath } from './derivation';
 import {
-  HDPathTuple,
   MIN_BIP_44_DEPTH,
   MAX_BIP_44_DEPTH,
   BIP44Depth,
   PartialHDPathTuple,
+  RootedHDPathTuple,
 } from './constants';
 import {
   bufferToBase64String,
@@ -28,7 +28,7 @@ export interface JsonBIP44Node {
    *
    * `m / purpose' / coin_type' / account' / change / address_index`
    *
-   * With the following indices:
+   * With the following depths:
    *
    * `0 / 1 / 2 / 3 / 4 / 5`
    */
@@ -42,29 +42,30 @@ export interface JsonBIP44Node {
 
 export type BIP44NodeInterface = JsonBIP44Node & {
   /**
+   * The raw bytes of the key material for this node, as a Node.js Buffer or
+   * browser-equivalent.
+   */
+  keyBuffer: Buffer;
+
+  /**
    * @returns A JSON-compatible representation of this node's data fields.
    */
   toJSON(): JsonBIP44Node;
 };
 
 interface BIP44NodeOptions {
-  readonly depth: BIP44Depth;
+  readonly depth?: BIP44Depth;
   readonly key?: Buffer | string;
-  readonly derivationPath?: HDPathTuple;
+  readonly derivationPath?: RootedHDPathTuple;
 }
 
 /**
- * - If the depth is 0:
- *   - If there is a path, it must be a single BIP39 node
- * - If the depth is >0:
- *    - If there is a path, the first segment must be a BIP32 node
+ * A wrapper for BIP-44 Hierarchical Deterministic (HD) tree nodes, i.e.
+ * cryptographic keys used to generate keypairs and addresses for cryptocurrency
+ * protocols.
  *
- * - If there is no key, there must be a path, and the first node
- *   must be a BIP39 node.
- */
-
-/**
- * `m / purpose' / coin_type' / account' / change / address_index`
+ * This class contains methods and fields that may not serialize well. Use
+ * {@link BIP44Node.toJSON} to get a JSON-compatible representation.
  */
 export class BIP44Node implements BIP44NodeInterface {
   public readonly depth: BIP44Depth;
@@ -73,39 +74,87 @@ export class BIP44Node implements BIP44NodeInterface {
     return bufferToBase64String(this.keyBuffer);
   }
 
-  /**
-   * The key of the BIP-44 node, as a Node.js Buffer or a browser equivalent.
-   */
   public readonly keyBuffer: Buffer;
 
   /**
+   * Initializes a BIP-44 node. Accepts either:
+   * - An existing 64-byte BIP-44 key, and its **0-indexed** BIP-44 path depth.
+   *   - The key may be in the form of a hexadecimal string, Base64 string, or a
+   *     {@link Buffer}.
+   * - A BIP-44 derivation path starting with an `m` node.
+   *   - At present, the `m` node must be a BIP-39 node, given as a string of
+   *     the form `bip39:MNEMONIC`, where `MNEMONIC` is a space-separated list
+   *     of BIP-39 seed phrase words.
+   *
+   * All parameters are stringently validated, and an error is thrown if
+   * validation fails.
+   *
+   * Recall that a BIP-44 HD tree path consists of the following nodes:
+   *
+   * `m / purpose' / coin_type' / account' / change / address_index`
+   *
+   * With the following depths:
+   *
+   * `0 / 1 / 2 / 3 / 4 / 5`
+   *
    * @param options - Options bag.
-   * @param options.depth -
-   * @param options.key -
-   * @param options.derivationPath -
+   * @param options.depth - The 0-indexed BIP-44 tree depth of the `key`, if
+   * specified.
+   * @param options.key - The key of this node. Mutually exclusive with
+   * `derivationPath`, and requires a `depth` to be specified.
+   * @param options.derivationPath - The rooted HD tree path that will be used
+   * to derive the key of this node. Mutually exclusive with `key`.
    */
   constructor({ depth, key, derivationPath }: BIP44NodeOptions) {
     const _key = BIP44Node._parseKey(key);
 
     if (derivationPath) {
-      this.keyBuffer = deriveKeyFromPath(derivationPath, _key, depth);
-
-      validateBIP44Depth(depth, derivationPath.length);
-    } else {
-      if (!_key) {
+      if (_key) {
         throw new Error(
-          'Invalid parameters: Must specify key if no derivation path is specified.',
+          'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call BIP44Node.derive() with your desired path.',
         );
       }
+
+      if (depth) {
+        throw new Error(
+          'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
+        );
+      }
+
+      if ((derivationPath as any).length === 0) {
+        throw new Error(
+          'Invalid derivation path: May not specify an empty derivation path.',
+        );
+      }
+
+      const _depth = derivationPath.length - 1;
+      validateBIP44Depth(_depth);
+      this.depth = _depth as BIP44Depth;
+
+      this.keyBuffer = deriveKeyFromPath(derivationPath, _key, this.depth);
+    } else if (_key) {
+      validateBIP44Depth(depth);
+      this.depth = depth as BIP44Depth;
+
       this.keyBuffer = _key;
-      validateBIP44Depth(depth, null);
+    } else {
+      throw new Error(
+        'Invalid parameters: Must specify either key or derivation path.',
+      );
     }
-    this.depth = depth;
 
     Object.freeze(this);
   }
 
-  private static _parseKey(key: unknown) {
+  /**
+   * Constructor helper for validating and parsing the `key` parameter. An error
+   * is thrown if validation fails.
+   *
+   * @param key - The key to parse.
+   * @returns A {@link Buffer}, or `undefined` if no key parameter was
+   * specified.
+   */
+  private static _parseKey(key: unknown): Buffer | undefined {
     if (key === undefined || key === null) {
       return undefined;
     }
@@ -139,18 +188,36 @@ export class BIP44Node implements BIP44NodeInterface {
   }
 
   /**
+   * Derives a child of the key contains be this node and returns a new
+   * {@link BIP44Node} containing the child key.
+   *
+   * The specified path must be a valid HD path from this node, per BIP-44.
+   * At present, this means that the path must consist of no more than 5 BIP-32
+   * nodes, depending on the depth of this node.
+   *
+   * Recall that a BIP-44 HD tree path consists of the following nodes:
+   *
    * `m / purpose' / coin_type' / account' / change / address_index`
+   *
+   * With the following depths:
+   *
+   * `0 / 1 / 2 / 3 / 4 / 5`
+   *
+   * @param path - The partial (non-rooted) BIP-44 HD tree path will be used
+   * to derive a child key from the parent key contained within this node.
+   * @returns The {@link BIP44Node} corresponding to the derived child key.
    */
   public derive(path: PartialHDPathTuple): BIP44Node {
     if (this.depth === MAX_BIP_44_DEPTH) {
       throw new Error(
-        'Illegal operation: This HD tree path already ends with a leaf node.',
+        'Illegal operation: This HD tree node is already a leaf node.',
       );
     }
 
     return deriveChildNode(this.keyBuffer, this.depth, path);
   }
 
+  // This is documented in the interface of this class.
   toJSON(): JsonBIP44Node {
     return {
       depth: this.depth,
@@ -159,6 +226,13 @@ export class BIP44Node implements BIP44NodeInterface {
   }
 }
 
+/**
+ * Derives a child key from the given parent key, as a {@link BIP44Node}.
+ * @param parentKey - The parent key to derive from.
+ * @param parentDepth - The depth of the parent key.
+ * @param pathToChild - The path to the child node / key.
+ * @returns The {@link BIP44Node} corresponding to the derived child key.
+ */
 export function deriveChildNode(
   parentKey: Buffer,
   parentDepth: BIP44Depth,
@@ -166,38 +240,37 @@ export function deriveChildNode(
 ) {
   if ((pathToChild as any).length === 0) {
     throw new Error(
-      'Invalid HD derivation path: Deriving a path of length 0 is not defined.',
+      'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
     );
   }
 
+  // Note that we do not subtract 1 from the length of the path to the child,
+  // unlike when we calculate the depth of a rooted path.
   const newDepth = (parentDepth + pathToChild.length) as BIP44Depth;
-  validateBIP44Depth(newDepth, null);
-
-  const childKey = deriveKeyFromPath(pathToChild, parentKey);
+  validateBIP44Depth(newDepth);
 
   return new BIP44Node({
     depth: newDepth,
-    key: childKey,
+    key: deriveKeyFromPath(pathToChild, parentKey),
   });
 }
 
-function validateBIP44Depth(
-  depth: number,
-  derivationPathLength: number | null,
-) {
+/**
+ * Validates a BIP-44 path depth. Effectively, asserts that the depth is an
+ * integer `number` N such that 0 <= N <= 5. Throws an error if validation
+ * fails.
+ *
+ * @param depth - The depth to validate.
+ */
+function validateBIP44Depth(depth: unknown) {
   if (
+    typeof depth !== 'number' ||
     !Number.isInteger(depth) ||
     depth < MIN_BIP_44_DEPTH ||
     depth > MAX_BIP_44_DEPTH
   ) {
     throw new Error(
       `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "${depth}"`,
-    );
-  }
-
-  if (derivationPathLength !== null && depth !== derivationPathLength - 1) {
-    throw new Error(
-      `Invalid HD tree path depth: The specified depth does not correspond to the length of the provided HD path: "${derivationPathLength}"`,
     );
   }
 }
