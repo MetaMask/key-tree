@@ -1,16 +1,11 @@
-import crypto from 'crypto';
-import { hdkey } from 'ethereumjs-wallet';
+import fixtures from '../test/fixtures';
 import { BIP44Node } from './BIP44Node';
-import { getBIP44AddressKeyDeriver } from './BIP44CoinTypeNode';
-import { privateKeyToEthAddress } from './derivers/bip32';
 import { BIP44PurposeNode, MIN_BIP_44_DEPTH } from './constants';
 
-const defaultMnemonic =
-  'romance hurry grit huge rifle ordinary loud toss sound congress upset twist';
-const defaultBip39Node = `bip39:${defaultMnemonic}` as const;
+const defaultBip39Node = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('BIP44Node', () => {
-  describe('BIP44Node.constructor', () => {
+  describe('constructor', () => {
     it('initializes a new node (depth, derivationPath)', () => {
       // Ethereum coin type node
       const node = new BIP44Node({
@@ -215,7 +210,7 @@ describe('BIP44Node', () => {
     });
   });
 
-  describe('BIP44Node.derive', () => {
+  describe('derive', () => {
     it('derives a child node', () => {
       const coinTypeNode = `bip32:40'`;
       const targetNode = new BIP44Node({
@@ -262,120 +257,27 @@ describe('BIP44Node', () => {
       );
     });
   });
-});
 
-describe('derivation', () => {
-  it('local seed phrase', () => {
-    // Ethereum coin type node
-    const node = new BIP44Node({
-      derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+  describe('toJSON', () => {
+    it('returns a JSON-compatible representation of the node', () => {
+      const node = new BIP44Node({
+        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+      });
+
+      expect(typeof node.key).toStrictEqual('string');
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(2);
+
+      const nodeJson = node.toJSON();
+      expect(nodeJson).toStrictEqual({
+        depth: node.depth,
+        key: node.key,
+      });
+
+      expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
+        depth: node.depth,
+        key: node.key,
+      });
     });
-
-    expect(node.key).toHaveLength(88);
-    expect(node.depth).toStrictEqual(2);
-    expect(node.toJSON()).toStrictEqual({
-      depth: 2,
-      key: expect.any(String),
-    });
-
-    const ethereumAddressDeriver = getBIP44AddressKeyDeriver(node as any, {
-      account: 0,
-      change: 0,
-    });
-
-    const account0Key = ethereumAddressDeriver(0);
-    expect(privateKeyToEthAddress(account0Key).toString('hex')).toStrictEqual(
-      '5df603999c3d5ca2ab828339a9883585b1bce11b',
-    );
-
-    // expect(() => {
-    //   node.derive([`bip32:60'`, `bip32:0'`, `bip32:0`, `bip32:0`]);
-    // }).toThrow(
-    //   `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "6"`,
-    // );
-
-    // const childNode = node.derive([BIP44PurposeNode])
-    // expect(childNode.key.length).toStrictEqual(88);
-    // expect(childNode.depth).toStrictEqual(1);
-  });
-
-  // https://github.com/brave/eth-hd-keyring/blob/482acf341f01a8d1e924d55bfdbd309444a78e46/test/index.js#L10-L12
-  it('eth-hd-keyring', () => {
-    const sampleMnemonic =
-      'finish oppose decorate face calm tragic certain desk hour urge dinosaur mango';
-    const account0 = '1c96099350f13d558464ec79b9be4445aa0ef579';
-    const account1 = '1b00aed43a693f3a957f9feb5cc08afa031e37a0';
-
-    const newBip39 = `bip39:${sampleMnemonic}` as const;
-
-    // Ethereum coin type node
-    const node = new BIP44Node({
-      derivationPath: [newBip39, BIP44PurposeNode, `bip32:60'`],
-    });
-
-    expect(node.key).toHaveLength(88);
-    expect(node.depth).toStrictEqual(2);
-    expect(node.toJSON()).toStrictEqual({
-      depth: 2,
-      key: expect.any(String),
-    });
-
-    const ethereumAddressDeriver = getBIP44AddressKeyDeriver(node as any, {
-      account: 0,
-      change: 0,
-    });
-
-    const account0Key = ethereumAddressDeriver(0);
-    const account1Key = ethereumAddressDeriver(1);
-
-    expect(privateKeyToEthAddress(account0Key).toString('hex')).toStrictEqual(
-      account0,
-    );
-
-    expect(privateKeyToEthAddress(account1Key).toString('hex')).toStrictEqual(
-      account1,
-    );
-
-    // expect(() => {
-    //   node.derive([`bip32:60'`, `bip32:0'`, `bip32:0`, `bip32:0`]);
-    // }).toThrow(
-    //   `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "6"`,
-    // );
-  });
-
-  // https://github.com/ethereumjs/ethereumjs-wallet/blob/master/test/hdkey.spec.ts
-  it('ethereumjs-wallet', () => {
-    const fixtureseed = Buffer.from(
-      '747f302d9c916698912d5f70be53a6cf53bc495803a5523d3a7c3afa2afba94ec3803f838b3e1929ab5481f9da35441372283690fdcf27372c38f40ba134fe03',
-      'hex',
-    );
-    const seedKey = crypto
-      .createHmac('sha512', Buffer.from('Bitcoin seed', 'utf8'))
-      .update(fixtureseed)
-      .digest();
-
-    const fixturehd = hdkey.fromMasterSeed(fixtureseed);
-    const childfixturehd = fixturehd.derivePath("m/44'/0'/0/1");
-    const fixtureKey = childfixturehd.getWallet().getPrivateKey();
-
-    const _node = new BIP44Node({
-      depth: 0,
-      key: seedKey,
-    });
-
-    const node = _node.derive([
-      BIP44PurposeNode,
-      `bip32:0'`,
-      `bip32:0`,
-      `bip32:1`,
-    ]);
-
-    expect(
-      privateKeyToEthAddress(node.keyBuffer).toString('hex'),
-    ).toStrictEqual(childfixturehd.getWallet().getAddressString().slice(2));
-
-    expect(node.keyBuffer.slice(0, 32).toString('base64')).toStrictEqual(
-      fixtureKey.toString('base64'),
-    );
   });
 });

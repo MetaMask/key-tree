@@ -65,19 +65,40 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 
   constructor(
     nodeOrArray: CoinTypeHDPathTuple | BIP44Node | JsonBIP44Node,
-    coin_type: number,
+    coin_type?: number,
   ) {
-    this.path = getBIP44CoinTypePathString(coin_type);
-    this.coin_type = coin_type;
-
     if (Array.isArray(nodeOrArray)) {
+      if (coin_type !== undefined) {
+        throw new Error(
+          'Invalid parameters: May not specify both coin type and a derivation path. The coin type will be computed from the derivation path.',
+        );
+      }
+
+      validateCoinTypeNodeDepth(nodeOrArray.length - 1);
+
       this[InnerNode] = new BIP44Node({
-        depth: COIN_TYPE_DEPTH,
         derivationPath: nodeOrArray,
       });
+
+      // TODO: use utility function
+      this.coin_type = Number.parseInt(
+        nodeOrArray[COIN_TYPE_DEPTH].split(':')[1].replace(`'`, ''),
+        10,
+      );
     } else {
       validateCoinTypeNodeDepth(nodeOrArray.depth);
       validateCoinTypeParentKey(nodeOrArray.key);
+
+      if (
+        typeof coin_type !== 'number' ||
+        !Number.isInteger(coin_type) ||
+        coin_type < 0
+      ) {
+        throw new Error(
+          'Invalid coin type: The specified coin type must be a non-negative integer number.',
+        );
+      }
+      this.coin_type = coin_type;
 
       this[InnerNode] =
         nodeOrArray instanceof BIP44Node
@@ -88,13 +109,14 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
             });
     }
 
+    this.path = getBIP44CoinTypePathString(this.coin_type);
     Object.freeze(this);
   }
 
   /**
    * `m / purpose' / coin_type' / account' / change / address_index`
    */
-  deriveBIP44AddressKey({
+  deriveBIP44Address({
     account = 0,
     change = 0,
     address_index,

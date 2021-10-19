@@ -1,14 +1,7 @@
+import fixtures from '../test/fixtures';
 import { FullHDPathTuple, HDPathTuple, PartialHDPathTuple } from './constants';
 import { deriveKeyFromPath } from './derivation';
 import { derivers } from './derivers';
-
-// TODO: Import for further derivation tests
-// import crypto from 'crypto';
-// import { hdkey } from 'ethereumjs-wallet';
-// import { BIP44Node } from './BIP44Node';
-// import { getBIP44AddressKeyDeriver } from './BIP44CoinTypeNode';
-// import { privateKeyToEthAddress } from './derivers/bip32';
-// import { base64StringToBuffer } from './utils';
 
 const {
   bip32: { deriveChildKey: bip32Derive, privateKeyToEthAddress },
@@ -31,21 +24,8 @@ function bip32PathToMultipath(path: string[]): PartialHDPathTuple {
   ) as unknown as PartialHDPathTuple;
 }
 
-const mnemonic =
-  'romance hurry grit huge rifle ordinary loud toss sound congress upset twist';
-
-const expectedAddresses = [
-  '5df603999c3d5ca2ab828339a9883585b1bce11b',
-  '441c07e32a609afd319ffbb66432b424058bcfe9',
-  '1f7c93dfe849c06dd610e77473bfaaef7f183c7c',
-  '9e28bae18e0e358b12796697c6546f77d4657527',
-  '6e7734c7f4fb973a3800b72fb1a6bf82d85d3d29',
-  'f87328a8ea5208946c60dbd9385d4c8533ad5dd8',
-  'bdc59c95b5afd6cb0318a24fd390f143fec85d51',
-  '05751e88f2d9f0fccffc8d9c5188adaa378d60e4',
-  'c4311bfd3fea0238a3f5ced088bd366b33f1e292',
-  '7b99c781cbfff075229314ccbdc7f6d9e8440ad9',
-];
+const { mnemonic } = fixtures.local;
+const expectedAddresses = fixtures.local.addresses;
 
 describe('derivation', () => {
   it('deriveKeyFromPath - full path', () => {
