@@ -8,8 +8,6 @@ const {
   bip39: { deriveChildKey: bip39Derive, bip39MnemonicToMultipath },
 } = derivers;
 
-const defaultEthereumPath = ['m', `44'`, `60'`, `0'`, `0`];
-
 /**
  * @param bip32Path
  */
@@ -24,8 +22,8 @@ function bip32PathToMultipath(path: string[]): PartialHDPathTuple {
   ) as unknown as PartialHDPathTuple;
 }
 
-const { mnemonic } = fixtures.local;
-const expectedAddresses = fixtures.local.addresses;
+const { addresses: expectedAddresses, mnemonic } = fixtures.local;
+const defaultEthereumPath = ['m', `44'`, `60'`, `0'`, `0`];
 
 describe('derivation', () => {
   it('deriveKeyFromPath - full path', () => {
@@ -140,9 +138,7 @@ describe('derivation', () => {
   it('bip32Derive', () => {
     // generate parent key
     let parentKey: Buffer;
-    parentKey = bip39Derive(
-      `romance hurry grit huge rifle ordinary loud toss sound congress upset twist`,
-    );
+    parentKey = bip39Derive(mnemonic);
     parentKey = bip32Derive(`44'`, parentKey);
     parentKey = bip32Derive(`60'`, parentKey);
     parentKey = bip32Derive(`0'`, parentKey);
