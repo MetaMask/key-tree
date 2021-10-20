@@ -19,11 +19,13 @@ export function bip39MnemonicToMultipath(mnemonic: string): BIP39Node {
  * @param _parentKey
  */
 export function deriveChildKey(pathPart: string, _parentKey?: never): Buffer {
-  const mnemonic = pathPart;
-  const seedBuffer = bip39.mnemonicToSeed(mnemonic);
-  return createKeyFromSeed(seedBuffer);
+  return createBip39KeyFromSeed(bip39.mnemonicToSeed(pathPart));
 }
 
-export function createKeyFromSeed(seed: Buffer): Buffer {
+/**
+ * @param seed - The cryptographic seed bytes.
+ * @returns The bytes of the corresponding BIP-39 master key.
+ */
+export function createBip39KeyFromSeed(seed: Buffer): Buffer {
   return crypto.createHmac('sha512', ROOT_BASE_SECRET).update(seed).digest();
 }

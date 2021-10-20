@@ -2,20 +2,22 @@ import HdKeyring from 'eth-hd-keyring';
 import { hdkey } from 'ethereumjs-wallet';
 import { BIP44Node } from '../src/BIP44Node';
 import { BIP44PurposeNode } from '../src/constants';
+import { deriveKeyFromPath } from '../src/derivation';
 import { privateKeyToEthAddress } from '../src/derivers/bip32';
-import { createKeyFromSeed } from '../src/derivers/bip39';
+import { createBip39KeyFromSeed } from '../src/derivers/bip39';
 import { getBIP44AddressPathTuple, stripHexPrefix } from '../src/utils';
 import fixtures from './fixtures';
 
 describe('reference implementation tests', () => {
   describe('local', () => {
-    describe('BIP44Node', () => {
-      const { addresses, mnemonic } = fixtures.local;
+    const { addresses, mnemonic } = fixtures.local;
+    const mnemonicBip39Node = `bip39:${mnemonic}` as const;
 
+    describe('BIP44Node', () => {
       it('derives the expected keys', () => {
         // Ethereum coin type node
         const node = new BIP44Node({
-          derivationPath: [`bip39:${mnemonic}`, BIP44PurposeNode, `bip32:60'`],
+          derivationPath: [mnemonicBip39Node, BIP44PurposeNode, `bip32:60'`],
         });
 
         addresses.forEach((expectedAddress, index) => {
@@ -31,20 +33,37 @@ describe('reference implementation tests', () => {
     });
 
     describe('deriveKeyFromPath', () => {
-      it.todo('derives the expected keys');
+      it('derives the expected keys', () => {
+        // Ethereum coin type key
+        const parentKey = deriveKeyFromPath([
+          mnemonicBip39Node,
+          BIP44PurposeNode,
+          `bip32:60'`,
+        ]);
+
+        addresses.forEach((expectedAddress, index) => {
+          const childKey = deriveKeyFromPath(
+            getBIP44AddressPathTuple({ address_index: index }),
+            parentKey,
+          );
+
+          expect(
+            privateKeyToEthAddress(childKey).toString('hex'),
+          ).toStrictEqual(expectedAddress);
+        });
+      });
     });
   });
 
   describe('eth-hd-keyring', () => {
+    const { mnemonic } = fixtures['eth-hd-keyring'];
+    const mnemonicBip39Node = `bip39:${mnemonic}` as const;
+
     describe('BIP44Node', () => {
-      const { mnemonic } = fixtures['eth-hd-keyring'];
-
       it('derives the same keys as the reference implementation', async () => {
-        const bip39Node = `bip39:${mnemonic}` as const;
-
         // Ethereum coin type node
         const node = new BIP44Node({
-          derivationPath: [bip39Node, BIP44PurposeNode, `bip32:60'`],
+          derivationPath: [mnemonicBip39Node, BIP44PurposeNode, `bip32:60'`],
         });
 
         const numberOfAccounts = 5;
@@ -66,20 +85,51 @@ describe('reference implementation tests', () => {
         expect(await hdKeyring.getAccounts()).toStrictEqual(
           ourAccounts.map((account) => `0x${account}`),
         );
+        expect(ourAccounts).toMatchSnapshot();
       });
     });
 
     describe('deriveKeyFromPath', () => {
-      it.todo('derives the same keys as the reference implementation');
+      it('derives the same keys as the reference implementation', async () => {
+        // Ethereum coin type key
+        const parentKey = deriveKeyFromPath([
+          mnemonicBip39Node,
+          BIP44PurposeNode,
+          `bip32:60'`,
+        ]);
+
+        const numberOfAccounts = 5;
+        const ourAccounts = [];
+        for (let i = 0; i < numberOfAccounts; i++) {
+          ourAccounts.push(
+            privateKeyToEthAddress(
+              deriveKeyFromPath(
+                getBIP44AddressPathTuple({ address_index: i }),
+                parentKey,
+              ),
+            ).toString('hex'),
+          );
+        }
+
+        const hdKeyring = new HdKeyring({
+          mnemonic,
+          numberOfAccounts,
+        });
+
+        expect(await hdKeyring.getAccounts()).toStrictEqual(
+          ourAccounts.map((account) => `0x${account}`),
+        );
+        expect(ourAccounts).toMatchSnapshot();
+      });
     });
   });
 
   describe('ethereumjs-wallet', () => {
-    describe('BIP44Node', () => {
-      const { sampleIndices, seed, path } = fixtures['ethereumjs-wallet'];
+    const { sampleIndices, seed, path } = fixtures['ethereumjs-wallet'];
 
+    describe('BIP44Node', () => {
       it('derives the same keys as the reference implementation', () => {
-        const seedKey = createKeyFromSeed(seed);
+        const seedKey = createBip39KeyFromSeed(seed);
 
         const fixtureHd = hdkey.fromMasterSeed(seed);
         const childFixtureHd = fixtureHd.derivePath(path.theirs);
@@ -110,12 +160,42 @@ describe('reference implementation tests', () => {
           );
 
           expect(ourAddress).toStrictEqual(theirAddress);
+          expect(ourAddress).toMatchSnapshot();
         });
       });
     });
 
     describe('deriveKeyFromPath', () => {
-      it.todo('derives the same keys as the reference implementation');
+      it('derives the same keys as the reference implementation', () => {
+        const seedKey = createBip39KeyFromSeed(seed);
+
+        const fixtureHd = hdkey.fromMasterSeed(seed);
+        const childFixtureHd = fixtureHd.derivePath(path.theirs);
+        const childFixtureHdKey = childFixtureHd.getWallet().getPrivateKey();
+
+        const parentKey = deriveKeyFromPath(path.ours.tuple, seedKey);
+
+        expect(parentKey.slice(0, 32).toString('base64')).toStrictEqual(
+          childFixtureHdKey.toString('base64'),
+        );
+
+        expect(privateKeyToEthAddress(parentKey).toString('hex')).toStrictEqual(
+          stripHexPrefix(childFixtureHd.getWallet().getAddressString()),
+        );
+
+        sampleIndices.forEach((index) => {
+          const ourAddress = privateKeyToEthAddress(
+            deriveKeyFromPath([`bip32:${index}`], parentKey),
+          ).toString('hex');
+
+          const theirAddress = stripHexPrefix(
+            childFixtureHd.deriveChild(index).getWallet().getAddressString(),
+          );
+
+          expect(ourAddress).toStrictEqual(theirAddress);
+          expect(ourAddress).toMatchSnapshot();
+        });
+      });
     });
   });
 });

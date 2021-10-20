@@ -38,6 +38,24 @@ module.exports = {
       files: ['*.test.ts', '*.test.js'],
       extends: ['@metamask/eslint-config-jest'],
     },
+
+    // Allow expect(value).toMatchSnapshot in this file only
+    {
+      files: ['./test/reference-implementations.test.ts'],
+      rules: {
+        'jest/no-restricted-matchers': [
+          'error',
+          {
+            resolves: 'Use `expect(await promise)` instead.',
+            toBeFalsy: 'Avoid `toBeFalsy`',
+            toBeTruthy: 'Avoid `toBeTruthy`',
+            // toMatchSnapshot: ...
+            toThrowErrorMatchingSnapshot:
+              'Use `toThrowErrorMatchingInlineSnapshot()` instead',
+          },
+        ],
+      },
+    },
   ],
 
   ignorePatterns: ['!.eslintrc.js', '!.prettierrc.js', 'dist/'],
