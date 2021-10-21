@@ -5,7 +5,11 @@ import { BIP44PurposeNode } from '../src/constants';
 import { deriveKeyFromPath } from '../src/derivation';
 import { privateKeyToEthAddress } from '../src/derivers/bip32';
 import { createBip39KeyFromSeed } from '../src/derivers/bip39';
-import { getBIP44AddressPathTuple, stripHexPrefix } from '../src/utils';
+import {
+  getBIP44AddressPathTuple,
+  hexStringToBuffer,
+  stripHexPrefix,
+} from '../src/utils';
 import fixtures from './fixtures';
 
 describe('reference implementation tests', () => {
@@ -125,7 +129,8 @@ describe('reference implementation tests', () => {
   });
 
   describe('ethereumjs-wallet', () => {
-    const { sampleIndices, seed, path } = fixtures['ethereumjs-wallet'];
+    const { sampleIndices, hexSeed, path } = fixtures['ethereumjs-wallet'];
+    const seed = hexStringToBuffer(hexSeed);
 
     describe('BIP44Node', () => {
       it('derives the same keys as the reference implementation', () => {
@@ -194,6 +199,76 @@ describe('reference implementation tests', () => {
 
           expect(ourAddress).toStrictEqual(theirAddress);
           expect(ourAddress).toMatchSnapshot();
+        });
+      });
+    });
+  });
+
+  describe('BIP-32 specification test vectors', () => {
+    const vectors = fixtures.bip32;
+
+    describe('BIP44Node', () => {
+      it('derives the test vector keys', () => {
+        vectors.forEach((vector) => {
+          const seed = hexStringToBuffer(vector.hexSeed);
+          const seedKey = createBip39KeyFromSeed(seed);
+
+          vector.keys.forEach(
+            (keyObj: { path: any; extPrivKey: string; extPubKey: string }) => {
+              const { path, extPrivKey } = keyObj;
+              const parentNode = new BIP44Node({
+                depth: 0,
+                key: seedKey,
+              });
+
+              let targetNode: BIP44Node;
+              if (path.ours.string === '') {
+                targetNode = parentNode;
+              } else {
+                targetNode = parentNode.derive(path.ours.tuple);
+              }
+
+              const xprvHdKey = hdkey
+                .fromExtendedKey(extPrivKey)
+                .getWallet()
+                .getPrivateKey();
+
+              expect(
+                targetNode.keyBuffer.slice(0, 32).toString('base64'),
+              ).toStrictEqual(xprvHdKey.toString('base64'));
+            },
+          );
+        });
+      });
+    });
+
+    describe('deriveKeyFromPath', () => {
+      it('derives the test vector keys', () => {
+        vectors.forEach((vector) => {
+          const seed = hexStringToBuffer(vector.hexSeed);
+          const seedKey = createBip39KeyFromSeed(seed);
+
+          vector.keys.forEach(
+            (keyObj: { path: any; extPrivKey: string; extPubKey: string }) => {
+              const { path, extPrivKey } = keyObj;
+
+              let targetKey: Buffer;
+              if (path.ours.string === '') {
+                targetKey = seedKey;
+              } else {
+                targetKey = deriveKeyFromPath(path.ours.tuple, seedKey);
+              }
+
+              const xprvHdKey = hdkey
+                .fromExtendedKey(extPrivKey)
+                .getWallet()
+                .getPrivateKey();
+
+              expect(targetKey.slice(0, 32).toString('base64')).toStrictEqual(
+                xprvHdKey.toString('base64'),
+              );
+            },
+          );
         });
       });
     });
