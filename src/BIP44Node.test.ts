@@ -1,6 +1,5 @@
 import fixtures from '../test/fixtures';
-import { BIP44Node } from './BIP44Node';
-import { BIP44PurposeNode, MIN_BIP_44_DEPTH } from './constants';
+import { BIP44Node, BIP44PurposeNode, MIN_BIP_44_DEPTH } from '.';
 
 const defaultBip39Node = `bip39:${fixtures.local.mnemonic}` as const;
 

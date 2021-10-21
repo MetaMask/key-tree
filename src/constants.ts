@@ -1,4 +1,4 @@
-export const KEY_BUFFER_LENGTH = 64 as const;
+export const BUFFER_KEY_LENGTH = 64 as const;
 
 export const BASE_64_KEY_LENGTH = 88 as const;
 
@@ -116,6 +116,9 @@ export type PartialHDPathTuple =
   | PartialHDPathTuple10
   | PartialHDPathTuple11;
 
+/**
+ * Every ordered subset of a full HD path tuple.
+ */
 export type HDPathTuple = RootedHDPathTuple | PartialHDPathTuple;
 
 export type FullHDPathTuple = RootedHDPathTuple5;

@@ -27,7 +27,7 @@ export type CoinTypeHDPathTuple = [
   typeof BIP44PurposeNode,
   HardenedBIP32Node,
 ];
-export const COIN_TYPE_DEPTH = 2;
+export const BIP_44_COIN_TYPE_DEPTH = 2;
 
 export type JsonBIP44CoinTypeNode = JsonBIP44Node & {
   readonly coin_type: number;
@@ -64,30 +64,35 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
   public readonly coin_type: number;
 
   constructor(
-    nodeOrArray: CoinTypeHDPathTuple | BIP44Node | JsonBIP44Node,
+    nodeOrPathTuple: CoinTypeHDPathTuple | BIP44Node | JsonBIP44Node,
     coin_type?: number,
   ) {
-    if (Array.isArray(nodeOrArray)) {
+    if (Array.isArray(nodeOrPathTuple)) {
       if (coin_type !== undefined) {
         throw new Error(
           'Invalid parameters: May not specify both coin type and a derivation path. The coin type will be computed from the derivation path.',
         );
       }
 
-      validateCoinTypeNodeDepth(nodeOrArray.length - 1);
+      validateCoinTypeNodeDepth(nodeOrPathTuple.length - 1);
 
       this[InnerNode] = new BIP44Node({
-        derivationPath: nodeOrArray,
+        derivationPath: nodeOrPathTuple,
       });
 
-      // TODO: use utility function
+      // Split the bip32 string token and extract the coin_type index
       this.coin_type = Number.parseInt(
-        nodeOrArray[COIN_TYPE_DEPTH].split(':')[1].replace(`'`, ''),
+        nodeOrPathTuple[BIP_44_COIN_TYPE_DEPTH].split(':')[1].replace(`'`, ''),
         10,
       );
     } else {
-      validateCoinTypeNodeDepth(nodeOrArray.depth);
-      validateCoinTypeParentKey(nodeOrArray.key);
+      validateCoinTypeNodeDepth(nodeOrPathTuple.depth);
+      validateCoinTypeParentKey(nodeOrPathTuple.key);
+
+      const keyBuffer =
+        nodeOrPathTuple instanceof BIP44Node
+          ? nodeOrPathTuple.keyBuffer
+          : base64StringToBuffer(nodeOrPathTuple.key);
 
       if (
         typeof coin_type !== 'number' ||
@@ -101,11 +106,11 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
       this.coin_type = coin_type;
 
       this[InnerNode] =
-        nodeOrArray instanceof BIP44Node
-          ? nodeOrArray
+        nodeOrPathTuple instanceof BIP44Node
+          ? nodeOrPathTuple
           : new BIP44Node({
-              depth: COIN_TYPE_DEPTH,
-              key: nodeOrArray.key,
+              depth: BIP_44_COIN_TYPE_DEPTH,
+              key: keyBuffer,
             });
     }
 
@@ -136,9 +141,9 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 }
 
 function validateCoinTypeNodeDepth(depth: number) {
-  if (depth !== COIN_TYPE_DEPTH) {
+  if (depth !== BIP_44_COIN_TYPE_DEPTH) {
     throw new Error(
-      `Invalid node: Coin type nodes must be of depth ${COIN_TYPE_DEPTH}. Received: "${depth}"`,
+      `Invalid depth: Coin type nodes must be of depth ${BIP_44_COIN_TYPE_DEPTH}. Received: "${depth}"`,
     );
   }
 }
@@ -151,7 +156,7 @@ function validateCoinTypeNodeDepth(depth: number) {
  */
 function validateCoinTypeParentKey(parentKey: string) {
   if (!isValidBase64StringKey(parentKey)) {
-    throw new Error(`Invalid parent key: Must be a 64-byte Base64 string.`);
+    throw new Error('Invalid parent key: Must be a non-zero 64-byte key.');
   }
 }
 
@@ -166,20 +171,30 @@ function validateCoinTypeParentKey(parentKey: string) {
 export function deriveBIP44AddressKey(
   parentKeyOrNode: string | BIP44CoinTypeNode | JsonBIP44CoinTypeNode,
   { account = 0, change = 0, address_index }: CoinTypeToAddressIndices,
-): string {
-  if (typeof parentKeyOrNode !== 'string' && 'depth' in parentKeyOrNode) {
+): Buffer {
+  if (typeof parentKeyOrNode === 'string') {
+    validateCoinTypeParentKey(parentKeyOrNode);
+  } else {
     validateCoinTypeNodeDepth(parentKeyOrNode.depth);
+    validateCoinTypeParentKey(parentKeyOrNode.key);
   }
 
-  const parentKey =
-    typeof parentKeyOrNode === 'string' ? parentKeyOrNode : parentKeyOrNode.key;
-  validateCoinTypeParentKey(parentKey);
+  let keyBuffer: Buffer;
+  if (parentKeyOrNode instanceof BIP44CoinTypeNode) {
+    keyBuffer = parentKeyOrNode.keyBuffer;
+  } else {
+    keyBuffer = base64StringToBuffer(
+      typeof parentKeyOrNode === 'string'
+        ? parentKeyOrNode
+        : parentKeyOrNode.key,
+    );
+  }
 
   return deriveChildNode(
-    base64StringToBuffer(parentKey),
-    COIN_TYPE_DEPTH,
+    keyBuffer,
+    BIP_44_COIN_TYPE_DEPTH,
     getBIP44AddressPathTuple({ account, change, address_index }),
-  ).key;
+  ).keyBuffer;
 }
 
 /**
@@ -201,22 +216,23 @@ export function getBIP44AddressKeyDeriver(
   validateCoinTypeNodeDepth(depth);
   validateCoinTypeParentKey(key);
 
-  const accountNode = getHardenedBIP32Node(account);
-  const changeNode = getUnhardenedBIP32Node(change);
-
   const parentKeyBuffer =
     node instanceof BIP44CoinTypeNode
       ? node.keyBuffer
       : base64StringToBuffer(key);
 
+  const accountNode = getHardenedBIP32Node(account);
+  const changeNode = getUnhardenedBIP32Node(change);
+
   const bip44AddressKeyDeriver = (address_index: number): Buffer => {
-    return deriveChildNode(parentKeyBuffer, COIN_TYPE_DEPTH, [
+    return deriveChildNode(parentKeyBuffer, BIP_44_COIN_TYPE_DEPTH, [
       accountNode,
       changeNode,
       getUnhardenedBIP32Node(address_index),
     ]).keyBuffer;
   };
 
+  bip44AddressKeyDeriver.coin_type = node.coin_type;
   bip44AddressKeyDeriver.path = getBIP44ChangePathString(node.path, {
     account,
     change,

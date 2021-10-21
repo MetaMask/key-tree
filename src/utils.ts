@@ -2,7 +2,7 @@ import {
   BASE_64_KEY_LENGTH,
   BASE_64_REGEX,
   BASE_64_ZERO,
-  KEY_BUFFER_LENGTH,
+  BUFFER_KEY_LENGTH,
   BIP44PurposeNode,
   UnhardenedBIP32Node,
   CoinTypeHDPathString,
@@ -104,7 +104,7 @@ export function bufferToBase64String(input: Buffer) {
 }
 
 export function isValidBufferKey(buffer: Buffer): boolean {
-  if (buffer.length !== KEY_BUFFER_LENGTH) {
+  if (buffer.length !== BUFFER_KEY_LENGTH) {
     return false;
   }
 

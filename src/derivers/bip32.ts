@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import secp256k1 from 'secp256k1';
 import createKeccakHash from 'keccak';
-import { KEY_BUFFER_LENGTH } from '../constants';
+import { BUFFER_KEY_LENGTH } from '../constants';
 
 const HARDENED_OFFSET = 0x80000000;
 
@@ -40,7 +40,7 @@ export function deriveChildKey(pathPart: string, parentKey: Buffer): Buffer {
     throw new Error('Must provide parentKey');
   }
 
-  if (parentKey.length !== KEY_BUFFER_LENGTH) {
+  if (parentKey.length !== BUFFER_KEY_LENGTH) {
     throw new Error('Parent key invalid length');
   }
 
