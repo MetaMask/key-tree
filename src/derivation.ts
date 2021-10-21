@@ -1,4 +1,3 @@
-import bip39 from 'bip39';
 import {
   HDPathTuple,
   BIP44Depth,
@@ -6,17 +5,6 @@ import {
   MIN_BIP_44_DEPTH,
 } from './constants';
 import { derivers, Deriver } from './derivers';
-import { bufferToBase64String } from './utils';
-
-/**
- * Converts the given BIP-39 mnemonic to a cryptographic seed.
- *
- * @param mnemonic - The BIP-39 mnemonic.
- * @returns The cryptographic seed corresponding to the given mnemonic.
- */
-export function mnemonicToSeed(mnemonic: string): Buffer {
-  return bip39.mnemonicToSeed(mnemonic);
-}
 
 /**
  * ethereum default seed path: "m/44'/60'/0'/0/{account_index}"
@@ -29,14 +17,6 @@ export function mnemonicToSeed(mnemonic: string): Buffer {
  * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
  * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
  */
-
-export function deriveStringKeyFromPath(
-  pathSegment: HDPathTuple,
-  parentKey?: Buffer,
-  depth?: BIP44Depth,
-): string {
-  return bufferToBase64String(deriveKeyFromPath(pathSegment, parentKey, depth));
-}
 
 /**
  * Takes a full or partial HD path string and returns the key corresponding to
@@ -72,6 +52,7 @@ export function deriveKeyFromPath(
   // derive through each part of path
   pathSegment.forEach((node) => {
     const [pathType, pathValue] = node.split(':');
+    /* istanbul ignore if: should be impossible */
     if (!hasDeriver(pathType)) {
       throw new Error(`Unknown derivation type: "${pathType}"`);
     }

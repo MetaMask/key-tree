@@ -465,6 +465,29 @@ describe('deriveBIP44AddressKey', () => {
       deriveBIP44AddressKey(parentKey, { address_index: 0 }).toString('base64'),
     ).toStrictEqual(expectedKey);
   });
+
+  it('throws if a node value is invalid', () => {
+    const coinType = 60;
+    const parentNode = new BIP44CoinTypeNode([
+      defaultBip39Node,
+      BIP44PurposeNode,
+      `bip32:${coinType}'`,
+    ]);
+
+    [
+      {},
+      { account: -1 },
+      { change: 1.1 },
+      { address_index: 'foo' },
+      { account: NaN },
+      { account: null },
+      { account: {} },
+    ].forEach((invalidInput) => {
+      expect(() =>
+        deriveBIP44AddressKey(parentNode, invalidInput as any),
+      ).toThrow(`Invalid BIP-32 index: Must be a non-negative integer.`);
+    });
+  });
 });
 
 describe('getBIP44AddressKeyDeriver', () => {
@@ -658,5 +681,54 @@ describe('getBIP44AddressKeyDeriver', () => {
     }).key;
 
     expect(deriver(0).toString('base64')).toStrictEqual(expectedKey);
+  });
+
+  it('throws if a node value is invalid', () => {
+    const coinType = 60;
+    const parentNode = new BIP44CoinTypeNode([
+      defaultBip39Node,
+      BIP44PurposeNode,
+      `bip32:${coinType}'`,
+    ]);
+
+    [
+      { account: -1 },
+      { change: 1.1 },
+      { account: NaN },
+      { account: null },
+      { account: {} },
+    ].forEach((invalidInput) => {
+      expect(() =>
+        getBIP44AddressKeyDeriver(parentNode, invalidInput as any),
+      ).toThrow(`Invalid BIP-32 index: Must be a non-negative integer.`);
+    });
+  });
+
+  it('deriver throws if address_index value is invalid', () => {
+    const coinType = 60;
+    const parentNode = new BIP44CoinTypeNode([
+      defaultBip39Node,
+      BIP44PurposeNode,
+      `bip32:${coinType}'`,
+    ]);
+
+    const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
+
+    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    expect(deriver.coin_type).toStrictEqual(coinType);
+    expect(deriver.path).toStrictEqual(expectedPath);
+
+    [
+      {},
+      { address_index: -1 },
+      { address_index: 1.1 },
+      { address_index: NaN },
+      { address_index: null },
+      { address_index: {} },
+    ].forEach((invalidInput) => {
+      expect(() => deriver(invalidInput as any)).toThrow(
+        `Invalid BIP-32 index: Must be a non-negative integer.`,
+      );
+    });
   });
 });

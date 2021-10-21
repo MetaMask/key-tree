@@ -6,7 +6,6 @@ import {
   BIP44PurposeNode,
   UnhardenedBIP32Node,
   CoinTypeHDPathString,
-  AddressHDPathString,
   CoinTypeToAddressTuple,
   HardenedBIP32Node,
   ChangeHDPathString,
@@ -30,17 +29,6 @@ export type CoinTypeToAddressIndices = Pick<
   BIP44PathIndices,
   'account' | 'change' | 'address_index'
 >;
-
-export function getBIP44AddressPathString(
-  coinTypePath: CoinTypeHDPathString,
-  indices: CoinTypeToAddressIndices,
-): AddressHDPathString {
-  return `${coinTypePath} / ${getHardenedBIP32Node(
-    indices.account || 0,
-  )} / ${getUnhardenedBIP32Node(
-    indices.change || 0,
-  )} / ${getUnhardenedBIP32Node(indices.address_index)}`;
-}
 
 export function getBIP44ChangePathString(
   coinTypePath: CoinTypeHDPathString,

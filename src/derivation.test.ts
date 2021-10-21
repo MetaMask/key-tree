@@ -68,6 +68,18 @@ describe('derivation', () => {
       const multipath = [bip39Part, ...ethereumBip32PathParts] as const;
       const parentKey = deriveKeyFromPath(multipath);
 
+      // Empty segments are forbidden
+      expect(() => {
+        deriveKeyFromPath([] as any);
+      }).toThrow(/Invalid HD path segment: The segment must not be empty\./u);
+
+      // Segments cannot exceed BIP-44 maximum depth
+      expect(() => {
+        deriveKeyFromPath([...multipath, multipath[4], multipath[4]] as any);
+      }).toThrow(
+        /Invalid HD path segment: The segment cannot exceed a 0-indexed depth of 5\./u,
+      );
+
       // Malformed multipaths are disallowed
       expect(() => {
         const [, ...rest] = multipath;
@@ -100,6 +112,16 @@ describe('derivation', () => {
           ...rest,
         ]);
       }).toThrow(/Invalid HD path segment: The path segment is malformed\./u);
+
+      expect(() => {
+        deriveKeyFromPath(
+          [bip39Part, ethereumBip32PathParts[0]],
+          Buffer.alloc(64).fill(1),
+          0,
+        );
+      }).toThrow(
+        /Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of 0\. Received:/u,
+      );
 
       // bip39 seed phrase component must be completely lowercase
       expect(() => {
@@ -145,6 +167,31 @@ describe('derivation', () => {
         const address = privateKeyToEthAddress(key);
         expect(address.toString('hex')).toStrictEqual(expectedAddresses[index]);
       });
+    });
+
+    it('throws for invalid inputs', () => {
+      [
+        String(-1),
+        String(1.1),
+        String(2147483649),
+        String(Number.MAX_SAFE_INTEGER),
+        String({}),
+        String('foo'),
+      ].forEach((invalidIndex) => {
+        expect(() =>
+          bip32Derive(invalidIndex as any, Buffer.allocUnsafe(64).fill(1)),
+        ).toThrow(
+          'Invalid BIP-32 index: The index must be a non-negative decimal integer less than 2147483648.',
+        );
+      });
+
+      expect(() => bip32Derive(`44'`, undefined as any)).toThrow(
+        'Invalid parameters: Must specify a parent key.',
+      );
+
+      expect(() => bip32Derive(`44'`, Buffer.allocUnsafe(63).fill(1))).toThrow(
+        'Invalid parent key: Must be 64 bytes long.',
+      );
     });
   });
 });

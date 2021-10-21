@@ -29,19 +29,27 @@ function keccak(a: string | Buffer, bits: KeccakBits = '256'): Buffer {
  * @param parentKey
  */
 export function deriveChildKey(pathPart: string, parentKey: Buffer): Buffer {
-  const isHardened = pathPart.includes(`'`);
-  const indexPart = pathPart.split(`'`)[0];
-  const childIndex = parseInt(indexPart, 10);
-  if (childIndex >= HARDENED_OFFSET) {
-    throw new Error('Invalid index');
-  }
-
   if (!parentKey) {
-    throw new Error('Must provide parentKey');
+    throw new Error('Invalid parameters: Must specify a parent key.');
   }
 
   if (parentKey.length !== BUFFER_KEY_LENGTH) {
-    throw new Error('Parent key invalid length');
+    throw new Error('Invalid parent key: Must be 64 bytes long.');
+  }
+
+  const isHardened = pathPart.includes(`'`);
+  const indexPart = pathPart.split(`'`)[0];
+  const childIndex = parseInt(indexPart, 10);
+
+  if (
+    !/^\d+$/u.test(indexPart) ||
+    !Number.isInteger(childIndex) ||
+    childIndex < 0 ||
+    childIndex >= HARDENED_OFFSET
+  ) {
+    throw new Error(
+      `Invalid BIP-32 index: The index must be a non-negative decimal integer less than ${HARDENED_OFFSET}.`,
+    );
   }
 
   const parentPrivateKey = parentKey.slice(0, 32);

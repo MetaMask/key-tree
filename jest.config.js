@@ -4,15 +4,14 @@ module.exports = {
   // ones.
   collectCoverageFrom: ['./src/**/*.ts'],
   coverageReporters: ['text', 'html'],
-  // TODO
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 100,
-  //     functions: 100,
-  //     lines: 100,
-  //     statements: 100,
-  //   },
-  // },
+  coverageThreshold: {
+    global: {
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+  },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.test.json',
