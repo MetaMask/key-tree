@@ -154,7 +154,7 @@ describe('BIP44CoinTypeNode', () => {
     });
   });
 
-  describe('deriveBIP44Address', () => {
+  describe('deriveBIP44AddressKey', () => {
     const coinTypePath = [
       defaultBip39Node,
       BIP44PurposeNode,
@@ -173,7 +173,9 @@ describe('BIP44CoinTypeNode', () => {
       ]);
 
       expect(
-        coinTypeNode.deriveBIP44Address({ address_index: 0 }).key,
+        coinTypeNode
+          .deriveBIP44AddressKey({ address_index: 0 })
+          .toString('base64'),
       ).toStrictEqual(expectedKey);
     });
 
@@ -189,7 +191,9 @@ describe('BIP44CoinTypeNode', () => {
       ]);
 
       expect(
-        coinTypeNode.deriveBIP44Address({ address_index: 99 }).key,
+        coinTypeNode
+          .deriveBIP44AddressKey({ address_index: 99 })
+          .toString('base64'),
       ).toStrictEqual(expectedKey);
     });
 
@@ -205,7 +209,9 @@ describe('BIP44CoinTypeNode', () => {
       ]);
 
       expect(
-        coinTypeNode.deriveBIP44Address({ account: 4, address_index: 0 }).key,
+        coinTypeNode
+          .deriveBIP44AddressKey({ account: 4, address_index: 0 })
+          .toString('base64'),
       ).toStrictEqual(expectedKey);
     });
 
@@ -221,7 +227,9 @@ describe('BIP44CoinTypeNode', () => {
       ]);
 
       expect(
-        coinTypeNode.deriveBIP44Address({ change: 3, address_index: 0 }).key,
+        coinTypeNode
+          .deriveBIP44AddressKey({ change: 3, address_index: 0 })
+          .toString('base64'),
       ).toStrictEqual(expectedKey);
     });
 
@@ -237,11 +245,13 @@ describe('BIP44CoinTypeNode', () => {
       ]);
 
       expect(
-        coinTypeNode.deriveBIP44Address({
-          account: 4,
-          change: 3,
-          address_index: 0,
-        }).key,
+        coinTypeNode
+          .deriveBIP44AddressKey({
+            account: 4,
+            change: 3,
+            address_index: 0,
+          })
+          .toString('base64'),
       ).toStrictEqual(expectedKey);
     });
   });

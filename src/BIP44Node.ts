@@ -26,7 +26,7 @@ export interface JsonBIP44Node {
    *
    * A BIP-44 path is of the form:
    *
-   * `m / purpose' / coin_type' / account' / change / address_index`
+   * `m / 44' / coin_type' / account' / change / address_index`
    *
    * With the following depths:
    *
@@ -91,7 +91,7 @@ export class BIP44Node implements BIP44NodeInterface {
    *
    * Recall that a BIP-44 HD tree path consists of the following nodes:
    *
-   * `m / purpose' / coin_type' / account' / change / address_index`
+   * `m / 44' / coin_type' / account' / change / address_index`
    *
    * With the following depths:
    *
@@ -197,7 +197,7 @@ export class BIP44Node implements BIP44NodeInterface {
    *
    * Recall that a BIP-44 HD tree path consists of the following nodes:
    *
-   * `m / purpose' / coin_type' / account' / change / address_index`
+   * `m / 44' / coin_type' / account' / change / address_index`
    *
    * With the following depths:
    *

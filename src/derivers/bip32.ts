@@ -2,16 +2,29 @@ import crypto from 'crypto';
 import secp256k1 from 'secp256k1';
 import createKeccakHash from 'keccak';
 import { BUFFER_KEY_LENGTH } from '../constants';
+import { isValidBufferKey } from '../utils';
 
 const HARDENED_OFFSET = 0x80000000;
 
 type KeccakBits = '224' | '256' | '384' | '512';
 
 /**
- * @param keyBuffer
+ * Converts a BIP-32 private key to an Ethereum address.
+ *
+ * **WARNING:** Only validates that the key is non-zero and of the correct
+ * length. It is the consumer's responsibility to ensure that the specified
+ * key is a valid BIP-44 Ethereum `address_index` key.
+ *
+ * @param key - The `address_index` key buffer to convert to an Ethereum
+ * address.
+ * @returns The Ethereum address corresponding to the given key.
  */
-export function privateKeyToEthAddress(keyBuffer: Buffer) {
-  const privateKey = keyBuffer.slice(0, 32);
+export function privateKeyToEthAddress(key: Buffer) {
+  if (!Buffer.isBuffer(key) || !isValidBufferKey(key)) {
+    throw new Error('Invalid key: The key must be a 64-byte, non-zero Buffer.');
+  }
+
+  const privateKey = key.slice(0, 32);
   const publicKey = secp256k1.publicKeyCreate(privateKey, false).slice(1);
   return keccak(publicKey as Buffer).slice(-20);
 }

@@ -28,6 +28,7 @@ describe('derivation', () => {
         ] as const;
         const bip39Part = bip39MnemonicToMultipath(mnemonic);
         const multipath = [bip39Part, ...bip32Part] as HDPathTuple;
+
         expect(multipath).toStrictEqual([
           `bip39:${mnemonic}`,
           `bip32:44'`,
@@ -192,6 +193,24 @@ describe('derivation', () => {
       expect(() => bip32Derive(`44'`, Buffer.allocUnsafe(63).fill(1))).toThrow(
         'Invalid parent key: Must be 64 bytes long.',
       );
+    });
+  });
+
+  // The outputs of this function are tested in key derivation above
+  describe('privateKeyToEthAddress', () => {
+    it('throws for invalid inputs', () => {
+      [
+        Buffer.allocUnsafe(63).fill(1),
+        Buffer.alloc(64, 0),
+        'foo',
+        {},
+        null,
+        undefined,
+      ].forEach((invalidInput) => {
+        expect(() => privateKeyToEthAddress(invalidInput as any)).toThrow(
+          'Invalid key: The key must be a 64-byte, non-zero Buffer.',
+        );
+      });
     });
   });
 });
