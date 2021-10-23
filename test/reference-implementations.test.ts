@@ -207,41 +207,8 @@ describe('reference implementation tests', () => {
   describe('BIP-32 specification test vectors', () => {
     const vectors = fixtures.bip32;
 
-    describe('BIP44Node', () => {
-      it('derives the test vector keys', () => {
-        vectors.forEach((vector) => {
-          const seed = hexStringToBuffer(vector.hexSeed);
-          const seedKey = createBip39KeyFromSeed(seed);
-
-          vector.keys.forEach(
-            (keyObj: { path: any; extPrivKey: string; extPubKey: string }) => {
-              const { path, extPrivKey } = keyObj;
-              const parentNode = new BIP44Node({
-                depth: 0,
-                key: seedKey,
-              });
-
-              let targetNode: BIP44Node;
-              if (path.ours.string === '') {
-                targetNode = parentNode;
-              } else {
-                targetNode = parentNode.derive(path.ours.tuple);
-              }
-
-              const xprvHdKey = hdkey
-                .fromExtendedKey(extPrivKey)
-                .getWallet()
-                .getPrivateKey();
-
-              expect(
-                targetNode.keyBuffer.slice(0, 32).toString('base64'),
-              ).toStrictEqual(xprvHdKey.toString('base64'));
-            },
-          );
-        });
-      });
-    });
-
+    // We only test the BIP-32 vectors with deriveKeyFromPath, since not all
+    // paths are BIP-44 compatible.
     describe('deriveKeyFromPath', () => {
       it('derives the test vector keys', () => {
         vectors.forEach((vector) => {

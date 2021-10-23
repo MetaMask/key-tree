@@ -3,6 +3,8 @@ import {
   BIP44Depth,
   MAX_BIP_44_DEPTH,
   MIN_BIP_44_DEPTH,
+  BIP_39_PATH_REGEX,
+  BIP_32_PATH_REGEX,
 } from './constants';
 import { derivers, Deriver } from './derivers';
 
@@ -71,20 +73,6 @@ export function deriveKeyFromPath(
 function hasDeriver(pathType: string): pathType is keyof typeof derivers {
   return pathType in derivers;
 }
-
-/**
- * e.g.
- * -  bip32:0
- * -  bip32:0'
- */
-const BIP_32_PATH_REGEX = /^bip32:\d+'?$/u;
-
-/**
- * bip39:<SPACE_DELMITED_SEED_PHRASE>
- *
- * The seed phrase must consist of 12 <= 24 words.
- */
-const BIP_39_PATH_REGEX = /^bip39:([a-z]+){1}( [a-z]+){11,23}$/u;
 
 /**
  * The path segment must be one of the following:

@@ -1,5 +1,5 @@
 import fixtures from '../test/fixtures';
-import { BIP44Node, BIP44PurposeNode, MIN_BIP_44_DEPTH } from '.';
+import { BIP44Node, BIP44PurposeNode } from '.';
 
 const defaultBip39Node = `bip39:${fixtures.local.mnemonic}` as const;
 
@@ -164,9 +164,84 @@ describe('BIP44Node', () => {
       expect(
         () => new BIP44Node({ derivationPath: [`bip32:0'`] as any }),
       ).toThrow(
-        `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_BIP_44_DEPTH}. Received: "${[
-          `bip32:0'`,
-        ]}"`,
+        'Invalid derivation path: The "m" / seed node (depth 0) must be a BIP-39 node.',
+      );
+    });
+
+    it('throws if the depth 1 node of the derivation path is not the BIP-44 purpose node', () => {
+      expect(
+        () =>
+          new BIP44Node({
+            derivationPath: [defaultBip39Node, `bip32:43'`] as any,
+          }),
+      ).toThrow(
+        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNode}".`,
+      );
+    });
+
+    it('throws if the depth 2 node of the derivation path is not a hardened BIP-32 node', () => {
+      expect(
+        () =>
+          new BIP44Node({
+            derivationPath: [
+              defaultBip39Node,
+              BIP44PurposeNode,
+              `bip32:60`,
+            ] as any,
+          }),
+      ).toThrow(
+        'Invalid derivation path: The "coin_type" node (depth 2) must be a hardened BIP-32 node.',
+      );
+    });
+
+    it('throws if the depth 3 node of the derivation path is not a hardened BIP-32 node', () => {
+      expect(
+        () =>
+          new BIP44Node({
+            derivationPath: [
+              defaultBip39Node,
+              BIP44PurposeNode,
+              `bip32:60'`,
+              `bip32:0`,
+            ] as any,
+          }),
+      ).toThrow(
+        'Invalid derivation path: The "account" node (depth 3) must be a hardened BIP-32 node.',
+      );
+    });
+
+    it('throws if the depth 4 node of the derivation path is not an unhardened BIP-32 node', () => {
+      expect(
+        () =>
+          new BIP44Node({
+            derivationPath: [
+              defaultBip39Node,
+              BIP44PurposeNode,
+              `bip32:60'`,
+              `bip32:0'`,
+              `bip32:0'`,
+            ] as any,
+          }),
+      ).toThrow(
+        'Invalid derivation path: The "change" node (depth 4) must be an unhardened BIP-32 node.',
+      );
+    });
+
+    it('throws if the depth 5 node of the derivation path is not an unhardened BIP-32 node', () => {
+      expect(
+        () =>
+          new BIP44Node({
+            derivationPath: [
+              defaultBip39Node,
+              BIP44PurposeNode,
+              `bip32:60'`,
+              `bip32:0'`,
+              `bip32:0`,
+              `bip32:0'`,
+            ] as any,
+          }),
+      ).toThrow(
+        'Invalid derivation path: The "address_index" node (depth 5) must be an unhardened BIP-32 node.',
       );
     });
 
@@ -253,6 +328,67 @@ describe('BIP44Node', () => {
         }).derive([] as any),
       ).toThrow(
         'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
+      );
+    });
+
+    it('throws if the depth 1 node of the derivation path is not the BIP-44 purpose node', () => {
+      expect(() =>
+        new BIP44Node({
+          derivationPath: [defaultBip39Node],
+        }).derive([`bip32:43'`]),
+      ).toThrow(
+        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNode}".`,
+      );
+    });
+
+    it('throws if the depth 2 node of the derivation path is not a hardened BIP-32 node', () => {
+      expect(() =>
+        new BIP44Node({
+          derivationPath: [defaultBip39Node, BIP44PurposeNode],
+        }).derive([`bip32:60`]),
+      ).toThrow(
+        'Invalid derivation path: The "coin_type" node (depth 2) must be a hardened BIP-32 node.',
+      );
+    });
+
+    it('throws if the depth 3 node of the derivation path is not a hardened BIP-32 node', () => {
+      expect(() =>
+        new BIP44Node({
+          derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        }).derive([`bip32:0`]),
+      ).toThrow(
+        'Invalid derivation path: The "account" node (depth 3) must be a hardened BIP-32 node.',
+      );
+    });
+
+    it('throws if the depth 4 node of the derivation path is not an unhardened BIP-32 node', () => {
+      expect(() =>
+        new BIP44Node({
+          derivationPath: [
+            defaultBip39Node,
+            BIP44PurposeNode,
+            `bip32:60'`,
+            `bip32:0'`,
+          ],
+        }).derive([`bip32:0'`]),
+      ).toThrow(
+        'Invalid derivation path: The "change" node (depth 4) must be an unhardened BIP-32 node.',
+      );
+    });
+
+    it('throws if the depth 5 node of the derivation path is not an unhardened BIP-32 node', () => {
+      expect(() =>
+        new BIP44Node({
+          derivationPath: [
+            defaultBip39Node,
+            BIP44PurposeNode,
+            `bip32:60'`,
+            `bip32:0'`,
+            `bip32:0`,
+          ],
+        }).derive([`bip32:0'`]),
+      ).toThrow(
+        'Invalid derivation path: The "address_index" node (depth 5) must be an unhardened BIP-32 node.',
       );
     });
   });

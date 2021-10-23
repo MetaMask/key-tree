@@ -5,6 +5,10 @@ import {
   BIP44Depth,
   PartialHDPathTuple,
   RootedHDPathTuple,
+  HDPathTuple,
+  BIP_39_PATH_REGEX,
+  BIP_32_PATH_REGEX,
+  BIP44PurposeNode,
 } from './constants';
 import {
   bufferToBase64String,
@@ -13,6 +17,7 @@ import {
   isValidHexStringKey,
   isValidBase64StringKey,
   isValidBufferKey,
+  isHardened,
 } from './utils';
 
 /**
@@ -131,7 +136,8 @@ export class BIP44Node implements BIP44NodeInterface {
       validateBIP44Depth(_depth);
       this.depth = _depth as BIP44Depth;
 
-      this.keyBuffer = deriveKeyFromPath(derivationPath, _key, this.depth);
+      validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
+      this.keyBuffer = deriveKeyFromPath(derivationPath, undefined, this.depth);
     } else if (_key) {
       validateBIP44Depth(depth);
       this.depth = depth as BIP44Depth;
@@ -248,6 +254,7 @@ export function deriveChildNode(
   // unlike when we calculate the depth of a rooted path.
   const newDepth = (parentDepth + pathToChild.length) as BIP44Depth;
   validateBIP44Depth(newDepth);
+  validateBIP44DerivationPath(pathToChild, (parentDepth + 1) as BIP44Depth);
 
   return new BIP44Node({
     depth: newDepth,
@@ -273,4 +280,83 @@ function validateBIP44Depth(depth: unknown) {
       `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "${depth}"`,
     );
   }
+}
+
+/**
+ * Ensures that the given derivation is valid by BIP-44.
+ *
+ * Recall that a BIP-44 HD tree path consists of the following nodes:
+ *
+ * `m / 44' / coin_type' / account' / change / address_index`
+ *
+ * With the following depths:
+ *
+ * `0 / 1 / 2 / 3 / 4 / 5`
+ *
+ * @param path - The path to validate.
+ * @param startingDepth - The depth of the first node of the derivation path.
+ */
+function validateBIP44DerivationPath(
+  path: HDPathTuple,
+  startingDepth: BIP44Depth,
+) {
+  path.forEach((nodeToken, index) => {
+    const currentDepth = startingDepth + index;
+
+    switch (currentDepth) {
+      case MIN_BIP_44_DEPTH:
+        if (!BIP_39_PATH_REGEX.test(nodeToken)) {
+          throw new Error(
+            'Invalid derivation path: The "m" / seed node (depth 0) must be a BIP-39 node.',
+          );
+        }
+        break;
+
+      case 1:
+        if (nodeToken !== BIP44PurposeNode) {
+          throw new Error(
+            `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNode}".`,
+          );
+        }
+        break;
+
+      case 2:
+        if (!BIP_32_PATH_REGEX.test(nodeToken) || !isHardened(nodeToken)) {
+          throw new Error(
+            'Invalid derivation path: The "coin_type" node (depth 2) must be a hardened BIP-32 node.',
+          );
+        }
+        break;
+
+      case 3:
+        if (!BIP_32_PATH_REGEX.test(nodeToken) || !isHardened(nodeToken)) {
+          throw new Error(
+            'Invalid derivation path: The "account" node (depth 3) must be a hardened BIP-32 node.',
+          );
+        }
+        break;
+
+      case 4:
+        if (!BIP_32_PATH_REGEX.test(nodeToken) || isHardened(nodeToken)) {
+          throw new Error(
+            'Invalid derivation path: The "change" node (depth 4) must be an unhardened BIP-32 node.',
+          );
+        }
+        break;
+
+      case MAX_BIP_44_DEPTH: // 5
+        if (!BIP_32_PATH_REGEX.test(nodeToken) || isHardened(nodeToken)) {
+          throw new Error(
+            'Invalid derivation path: The "address_index" node (depth 5) must be an unhardened BIP-32 node.',
+          );
+        }
+        break;
+
+      /* istanbul ignore next: should be impossible in our usage */
+      default:
+        throw new Error(
+          `Invalid derivation path: The path exceeds the maximum BIP-44 depth.`,
+        );
+    }
+  });
 }

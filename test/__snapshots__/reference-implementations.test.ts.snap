@@ -20,34 +20,34 @@ Array [
 ]
 `;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 1`] = `"ceb27994cefb8c0f6b2b95bac3b92513a8d37fd0"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 1`] = `"c5ba325f997531b5f0f50868913f0ce2fc0386bd"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 2`] = `"1666faf80940cb2314b64a692f6859477373196a"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 2`] = `"326aa42f2b600f624d800e109b1e146906bc8175"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 3`] = `"71d44202324a1d976ef32007b73b0521d38e8784"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 3`] = `"6d0cc8671c91559d5f2d43de9c33eee0497db7cd"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 4`] = `"b7a47b81b8ca04fefc1764fe2138b0ddbba2cf38"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 4`] = `"7bf971adda7f4487ac8f3dbd7450463ff3624f94"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 5`] = `"e5d8e52b3cd36929e7c2435ccb9bf4290baa438e"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 5`] = `"564d7507d39a881d04bffc0120ebd331e7c41758"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 6`] = `"caae5e7f467274cf6c83626d0a7b57836cb2376c"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 6`] = `"7496ff062c1fe3e750dff9cbbe317558161ba6db"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 7`] = `"f0beee9eb42a90c19dae37e11308e31ef2c90c80"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 7`] = `"ddf1f1a72a668d5014ec57a24019291fd2a00197"`;
 
-exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 8`] = `"1f94dc3288f8139d6042732c8176c30bf0c87e19"`;
+exports[`reference implementation tests ethereumjs-wallet BIP44Node derives the same keys as the reference implementation 8`] = `"24dd12b9df5375f3b7fc5a539d4ac1bd2c16e9a0"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 1`] = `"ceb27994cefb8c0f6b2b95bac3b92513a8d37fd0"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 1`] = `"c5ba325f997531b5f0f50868913f0ce2fc0386bd"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 2`] = `"1666faf80940cb2314b64a692f6859477373196a"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 2`] = `"326aa42f2b600f624d800e109b1e146906bc8175"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 3`] = `"71d44202324a1d976ef32007b73b0521d38e8784"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 3`] = `"6d0cc8671c91559d5f2d43de9c33eee0497db7cd"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 4`] = `"b7a47b81b8ca04fefc1764fe2138b0ddbba2cf38"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 4`] = `"7bf971adda7f4487ac8f3dbd7450463ff3624f94"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 5`] = `"e5d8e52b3cd36929e7c2435ccb9bf4290baa438e"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 5`] = `"564d7507d39a881d04bffc0120ebd331e7c41758"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 6`] = `"caae5e7f467274cf6c83626d0a7b57836cb2376c"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 6`] = `"7496ff062c1fe3e750dff9cbbe317558161ba6db"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 7`] = `"f0beee9eb42a90c19dae37e11308e31ef2c90c80"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 7`] = `"ddf1f1a72a668d5014ec57a24019291fd2a00197"`;
 
-exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 8`] = `"1f94dc3288f8139d6042732c8176c30bf0c87e19"`;
+exports[`reference implementation tests ethereumjs-wallet deriveKeyFromPath derives the same keys as the reference implementation 8`] = `"24dd12b9df5375f3b7fc5a539d4ac1bd2c16e9a0"`;

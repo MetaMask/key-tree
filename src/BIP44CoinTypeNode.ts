@@ -49,7 +49,7 @@ const InnerNode = Symbol('_node');
  * specifying the protocol for which deeper keys are intended. For the
  * authoritative list of coin types, please see
  * [SLIP-44](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
- * 
+ *
  * Recall that a BIP-44 HD tree path consists of the following nodes:
  *
  * `m / 44' / coin_type' / account' / change / address_index`

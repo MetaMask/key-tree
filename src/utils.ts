@@ -57,7 +57,6 @@ export function getHardenedBIP32Node(index: number): HardenedBIP32Node {
 
 export function getUnhardenedBIP32Node(index: number): UnhardenedBIP32Node {
   validateBIP32Index(index);
-
   return `bip32:${index}`;
 }
 
@@ -69,6 +68,10 @@ export function validateBIP32Index(addressIndex: number) {
 
 export function isValidBIP32Index(index: number): boolean {
   return Number.isInteger(index) && index >= 0;
+}
+
+export function isHardened(bip32Token: string): boolean {
+  return bip32Token.endsWith(`'`);
 }
 
 export function stripHexPrefix(hexString: string): string {

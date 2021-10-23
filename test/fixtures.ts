@@ -25,12 +25,15 @@ export default {
   'ethereumjs-wallet': {
     hexSeed:
       '747f302d9c916698912d5f70be53a6cf53bc495803a5523d3a7c3afa2afba94ec3803f838b3e1929ab5481f9da35441372283690fdcf27372c38f40ba134fe03',
+    // The path used is modified from the ethereumjs-wallet original, which
+    // isn't BIP-44 compatible. Since we're testing against their
+    // implementation, not any reference values, this is fine.
     path: {
       ours: {
-        tuple: [`bip32:44'`, `bip32:0'`, `bip32:0`, `bip32:1`],
-        string: [`bip32:44'/bip32:0'/bip32:0/bip32:1`],
+        tuple: [`bip32:44'`, `bip32:0'`, `bip32:0'`, `bip32:1`],
+        string: [`bip32:44'/bip32:0'/bip32:0'/bip32:1`],
       },
-      theirs: "m/44'/0'/0/1",
+      theirs: "m/44'/0'/0'/1",
     },
     sampleIndices: [0, 1, 5, 50, 500, 5000, 4_999_999, 5_000_000],
   },
