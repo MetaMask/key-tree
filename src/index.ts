@@ -12,7 +12,7 @@ export {
   MIN_BIP_44_DEPTH,
   MAX_BIP_44_DEPTH,
   BIP44Depth,
-  BIP44PurposeNode,
+  BIP44PurposeNodeToken,
   BIP32Node,
   BIP39Node,
 } from './constants';

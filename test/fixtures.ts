@@ -35,7 +35,7 @@ export default {
       },
       theirs: "m/44'/0'/0'/1",
     },
-    sampleIndices: [0, 1, 5, 50, 500, 5000, 4_999_999, 5_000_000],
+    sampleAddressIndices: [0, 1, 5, 50, 500, 5000, 4_999_999, 5_000_000],
   },
 
   // The BIP-32 specification test vectors.

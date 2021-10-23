@@ -34,7 +34,7 @@ export type HardenedBIP32Node = `bip32:${number}'`;
 export type UnhardenedBIP32Node = `bip32:${number}`;
 export type BIP32Node = HardenedBIP32Node | UnhardenedBIP32Node;
 
-export const BIP44PurposeNode = `bip32:44'`;
+export const BIP44PurposeNodeToken = `bip32:44'`;
 
 /**
  * e.g.

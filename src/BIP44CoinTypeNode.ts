@@ -1,6 +1,6 @@
 import {
   BIP39Node,
-  BIP44PurposeNode,
+  BIP44PurposeNodeToken,
   CoinTypeHDPathString,
   HardenedBIP32Node,
   BIP44Depth,
@@ -13,18 +13,18 @@ import {
 } from './BIP44Node';
 import {
   base64StringToBuffer,
-  getBIP44AddressPathTuple,
+  getBIP44CoinTypeToAddressPathTuple,
   getBIP44CoinTypePathString,
   isValidBase64StringKey,
   CoinTypeToAddressIndices,
-  getHardenedBIP32Node,
-  getUnhardenedBIP32Node,
+  getHardenedBIP32NodeToken,
+  getUnhardenedBIP32NodeToken,
   getBIP44ChangePathString,
 } from './utils';
 
 export type CoinTypeHDPathTuple = [
   BIP39Node,
-  typeof BIP44PurposeNode,
+  typeof BIP44PurposeNodeToken,
   HardenedBIP32Node,
 ];
 export const BIP_44_COIN_TYPE_DEPTH = 2;
@@ -178,7 +178,7 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     address_index,
   }: CoinTypeToAddressIndices): Buffer {
     return this[InnerNode].derive(
-      getBIP44AddressPathTuple({ account, change, address_index }),
+      getBIP44CoinTypeToAddressPathTuple({ account, change, address_index }),
     ).keyBuffer;
   }
 
@@ -259,7 +259,7 @@ export function deriveBIP44AddressKey(
   return deriveChildNode(
     keyBuffer,
     BIP_44_COIN_TYPE_DEPTH,
-    getBIP44AddressPathTuple({ account, change, address_index }),
+    getBIP44CoinTypeToAddressPathTuple({ account, change, address_index }),
   ).keyBuffer;
 }
 
@@ -325,14 +325,14 @@ export function getBIP44AddressKeyDeriver(
       ? node.keyBuffer
       : base64StringToBuffer(key);
 
-  const accountNode = getHardenedBIP32Node(account);
-  const changeNode = getUnhardenedBIP32Node(change);
+  const accountNode = getHardenedBIP32NodeToken(account);
+  const changeNode = getUnhardenedBIP32NodeToken(change);
 
   const bip44AddressKeyDeriver = (address_index: number): Buffer => {
     return deriveChildNode(parentKeyBuffer, BIP_44_COIN_TYPE_DEPTH, [
       accountNode,
       changeNode,
-      getUnhardenedBIP32Node(address_index),
+      getUnhardenedBIP32NodeToken(address_index),
     ]).keyBuffer;
   };
 

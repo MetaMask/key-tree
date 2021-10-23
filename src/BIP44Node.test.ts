@@ -1,14 +1,18 @@
 import fixtures from '../test/fixtures';
-import { BIP44Node, BIP44PurposeNode } from '.';
+import { BIP44Node, BIP44PurposeNodeToken } from '.';
 
-const defaultBip39Node = `bip39:${fixtures.local.mnemonic}` as const;
+const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('BIP44Node', () => {
   describe('constructor', () => {
     it('initializes a new node (depth, derivationPath)', () => {
       // Ethereum coin type node
       const node = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       });
 
       expect(node.key).toHaveLength(88);
@@ -77,7 +81,11 @@ describe('BIP44Node', () => {
 
     it('throws an error if attempting to modify the fields of a node', () => {
       const node: any = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       });
 
       // getter
@@ -128,7 +136,11 @@ describe('BIP44Node', () => {
         () =>
           new BIP44Node({
             depth: 2, // This is the correct depth, but it's still forbidden
-            derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+            derivationPath: [
+              defaultBip39NodeToken,
+              BIP44PurposeNodeToken,
+              `bip32:60'`,
+            ],
           }),
       ).toThrow(
         'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
@@ -146,7 +158,7 @@ describe('BIP44Node', () => {
         () =>
           new BIP44Node({
             depth: 1,
-            derivationPath: [defaultBip39Node],
+            derivationPath: [defaultBip39NodeToken],
             key: Buffer.alloc(64).fill(1),
           }),
       ).toThrow(
@@ -172,10 +184,10 @@ describe('BIP44Node', () => {
       expect(
         () =>
           new BIP44Node({
-            derivationPath: [defaultBip39Node, `bip32:43'`] as any,
+            derivationPath: [defaultBip39NodeToken, `bip32:43'`] as any,
           }),
       ).toThrow(
-        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNode}".`,
+        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
       );
     });
 
@@ -184,8 +196,8 @@ describe('BIP44Node', () => {
         () =>
           new BIP44Node({
             derivationPath: [
-              defaultBip39Node,
-              BIP44PurposeNode,
+              defaultBip39NodeToken,
+              BIP44PurposeNodeToken,
               `bip32:60`,
             ] as any,
           }),
@@ -199,8 +211,8 @@ describe('BIP44Node', () => {
         () =>
           new BIP44Node({
             derivationPath: [
-              defaultBip39Node,
-              BIP44PurposeNode,
+              defaultBip39NodeToken,
+              BIP44PurposeNodeToken,
               `bip32:60'`,
               `bip32:0`,
             ] as any,
@@ -215,8 +227,8 @@ describe('BIP44Node', () => {
         () =>
           new BIP44Node({
             derivationPath: [
-              defaultBip39Node,
-              BIP44PurposeNode,
+              defaultBip39NodeToken,
+              BIP44PurposeNodeToken,
               `bip32:60'`,
               `bip32:0'`,
               `bip32:0'`,
@@ -232,8 +244,8 @@ describe('BIP44Node', () => {
         () =>
           new BIP44Node({
             derivationPath: [
-              defaultBip39Node,
-              BIP44PurposeNode,
+              defaultBip39NodeToken,
+              BIP44PurposeNodeToken,
               `bip32:60'`,
               `bip32:0'`,
               `bip32:0`,
@@ -288,11 +300,15 @@ describe('BIP44Node', () => {
     it('derives a child node', () => {
       const coinTypeNode = `bip32:40'`;
       const targetNode = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, coinTypeNode],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          coinTypeNode,
+        ],
       });
 
       const childNode = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode],
+        derivationPath: [defaultBip39NodeToken, BIP44PurposeNodeToken],
       }).derive([coinTypeNode]);
 
       expect(childNode).toMatchObject({
@@ -305,8 +321,8 @@ describe('BIP44Node', () => {
       expect(() =>
         new BIP44Node({
           derivationPath: [
-            defaultBip39Node,
-            BIP44PurposeNode,
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
             `bip32:3'`,
             `bip32:0'`,
             `bip32:0`,
@@ -320,8 +336,8 @@ describe('BIP44Node', () => {
       expect(() =>
         new BIP44Node({
           derivationPath: [
-            defaultBip39Node,
-            BIP44PurposeNode,
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
             `bip32:3'`,
             `bip32:0'`,
           ],
@@ -334,17 +350,17 @@ describe('BIP44Node', () => {
     it('throws if the depth 1 node of the derivation path is not the BIP-44 purpose node', () => {
       expect(() =>
         new BIP44Node({
-          derivationPath: [defaultBip39Node],
+          derivationPath: [defaultBip39NodeToken],
         }).derive([`bip32:43'`]),
       ).toThrow(
-        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNode}".`,
+        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
       );
     });
 
     it('throws if the depth 2 node of the derivation path is not a hardened BIP-32 node', () => {
       expect(() =>
         new BIP44Node({
-          derivationPath: [defaultBip39Node, BIP44PurposeNode],
+          derivationPath: [defaultBip39NodeToken, BIP44PurposeNodeToken],
         }).derive([`bip32:60`]),
       ).toThrow(
         'Invalid derivation path: The "coin_type" node (depth 2) must be a hardened BIP-32 node.',
@@ -354,7 +370,11 @@ describe('BIP44Node', () => {
     it('throws if the depth 3 node of the derivation path is not a hardened BIP-32 node', () => {
       expect(() =>
         new BIP44Node({
-          derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+          derivationPath: [
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
+            `bip32:60'`,
+          ],
         }).derive([`bip32:0`]),
       ).toThrow(
         'Invalid derivation path: The "account" node (depth 3) must be a hardened BIP-32 node.',
@@ -365,8 +385,8 @@ describe('BIP44Node', () => {
       expect(() =>
         new BIP44Node({
           derivationPath: [
-            defaultBip39Node,
-            BIP44PurposeNode,
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
             `bip32:60'`,
             `bip32:0'`,
           ],
@@ -380,8 +400,8 @@ describe('BIP44Node', () => {
       expect(() =>
         new BIP44Node({
           derivationPath: [
-            defaultBip39Node,
-            BIP44PurposeNode,
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
             `bip32:60'`,
             `bip32:0'`,
             `bip32:0`,
@@ -396,7 +416,11 @@ describe('BIP44Node', () => {
   describe('toJSON', () => {
     it('returns a JSON-compatible representation of the node', () => {
       const node = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       });
 
       expect(typeof node.key).toStrictEqual('string');

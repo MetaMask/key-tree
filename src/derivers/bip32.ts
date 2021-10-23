@@ -30,11 +30,11 @@ export function privateKeyToEthAddress(key: Buffer) {
 }
 
 /**
- * @param a
- * @param bits
+ * @param data
+ * @param keccakBits
  */
-function keccak(a: string | Buffer, bits: KeccakBits = '256'): Buffer {
-  return createKeccakHash(`keccak${bits}`).update(a).digest();
+function keccak(data: string | Buffer, keccakBits: KeccakBits = '256'): Buffer {
+  return createKeccakHash(`keccak${keccakBits}`).update(data).digest();
 }
 
 /**
@@ -90,10 +90,10 @@ interface DeriveSecretExtensionArgs {
 
 // the bip32 secret extension is created from the parent private or public key and the child index
 /**
- * @param options0
- * @param options0.parentPrivateKey
- * @param options0.childIndex
- * @param options0.isHardened
+ * @param options
+ * @param options.parentPrivateKey
+ * @param options.childIndex
+ * @param options.isHardened
  */
 function deriveSecretExtension({
   parentPrivateKey,
@@ -123,10 +123,10 @@ interface GenerateKeyArgs {
 }
 
 /**
- * @param options0
- * @param options0.parentPrivateKey
- * @param options0.parentExtraEntropy
- * @param options0.secretExtension
+ * @param options
+ * @param options.parentPrivateKey
+ * @param options.parentExtraEntropy
+ * @param options.secretExtension
  */
 function generateKey({
   parentPrivateKey,

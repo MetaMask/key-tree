@@ -8,7 +8,7 @@ import {
   HDPathTuple,
   BIP_39_PATH_REGEX,
   BIP_32_PATH_REGEX,
-  BIP44PurposeNode,
+  BIP44PurposeNodeToken,
 } from './constants';
 import {
   bufferToBase64String,
@@ -313,9 +313,9 @@ function validateBIP44DerivationPath(
         break;
 
       case 1:
-        if (nodeToken !== BIP44PurposeNode) {
+        if (nodeToken !== BIP44PurposeNodeToken) {
           throw new Error(
-            `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNode}".`,
+            `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
           );
         }
         break;

@@ -3,19 +3,19 @@ import {
   BIP_44_COIN_TYPE_DEPTH,
   BIP44Node,
   BIP44CoinTypeNode,
-  BIP44PurposeNode,
+  BIP44PurposeNodeToken,
   deriveBIP44AddressKey,
   getBIP44AddressKeyDeriver,
 } from '.';
 
-const defaultBip39Node = `bip39:${fixtures.local.mnemonic}` as const;
+const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('BIP44CoinTypeNode', () => {
   describe('constructor', () => {
     it('initializes a BIP44CoinTypeNode (derivation path)', () => {
       const node = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);
       const coinType = 60;
@@ -37,7 +37,11 @@ describe('BIP44CoinTypeNode', () => {
 
     it('initializes a BIP44CoinTypeNode (BIP44Node)', () => {
       const bip44Node = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       });
 
       const coinType = 60;
@@ -60,7 +64,11 @@ describe('BIP44CoinTypeNode', () => {
 
     it('initializes a BIP44CoinTypeNode (serialized BIP44Node)', () => {
       const bip44Node = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       });
 
       const coinType = 60;
@@ -85,7 +93,7 @@ describe('BIP44CoinTypeNode', () => {
       expect(
         () =>
           new BIP44CoinTypeNode(
-            [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+            [defaultBip39NodeToken, BIP44PurposeNodeToken, `bip32:60'`],
             60,
           ),
       ).toThrow(
@@ -95,8 +103,8 @@ describe('BIP44CoinTypeNode', () => {
 
     it('throws if derivation path has invalid depth', () => {
       [
-        [defaultBip39Node, BIP44PurposeNode],
-        [defaultBip39Node, BIP44PurposeNode, `bip32:60'`, `bip32:0'`],
+        [defaultBip39NodeToken, BIP44PurposeNodeToken],
+        [defaultBip39NodeToken, BIP44PurposeNodeToken, `bip32:60'`, `bip32:0'`],
       ].forEach((invalidDerivationPath) => {
         expect(
           () => new BIP44CoinTypeNode(invalidDerivationPath as any),
@@ -141,7 +149,11 @@ describe('BIP44CoinTypeNode', () => {
 
     it('throws if coin type is invalid', () => {
       const jsonNode = new BIP44Node({
-        derivationPath: [defaultBip39Node, BIP44PurposeNode, `bip32:60'`],
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       }).toJSON();
 
       ['60', 1.1, -1, {}].forEach((invalidCoinType) => {
@@ -156,8 +168,8 @@ describe('BIP44CoinTypeNode', () => {
 
   describe('deriveBIP44AddressKey', () => {
     const coinTypePath = [
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:60'`,
     ] as const;
 
@@ -167,8 +179,8 @@ describe('BIP44CoinTypeNode', () => {
       }).key;
 
       const coinTypeNode = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);
 
@@ -185,8 +197,8 @@ describe('BIP44CoinTypeNode', () => {
       }).key;
 
       const coinTypeNode = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);
 
@@ -203,8 +215,8 @@ describe('BIP44CoinTypeNode', () => {
       }).key;
 
       const coinTypeNode = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);
 
@@ -221,8 +233,8 @@ describe('BIP44CoinTypeNode', () => {
       }).key;
 
       const coinTypeNode = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);
 
@@ -239,8 +251,8 @@ describe('BIP44CoinTypeNode', () => {
       }).key;
 
       const coinTypeNode = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);
 
@@ -260,8 +272,8 @@ describe('BIP44CoinTypeNode', () => {
     it('returns a JSON-compatible representation of the node', () => {
       const coinType = 60;
       const node = new BIP44CoinTypeNode([
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
       ]);
       const pathString = `m / bip32:44' / bip32:${coinType}'`;
@@ -295,15 +307,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives a BIP-44 address key (default inputs)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -321,15 +333,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives an address_index key (default inputs, different address_index)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -347,15 +359,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives a BIP-44 address key (non-default account value)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:3'`,
         `bip32:0`,
@@ -374,15 +386,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives a BIP-44 address key (non-default change value)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:9`,
@@ -401,15 +413,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives a BIP-44 address key (non-default account and change values)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:3'`,
         `bip32:9`,
@@ -429,15 +441,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives a BIP-44 address key (JSON node)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]).toJSON();
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -455,15 +467,15 @@ describe('deriveBIP44AddressKey', () => {
   it('derives a BIP-44 address key (string key)', () => {
     const coinType = 60;
     const parentKey = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]).key;
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -479,8 +491,8 @@ describe('deriveBIP44AddressKey', () => {
   it('throws if a node value is invalid', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
@@ -504,8 +516,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (default inputs)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
@@ -516,8 +528,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -531,8 +543,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (different coin_type)', () => {
     const coinType = 8129837;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
@@ -543,8 +555,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -558,8 +570,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (default inputs, different address_index)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
@@ -570,8 +582,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -585,8 +597,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (non-default account value)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:46' / bip32:0`;
@@ -597,8 +609,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:46'`,
         `bip32:0`,
@@ -612,8 +624,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (non-default change value)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:2`;
@@ -624,8 +636,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:2`,
@@ -639,8 +651,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (non-default account and change values)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:46' / bip32:2`;
@@ -654,8 +666,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:46'`,
         `bip32:2`,
@@ -669,8 +681,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('returns the expected BIP-44 address key deriver function (JSON node)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]).toJSON();
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
@@ -681,8 +693,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedKey = new BIP44Node({
       derivationPath: [
-        defaultBip39Node,
-        BIP44PurposeNode,
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:0`,
@@ -696,8 +708,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('throws if a node value is invalid', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 
@@ -717,8 +729,8 @@ describe('getBIP44AddressKeyDeriver', () => {
   it('deriver throws if address_index value is invalid', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
-      defaultBip39Node,
-      BIP44PurposeNode,
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
       `bip32:${coinType}'`,
     ]);
 

@@ -2,7 +2,7 @@ import fixtures from '../test/fixtures';
 import { HDPathTuple } from './constants';
 import { deriveKeyFromPath } from './derivation';
 import { derivers } from './derivers';
-import { getUnhardenedBIP32Node } from './utils';
+import { getUnhardenedBIP32NodeToken } from './utils';
 
 const {
   bip32: { deriveChildKey: bip32Derive, privateKeyToEthAddress },
@@ -24,7 +24,7 @@ describe('derivation', () => {
       const keys = expectedAddresses.map((_, index) => {
         const bip32Part = [
           ...ethereumBip32PathParts,
-          getUnhardenedBIP32Node(index),
+          getUnhardenedBIP32NodeToken(index),
         ] as const;
         const bip39Part = bip39MnemonicToMultipath(mnemonic);
         const multipath = [bip39Part, ...bip32Part] as HDPathTuple;

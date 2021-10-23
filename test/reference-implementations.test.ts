@@ -1,12 +1,12 @@
 import HdKeyring from 'eth-hd-keyring';
 import { hdkey } from 'ethereumjs-wallet';
 import { BIP44Node } from '../src/BIP44Node';
-import { BIP44PurposeNode } from '../src/constants';
+import { BIP44PurposeNodeToken } from '../src/constants';
 import { deriveKeyFromPath } from '../src/derivation';
 import { privateKeyToEthAddress } from '../src/derivers/bip32';
 import { createBip39KeyFromSeed } from '../src/derivers/bip39';
 import {
-  getBIP44AddressPathTuple,
+  getBIP44CoinTypeToAddressPathTuple,
   hexStringToBuffer,
   stripHexPrefix,
 } from '../src/utils';
@@ -21,12 +21,16 @@ describe('reference implementation tests', () => {
       it('derives the expected keys', () => {
         // Ethereum coin type node
         const node = new BIP44Node({
-          derivationPath: [mnemonicBip39Node, BIP44PurposeNode, `bip32:60'`],
+          derivationPath: [
+            mnemonicBip39Node,
+            BIP44PurposeNodeToken,
+            `bip32:60'`,
+          ],
         });
 
         addresses.forEach((expectedAddress, index) => {
           const childNode = node.derive(
-            getBIP44AddressPathTuple({ address_index: index }),
+            getBIP44CoinTypeToAddressPathTuple({ address_index: index }),
           );
 
           expect(
@@ -41,13 +45,13 @@ describe('reference implementation tests', () => {
         // Ethereum coin type key
         const parentKey = deriveKeyFromPath([
           mnemonicBip39Node,
-          BIP44PurposeNode,
+          BIP44PurposeNodeToken,
           `bip32:60'`,
         ]);
 
         addresses.forEach((expectedAddress, index) => {
           const childKey = deriveKeyFromPath(
-            getBIP44AddressPathTuple({ address_index: index }),
+            getBIP44CoinTypeToAddressPathTuple({ address_index: index }),
             parentKey,
           );
 
@@ -67,7 +71,11 @@ describe('reference implementation tests', () => {
       it('derives the same keys as the reference implementation', async () => {
         // Ethereum coin type node
         const node = new BIP44Node({
-          derivationPath: [mnemonicBip39Node, BIP44PurposeNode, `bip32:60'`],
+          derivationPath: [
+            mnemonicBip39Node,
+            BIP44PurposeNodeToken,
+            `bip32:60'`,
+          ],
         });
 
         const numberOfAccounts = 5;
@@ -75,8 +83,9 @@ describe('reference implementation tests', () => {
         for (let i = 0; i < numberOfAccounts; i++) {
           ourAccounts.push(
             privateKeyToEthAddress(
-              node.derive(getBIP44AddressPathTuple({ address_index: i }))
-                .keyBuffer,
+              node.derive(
+                getBIP44CoinTypeToAddressPathTuple({ address_index: i }),
+              ).keyBuffer,
             ).toString('hex'),
           );
         }
@@ -98,7 +107,7 @@ describe('reference implementation tests', () => {
         // Ethereum coin type key
         const parentKey = deriveKeyFromPath([
           mnemonicBip39Node,
-          BIP44PurposeNode,
+          BIP44PurposeNodeToken,
           `bip32:60'`,
         ]);
 
@@ -108,7 +117,7 @@ describe('reference implementation tests', () => {
           ourAccounts.push(
             privateKeyToEthAddress(
               deriveKeyFromPath(
-                getBIP44AddressPathTuple({ address_index: i }),
+                getBIP44CoinTypeToAddressPathTuple({ address_index: i }),
                 parentKey,
               ),
             ).toString('hex'),
@@ -129,7 +138,8 @@ describe('reference implementation tests', () => {
   });
 
   describe('ethereumjs-wallet', () => {
-    const { sampleIndices, hexSeed, path } = fixtures['ethereumjs-wallet'];
+    const { sampleAddressIndices, hexSeed, path } =
+      fixtures['ethereumjs-wallet'];
     const seed = hexStringToBuffer(hexSeed);
 
     describe('BIP44Node', () => {
@@ -155,7 +165,7 @@ describe('reference implementation tests', () => {
           stripHexPrefix(childFixtureHd.getWallet().getAddressString()),
         );
 
-        sampleIndices.forEach((index) => {
+        sampleAddressIndices.forEach((index) => {
           const ourAddress = privateKeyToEthAddress(
             node.derive([`bip32:${index}`]).keyBuffer,
           ).toString('hex');
@@ -188,7 +198,7 @@ describe('reference implementation tests', () => {
           stripHexPrefix(childFixtureHd.getWallet().getAddressString()),
         );
 
-        sampleIndices.forEach((index) => {
+        sampleAddressIndices.forEach((index) => {
           const ourAddress = privateKeyToEthAddress(
             deriveKeyFromPath([`bip32:${index}`], parentKey),
           ).toString('hex');
