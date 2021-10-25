@@ -38,13 +38,11 @@ const coinType = 60;
 // the user's mnemonic.
 const mnemonic = getMnemonic();
 
-const coinTypeNode = new BIP44Node({
-  derivationPath: [
-    `bip39:${mnemonic}`,
-    `bip32:44'`, // By BIP-44, the "purpose" node must be "44'"
-    `bip32:${coinType}'`,
-  ],
-});
+const coinTypeNode = new BIP44CoinTypeNode([
+  `bip39:${mnemonic}`,
+  `bip32:44'`, // By BIP-44, the "purpose" node must be "44'"
+  `bip32:${coinType}'`,
+]);
 
 // Imagine that this is some Node.js stream, but it could be anything that
 // can transmit JSON messages, such as window.postMessage.
