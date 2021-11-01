@@ -25,7 +25,9 @@ export function privateKeyToEthAddress(key: Buffer) {
   }
 
   const privateKey = key.slice(0, 32);
-  const publicKey = secp256k1.publicKeyCreate(new Uint8Array(privateKey), false).slice(1);
+  const publicKey = secp256k1
+    .publicKeyCreate(new Uint8Array(privateKey), false)
+    .slice(1);
   return keccak(Buffer.from(publicKey)).slice(-20);
 }
 
@@ -112,7 +114,10 @@ function deriveSecretExtension({
   // Normal child
   const indexBuffer = Buffer.allocUnsafe(4);
   indexBuffer.writeUInt32BE(childIndex, 0);
-  const parentPublicKey = secp256k1.publicKeyCreate(new Uint8Array(parentPrivateKey), true);
+  const parentPublicKey = secp256k1.publicKeyCreate(
+    new Uint8Array(parentPrivateKey),
+    true,
+  );
   return Buffer.concat([parentPublicKey, indexBuffer]);
 }
 
