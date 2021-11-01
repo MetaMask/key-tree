@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1]
+### Uncategorized
+- keccak@3.0.2 ([#31](https://github.com/MetaMask/key-tree/pull/31))
+- secp256k1@4.0.2 ([#30](https://github.com/MetaMask/key-tree/pull/30))
+- bip39@3.0.4 ([#29](https://github.com/MetaMask/key-tree/pull/29))
+
 ## [3.0.0]
 ### Changed
 - **BREAKING:** Refactor package API ([#25](https://github.com/MetaMask/key-tree/pull/25))
@@ -34,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/MetaMask/key-tree/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/MetaMask/key-tree/compare/v2.0.1...v3.0.0
 [2.0.1]: https://github.com/MetaMask/key-tree/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/MetaMask/key-tree/compare/v1.0.0...v2.0.0
