@@ -3,14 +3,16 @@ import {
   BASE_64_KEY_LENGTH,
   BASE_64_REGEX,
   BASE_64_ZERO,
-  BUFFER_KEY_LENGTH,
+  BIP32Node,
   BIP44PurposeNodeToken,
-  UnhardenedBIP32Node,
+  BIP_32_HARDENED_OFFSET,
+  BUFFER_KEY_LENGTH,
+  ChangeHDPathString,
   CoinTypeHDPathString,
   CoinTypeToAddressTuple,
   HardenedBIP32Node,
-  ChangeHDPathString,
   HEXADECIMAL_KEY_LENGTH,
+  UnhardenedBIP32Node,
 } from './constants';
 
 /**
@@ -59,7 +61,7 @@ export function getBIP44ChangePathString(
 ): ChangeHDPathString {
   return `${coinTypePath} / ${getHardenedBIP32NodeToken(
     indices.account || 0,
-  )} / ${getUnhardenedBIP32NodeToken(indices.change || 0)}`;
+  )} / ${getBIP32NodeToken(indices.change || 0)}`;
 }
 
 /**
@@ -80,8 +82,8 @@ export function getBIP44CoinTypeToAddressPathTuple({
 }: CoinTypeToAddressIndices): CoinTypeToAddressTuple {
   return [
     getHardenedBIP32NodeToken(account),
-    getUnhardenedBIP32NodeToken(change),
-    getUnhardenedBIP32NodeToken(address_index),
+    getBIP32NodeToken(change),
+    getBIP32NodeToken(address_index),
   ] as const;
 }
 
@@ -111,6 +113,22 @@ export function getUnhardenedBIP32NodeToken(
 ): UnhardenedBIP32Node {
   validateBIP32Index(index);
   return `bip32:${index}`;
+}
+
+/**
+ * An hardened or unhardened BIP-32 node token, e.g. `bip32:0` or `bip32:0'`.
+ * Validates that the index is a non-negative integer number, and throws an
+ * error if validation fails.
+ *
+ * @param index - The index of the node.
+ * @returns The hardened or unhardened BIP-32 node token.
+ */
+export function getBIP32NodeToken(index: number): BIP32Node {
+  if (isHardenedIndex(index)) {
+    return getHardenedBIP32NodeToken(index - BIP_32_HARDENED_OFFSET);
+  }
+
+  return getUnhardenedBIP32NodeToken(index);
 }
 
 /**
@@ -268,4 +286,14 @@ export function isValidBase64StringKey(stringKey: string): boolean {
  */
 export function bytesToNumber(bytes: Uint8Array): bigint {
   return BigInt(`0x${bytesToHex(bytes)}`);
+}
+
+/**
+ * Tests whether a BIP-32 index is a hardened index.
+ *
+ * @param index - The BIP-32 index to test.
+ * @returns Whether the index is a hardened index.
+ */
+export function isHardenedIndex(index: number): boolean {
+  return index >= BIP_32_HARDENED_OFFSET;
 }

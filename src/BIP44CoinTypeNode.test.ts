@@ -1,4 +1,5 @@
 import fixtures from '../test/fixtures';
+import { BIP_32_HARDENED_OFFSET } from './constants';
 import {
   BIP_44_COIN_TYPE_DEPTH,
   BIP44Node,
@@ -356,6 +357,32 @@ describe('deriveBIP44AddressKey', () => {
     ).toStrictEqual(expectedKey);
   });
 
+  it('derives an address_index key (default inputs, hardened address_index)', () => {
+    const coinType = 60;
+    const parentNode = new BIP44CoinTypeNode([
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
+      `bip32:${coinType}'`,
+    ]);
+
+    const expectedKey = new BIP44Node({
+      derivationPath: [
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
+        `bip32:${coinType}'`,
+        `bip32:0'`,
+        `bip32:0`,
+        `bip32:3333'`,
+      ],
+    }).key;
+
+    expect(
+      deriveBIP44AddressKey(parentNode, {
+        address_index: BIP_32_HARDENED_OFFSET + 3333,
+      }).toString('base64'),
+    ).toStrictEqual(expectedKey);
+  });
+
   it('derives a BIP-44 address key (non-default account value)', () => {
     const coinType = 60;
     const parentNode = new BIP44CoinTypeNode([
@@ -540,6 +567,33 @@ describe('getBIP44AddressKeyDeriver', () => {
     expect(deriver(0).toString('base64')).toStrictEqual(expectedKey);
   });
 
+  it('returns the expected BIP-44 address key deriver function and derives a hardened index (default inputs)', () => {
+    const coinType = 60;
+    const parentNode = new BIP44CoinTypeNode([
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
+      `bip32:${coinType}'`,
+    ]);
+    const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
+
+    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    expect(deriver.coin_type).toStrictEqual(coinType);
+    expect(deriver.path).toStrictEqual(expectedPath);
+
+    const expectedKey = new BIP44Node({
+      derivationPath: [
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
+        `bip32:${coinType}'`,
+        `bip32:0'`,
+        `bip32:0`,
+        `bip32:0'`,
+      ],
+    }).key;
+
+    expect(deriver(0, true).toString('base64')).toStrictEqual(expectedKey);
+  });
+
   it('returns the expected BIP-44 address key deriver function (different coin_type)', () => {
     const coinType = 8129837;
     const parentNode = new BIP44CoinTypeNode([
@@ -641,6 +695,35 @@ describe('getBIP44AddressKeyDeriver', () => {
         `bip32:${coinType}'`,
         `bip32:0'`,
         `bip32:2`,
+        `bip32:0`,
+      ],
+    }).key;
+
+    expect(deriver(0).toString('base64')).toStrictEqual(expectedKey);
+  });
+
+  it('returns the expected BIP-44 address key deriver function (hardened change value)', () => {
+    const coinType = 60;
+    const parentNode = new BIP44CoinTypeNode([
+      defaultBip39NodeToken,
+      BIP44PurposeNodeToken,
+      `bip32:${coinType}'`,
+    ]);
+    const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:2'`;
+
+    const deriver = getBIP44AddressKeyDeriver(parentNode, {
+      change: BIP_32_HARDENED_OFFSET + 2,
+    });
+    expect(deriver.coin_type).toStrictEqual(coinType);
+    expect(deriver.path).toStrictEqual(expectedPath);
+
+    const expectedKey = new BIP44Node({
+      derivationPath: [
+        defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
+        `bip32:${coinType}'`,
+        `bip32:0'`,
+        `bip32:2'`,
         `bip32:0`,
       ],
     }).key;
