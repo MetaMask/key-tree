@@ -1,7 +1,8 @@
-import crypto from 'crypto';
 import { CURVE, getPublicKey, utils } from '@noble/secp256k1';
 import { bytesToHex } from '@noble/hashes/utils';
 import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
+import { hmac } from '@noble/hashes/hmac';
+import { sha512 } from '@noble/hashes/sha512';
 import { BUFFER_KEY_LENGTH } from '../constants';
 import { hexStringToBuffer, isValidBufferKey } from '../utils';
 
@@ -163,10 +164,7 @@ function generateKey({
   parentExtraEntropy,
   secretExtension,
 }: GenerateKeyArgs) {
-  const entropy = crypto
-    .createHmac('sha512', parentExtraEntropy)
-    .update(secretExtension)
-    .digest();
+  const entropy = hmac(sha512, parentExtraEntropy, secretExtension);
   const keyMaterial = entropy.slice(0, 32);
   // extraEntropy is also called "chaincode"
   const extraEntropy = entropy.slice(32);
