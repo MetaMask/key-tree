@@ -1,4 +1,4 @@
-import { mnemonicToSeedSync } from 'bip39';
+import { mnemonicToSeedSync } from '@scure/bip39';
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
 import { BIP39Node } from '../constants';
@@ -20,7 +20,7 @@ export function bip39MnemonicToMultipath(mnemonic: string): BIP39Node {
  * @param _parentKey
  */
 export function deriveChildKey(pathPart: string, _parentKey?: never): Buffer {
-  return createBip39KeyFromSeed(mnemonicToSeedSync(pathPart));
+  return createBip39KeyFromSeed(Buffer.from(mnemonicToSeedSync(pathPart)));
 }
 
 /**
