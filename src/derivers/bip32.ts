@@ -1,10 +1,9 @@
 import { CURVE, getPublicKey, utils } from '@noble/secp256k1';
-import { bytesToHex } from '@noble/hashes/utils';
 import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
 import { BUFFER_KEY_LENGTH } from '../constants';
-import { hexStringToBuffer, isValidBufferKey } from '../utils';
+import { bytesToNumber, hexStringToBuffer, isValidBufferKey } from '../utils';
 
 const HARDENED_OFFSET = 0x80000000;
 
@@ -113,16 +112,6 @@ type GenerateKeyArgs = {
   parentExtraEntropy: string | Buffer;
   secretExtension: string | Buffer;
 };
-
-/**
- * Get a BigInt from a byte array.
- *
- * @param bytes - The byte array to get the BigInt for.
- * @returns The byte array as BigInt.
- */
-function bytesToNumber(bytes: Uint8Array): bigint {
-  return BigInt(`0x${bytesToHex(bytes)}`);
-}
 
 /**
  * Add a tweak to the private key: `(privateKey + tweak) % n`.
