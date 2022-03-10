@@ -1,13 +1,11 @@
 import crypto from 'crypto';
 import { CURVE, getPublicKey, utils } from '@noble/secp256k1';
-import createKeccakHash from 'keccak';
 import { bytesToHex } from '@noble/hashes/utils';
+import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 import { BUFFER_KEY_LENGTH } from '../constants';
 import { hexStringToBuffer, isValidBufferKey } from '../utils';
 
 const HARDENED_OFFSET = 0x80000000;
-
-type KeccakBits = '224' | '256' | '384' | '512';
 
 /**
  * Converts a BIP-32 private key to an Ethereum address.
@@ -27,15 +25,7 @@ export function privateKeyToEthAddress(key: Buffer) {
 
   const privateKey = key.slice(0, 32);
   const publicKey = getPublicKey(privateKey, false).slice(1);
-  return keccak(Buffer.from(publicKey)).slice(-20);
-}
-
-/**
- * @param data
- * @param keccakBits
- */
-function keccak(data: string | Buffer, keccakBits: KeccakBits = '256'): Buffer {
-  return createKeccakHash(`keccak${keccakBits}`).update(data).digest();
+  return Buffer.from(keccak256(Buffer.from(publicKey)).slice(-20));
 }
 
 /**
