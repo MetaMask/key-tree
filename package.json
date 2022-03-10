@@ -25,9 +25,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@noble/hashes": "^1.0.0",
+    "@noble/secp256k1": "^1.5.5",
     "bip39": "^3.0.4",
-    "keccak": "^3.0.2",
-    "secp256k1": "^4.0.2"
+    "keccak": "^3.0.2"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^1.0.6",
@@ -38,7 +39,6 @@
     "@metamask/eslint-config-typescript": "^8.0.0",
     "@types/jest": "^27.0.2",
     "@types/keccak": "^3.0.1",
-    "@types/secp256k1": "^4.0.3",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^7.23.0",
@@ -67,8 +67,7 @@
   "lavamoat": {
     "allowScripts": {
       "@lavamoat/preinstall-always-fail": false,
-      "keccak": true,
-      "secp256k1": true
+      "keccak": true
     }
   }
 }

@@ -1,8 +1,9 @@
 import crypto from 'crypto';
-import secp256k1 from 'secp256k1';
+import { CURVE, getPublicKey, utils } from '@noble/secp256k1';
 import createKeccakHash from 'keccak';
+import { bytesToHex } from '@noble/hashes/utils';
 import { BUFFER_KEY_LENGTH } from '../constants';
-import { isValidBufferKey } from '../utils';
+import { hexStringToBuffer, isValidBufferKey } from '../utils';
 
 const HARDENED_OFFSET = 0x80000000;
 
@@ -25,9 +26,7 @@ export function privateKeyToEthAddress(key: Buffer) {
   }
 
   const privateKey = key.slice(0, 32);
-  const publicKey = secp256k1
-    .publicKeyCreate(new Uint8Array(privateKey), false)
-    .slice(1);
+  const publicKey = getPublicKey(privateKey, false).slice(1);
   return keccak(Buffer.from(publicKey)).slice(-20);
 }
 
@@ -114,10 +113,7 @@ function deriveSecretExtension({
   // Normal child
   const indexBuffer = Buffer.allocUnsafe(4);
   indexBuffer.writeUInt32BE(childIndex, 0);
-  const parentPublicKey = secp256k1.publicKeyCreate(
-    new Uint8Array(parentPrivateKey),
-    true,
-  );
+  const parentPublicKey = getPublicKey(parentPrivateKey, true);
   return Buffer.concat([parentPublicKey, indexBuffer]);
 }
 
@@ -126,6 +122,45 @@ type GenerateKeyArgs = {
   parentExtraEntropy: string | Buffer;
   secretExtension: string | Buffer;
 };
+
+/**
+ * Get a BigInt from a byte array.
+ *
+ * @param bytes - The byte array to get the BigInt for.
+ * @returns The byte array as BigInt.
+ */
+function bytesToNumber(bytes: Uint8Array): bigint {
+  return BigInt(`0x${bytesToHex(bytes)}`);
+}
+
+/**
+ * Add a tweak to the private key: `(privateKey + tweak) % n`.
+ *
+ * @param privateKeyBuffer - The private key as 32 byte Uint8Array.
+ * @param tweakBuffer - The tweak as 32 byte Uint8Array.
+ * @throws If the private key or tweak is invalid.
+ * @returns The private key with the tweak added to it.
+ */
+export function privateAdd(
+  privateKeyBuffer: Uint8Array,
+  tweakBuffer: Uint8Array,
+): Uint8Array {
+  const privateKey = bytesToNumber(privateKeyBuffer);
+  const tweak = bytesToNumber(tweakBuffer);
+
+  if (tweak >= CURVE.n) {
+    throw new Error('Invalid tweak: tweak is larger than the curve order');
+  }
+
+  const added = utils.mod(privateKey + tweak, CURVE.n);
+  if (!utils.isValidPrivateKey(added)) {
+    throw new Error(
+      'Invalid private key or tweak: the resulting private key is invalid',
+    );
+  }
+
+  return hexStringToBuffer(added.toString(16).padStart(64, '0'));
+}
 
 /**
  * @param options
@@ -145,9 +180,7 @@ function generateKey({
   const keyMaterial = entropy.slice(0, 32);
   // extraEntropy is also called "chaincode"
   const extraEntropy = entropy.slice(32);
-  const privateKey = secp256k1.privateKeyTweakAdd(
-    new Uint8Array(parentPrivateKey),
-    new Uint8Array(keyMaterial),
-  );
+  const privateKey = privateAdd(parentPrivateKey, keyMaterial);
+
   return { privateKey, extraEntropy };
 }
