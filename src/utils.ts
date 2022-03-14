@@ -5,7 +5,6 @@ import {
   BASE_64_ZERO,
   BIP32Node,
   BIP44PurposeNodeToken,
-  BIP_32_HARDENED_OFFSET,
   BUFFER_KEY_LENGTH,
   ChangeHDPathString,
   CoinTypeHDPathString,
@@ -32,11 +31,13 @@ export function getBIP44CoinTypePathString(
   )}'`;
 }
 
+type BIP44PathIndex = number | { index: number; hardened: boolean };
+
 type BIP44PathIndices = {
   coin_type: number;
   account?: number;
-  change?: number;
-  address_index: number;
+  change?: BIP44PathIndex;
+  address_index: BIP44PathIndex;
 };
 
 export type CoinTypeToAddressIndices = Pick<
@@ -123,12 +124,26 @@ export function getUnhardenedBIP32NodeToken(
  * @param index - The index of the node.
  * @returns The hardened or unhardened BIP-32 node token.
  */
-export function getBIP32NodeToken(index: number): BIP32Node {
-  if (isHardenedIndex(index)) {
-    return getHardenedBIP32NodeToken(index - BIP_32_HARDENED_OFFSET);
+export function getBIP32NodeToken(index: BIP44PathIndex): BIP32Node {
+  if (typeof index === 'number') {
+    return getUnhardenedBIP32NodeToken(index);
   }
 
-  return getUnhardenedBIP32NodeToken(index);
+  if (
+    typeof index !== 'object' ||
+    !Number.isInteger(index.index) ||
+    typeof index.hardened !== 'boolean'
+  ) {
+    throw new Error(
+      'Invalid BIP-32 index: Must be an object containing the index and whether it is hardened.',
+    );
+  }
+
+  if (index.hardened) {
+    return getHardenedBIP32NodeToken(index.index);
+  }
+
+  return getUnhardenedBIP32NodeToken(index.index);
 }
 
 /**
@@ -286,14 +301,4 @@ export function isValidBase64StringKey(stringKey: string): boolean {
  */
 export function bytesToNumber(bytes: Uint8Array): bigint {
   return BigInt(`0x${bytesToHex(bytes)}`);
-}
-
-/**
- * Tests whether a BIP-32 index is a hardened index.
- *
- * @param index - The BIP-32 index to test.
- * @returns Whether the index is a hardened index.
- */
-export function isHardenedIndex(index: number): boolean {
-  return index >= BIP_32_HARDENED_OFFSET;
 }
