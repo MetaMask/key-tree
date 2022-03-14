@@ -18,6 +18,13 @@ export default {
   'eth-hd-keyring': {
     mnemonic:
       'finish oppose decorate face calm tragic certain desk hour urge dinosaur mango',
+    addresses: [
+      '0x1c96099350f13d558464ec79b9be4445aa0ef579',
+      '0x1b00aed43a693f3a957f9feb5cc08afa031e37a0',
+      '0x8c9ba4f86ae12250ee1c3676ee925c77426d0b68',
+      '0xffe45dbc6c1bee8f211da2ec961f73b82e9ab42c',
+      '0xb8a13c465c9a0a46f262a1ad666a752923e65b8c',
+    ],
   },
 
   // https://github.com/ethereumjs/ethereumjs-wallet/blob/2bc21b408da3b002a95aa752b94fa039ffc64e0f/test/hdkey.spec.ts

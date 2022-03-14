@@ -1,4 +1,3 @@
-import HdKeyring from 'eth-hd-keyring';
 import { BIP44Node } from '../src/BIP44Node';
 import { BIP44PurposeNodeToken } from '../src/constants';
 import { deriveKeyFromPath } from '../src/derivation';
@@ -62,7 +61,7 @@ describe('reference implementation tests', () => {
   });
 
   describe('eth-hd-keyring', () => {
-    const { mnemonic } = fixtures['eth-hd-keyring'];
+    const { mnemonic, addresses } = fixtures['eth-hd-keyring'];
     const mnemonicBip39Node = `bip39:${mnemonic}` as const;
 
     describe('BIP44Node', () => {
@@ -88,12 +87,7 @@ describe('reference implementation tests', () => {
           );
         }
 
-        const hdKeyring = new HdKeyring({
-          mnemonic,
-          numberOfAccounts,
-        });
-
-        expect(await hdKeyring.getAccounts()).toStrictEqual(
+        expect(addresses).toStrictEqual(
           ourAccounts.map((account) => `0x${account}`),
         );
         expect(ourAccounts).toMatchSnapshot();
@@ -122,12 +116,7 @@ describe('reference implementation tests', () => {
           );
         }
 
-        const hdKeyring = new HdKeyring({
-          mnemonic,
-          numberOfAccounts,
-        });
-
-        expect(await hdKeyring.getAccounts()).toStrictEqual(
+        expect(addresses).toStrictEqual(
           ourAccounts.map((account) => `0x${account}`),
         );
         expect(ourAccounts).toMatchSnapshot();
