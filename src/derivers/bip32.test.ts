@@ -24,7 +24,7 @@ describe('privateAdd', () => {
     const tweak = hexStringToBuffer(CURVE.n.toString(16));
 
     expect(() => privateAdd(privateKey, tweak)).toThrow(
-      'Invalid tweak: tweak is larger than the curve order',
+      'Invalid tweak: Tweak is larger than the curve order.',
     );
   });
 
@@ -40,7 +40,7 @@ describe('privateAdd', () => {
     );
 
     expect(() => privateAdd(privateKey, tweak)).toThrow(
-      'Invalid private key or tweak: the resulting private key is invalid',
+      'Invalid private key or tweak: The resulting private key is invalid.',
     );
   });
 });

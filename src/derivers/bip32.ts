@@ -1,4 +1,4 @@
-import { CURVE, getPublicKey, utils } from '@noble/secp256k1';
+import { CURVE, getPublicKey, utils as secp256k1Utils } from '@noble/secp256k1';
 import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
@@ -129,13 +129,13 @@ export function privateAdd(
   const tweak = bytesToNumber(tweakBuffer);
 
   if (tweak >= CURVE.n) {
-    throw new Error('Invalid tweak: tweak is larger than the curve order');
+    throw new Error('Invalid tweak: Tweak is larger than the curve order.');
   }
 
-  const added = utils.mod(privateKey + tweak, CURVE.n);
-  if (!utils.isValidPrivateKey(added)) {
+  const added = secp256k1Utils.mod(privateKey + tweak, CURVE.n);
+  if (!secp256k1Utils.isValidPrivateKey(added)) {
     throw new Error(
-      'Invalid private key or tweak: the resulting private key is invalid',
+      'Invalid private key or tweak: The resulting private key is invalid.',
     );
   }
 
