@@ -117,7 +117,7 @@ export function getUnhardenedBIP32NodeToken(
 }
 
 /**
- * An hardened or unhardened BIP-32 node token, e.g. `bip32:0` or `bip32:0'`.
+ * A hardened or unhardened BIP-32 node token, e.g. `bip32:0` or `bip32:0'`.
  * Validates that the index is a non-negative integer number, and throws an
  * error if validation fails.
  *
