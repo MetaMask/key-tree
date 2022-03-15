@@ -578,6 +578,8 @@ describe('deriveBIP44AddressKey', () => {
     [
       {},
       { change: {} },
+      { change: null },
+      { change: undefined },
       { address_index: {} },
       { address_index: 'foo' },
       { address_index: { index: 1 } },

@@ -130,7 +130,7 @@ export function getBIP32NodeToken(index: BIP44PathIndex): BIP32Node {
   }
 
   if (
-    typeof index !== 'object' ||
+    !index ||
     !Number.isInteger(index.index) ||
     typeof index.hardened !== 'boolean'
   ) {
