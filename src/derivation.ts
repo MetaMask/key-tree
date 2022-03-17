@@ -7,6 +7,7 @@ import {
   BIP_32_PATH_REGEX,
 } from './constants';
 import { derivers, Deriver } from './derivers';
+import { Curve } from './curves';
 
 /**
  * ethereum default seed path: "m/44'/60'/0'/0/{account_index}"
@@ -38,12 +39,14 @@ import { derivers, Deriver } from './derivers';
  * BIP-39 seed phrases must be lowercase, space-delimited, and 12-24 words long.
  * @param parentKey - The parent key of the given path segment, if any.
  * @param depth - The depth of the segment.
+ * @param curve - The curve to use.
  * @returns The derived key.
  */
 export async function deriveKeyFromPath(
   pathSegment: HDPathTuple,
   parentKey?: Buffer,
   depth?: BIP44Depth,
+  curve?: Curve,
 ): Promise<Buffer> {
   if (parentKey && !Buffer.isBuffer(parentKey)) {
     throw new Error('Parent key must be a Buffer if specified.');
@@ -63,7 +66,7 @@ export async function deriveKeyFromPath(
       throw new Error(`Unknown derivation type: "${pathType}"`);
     }
     const deriver = derivers[pathType] as Deriver;
-    const childKey = await deriver.deriveChildKey(pathValue, key);
+    const childKey = await deriver.deriveChildKey(pathValue, key, curve);
     // continue deriving from child key
     return childKey;
   }, Promise.resolve(parentKey as Buffer));

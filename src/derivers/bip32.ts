@@ -46,6 +46,12 @@ export async function deriveChildKey(
   }
 
   const isHardened = pathPart.includes(`'`);
+  if (!isHardened && curve.name === 'ed25519') {
+    throw new Error(
+      'Invalid path: Cannot derive unhardened child keys with ed25519.',
+    );
+  }
+
   const indexPart = pathPart.split(`'`)[0];
   const childIndex = parseInt(indexPart, 10);
 
@@ -169,7 +175,12 @@ function generateKey({
   const keyMaterial = entropy.slice(0, 32);
   // extraEntropy is also called "chaincode"
   const extraEntropy = entropy.slice(32);
-  const privateKey = privateAdd(parentPrivateKey, keyMaterial, curve);
 
+  // If curve is ed25519: The returned child key ki is parse256(IL).
+  if (curve.name === 'ed25519') {
+    return { privateKey: keyMaterial, extraEntropy };
+  }
+
+  const privateKey = privateAdd(parentPrivateKey, keyMaterial, curve);
   return { privateKey, extraEntropy };
 }

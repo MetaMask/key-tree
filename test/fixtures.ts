@@ -448,4 +448,272 @@ export default {
       },
     ],
   },
+
+  ed25519: {
+    // https://github.com/satoshilabs/slips/blob/b17cfb61666c3e475003391dc314c6794fb27e33/slip-0010.md#test-vector-1-for-ed25519
+    // The state of the default branch as of 2022-03-17
+    slip10: [
+      {
+        hexSeed: '000102030405060708090a0b0c0d0e0f',
+        keys: [
+          {
+            path: {
+              ours: {
+                tuple: [],
+                string: '',
+              },
+              theirs: 'm',
+            },
+            privateKey:
+              '2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7',
+            publicKey:
+              '00a4b2856bfec510abab89753fac1ac0e1112364e7d250545963f135f2a33188ed',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`],
+                string: `bip32:0'`,
+              },
+              theirs: `m/0'`,
+            },
+            privateKey:
+              '68e0fe46dfb67e368c75379acec591dad19df3cde26e63b93a8e704f1dade7a3',
+            publicKey:
+              '008c8a13df77a28f3445213a0f432fde644acaa215fc72dcdf300d5efaa85d350c',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`, `bip32:1'`],
+                string: `bip32:0'/bip32:1'`,
+              },
+              theirs: `m/0'/1'`,
+            },
+            privateKey:
+              'b1d0bad404bf35da785a64ca1ac54b2617211d2777696fbffaf208f746ae84f2',
+            publicKey:
+              '001932a5270f335bed617d5b935c80aedb1a35bd9fc1e31acafd5372c30f5c1187',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`, `bip32:1'`, `bip32:2'`],
+                string: `bip32:0'/bip32:1'/bip32:2'`,
+              },
+              theirs: `m/0'/1'/2'`,
+            },
+            privateKey:
+              '92a5b23c0b8a99e37d07df3fb9966917f5d06e02ddbd909c7e184371463e9fc9',
+            publicKey:
+              '00ae98736566d30ed0e9d2f4486a64bc95740d89c7db33f52121f8ea8f76ff0fc1',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`, `bip32:1'`, `bip32:2'`, `bip32:2'`],
+                string: `bip32:0'/bip32:1'/bip32:2'/bip32:2'`,
+              },
+              theirs: `m/0'/1'/2'/2'`,
+            },
+            privateKey:
+              '30d1dc7e5fc04c31219ab25a27ae00b50f6fd66622f6e9c913253d6511d1e662',
+            publicKey:
+              '008abae2d66361c879b900d204ad2cc4984fa2aa344dd7ddc46007329ac76c429c',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [
+                  `bip32:0'`,
+                  `bip32:1'`,
+                  `bip32:2'`,
+                  `bip32:2'`,
+                  `bip32:1000000000'`,
+                ],
+                string: `bip32:0'/bip32:1'/bip32:2'/bip32:2'/bip32:1000000000'`,
+              },
+              theirs: `m/0'/1'/2'/2'/1000000000'`,
+            },
+            privateKey:
+              '8f94d394a8e8fd6b1bc2f3f49f5c47e385281d5c17e65324b0f62483e37e8793',
+            publicKey:
+              '003c24da049451555d51a7014a37337aa4e12d41e485abccfa46b47dfb2af54b7a',
+          },
+        ],
+      },
+      {
+        hexSeed:
+          'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542',
+        keys: [
+          {
+            path: {
+              ours: {
+                tuple: [],
+                string: '',
+              },
+              theirs: 'm',
+            },
+            privateKey:
+              '171cb88b1b3c1db25add599712e36245d75bc65a1a5c9e18d76f9f2b1eab4012',
+            publicKey:
+              '008fe9693f8fa62a4305a140b9764c5ee01e455963744fe18204b4fb948249308a',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`],
+                string: `bip32:0'`,
+              },
+              theirs: `m/0'`,
+            },
+            privateKey:
+              '1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635',
+            publicKey:
+              '0086fab68dcb57aa196c77c5f264f215a112c22a912c10d123b0d03c3c28ef1037',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`, `bip32:2147483647'`],
+                string: `bip32:0'/bip32:2147483647'`,
+              },
+              theirs: `m/0'/2147483647'`,
+            },
+            privateKey:
+              'ea4f5bfe8694d8bb74b7b59404632fd5968b774ed545e810de9c32a4fb4192f4',
+            publicKey:
+              '005ba3b9ac6e90e83effcd25ac4e58a1365a9e35a3d3ae5eb07b9e4d90bcf7506d',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [`bip32:0'`, `bip32:2147483647'`, `bip32:1'`],
+                string: `bip32:0'/bip32:2147483647'/bip32:1'`,
+              },
+              theirs: `m/0'/2147483647'/1'`,
+            },
+            privateKey:
+              '3757c7577170179c7868353ada796c839135b3d30554bbb74a4b1e4a5a58505c',
+            publicKey:
+              '002e66aa57069c86cc18249aecf5cb5a9cebbfd6fadeab056254763874a9352b45',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [
+                  `bip32:0'`,
+                  `bip32:2147483647'`,
+                  `bip32:1'`,
+                  `bip32:2147483646'`,
+                ],
+                string: `bip32:0'/bip32:2147483647'/bip32:1'/bip32:2147483646'`,
+              },
+              theirs: `m/0'/2147483647'/1'/2147483646'`,
+            },
+            privateKey:
+              '5837736c89570de861ebc173b1086da4f505d4adb387c6a1b1342d5e4ac9ec72',
+            publicKey:
+              '00e33c0f7d81d843c572275f287498e8d408654fdf0d1e065b84e2e6f157aab09b',
+          },
+          {
+            path: {
+              ours: {
+                tuple: [
+                  `bip32:0'`,
+                  `bip32:2147483647'`,
+                  `bip32:1'`,
+                  `bip32:2147483646'`,
+                  `bip32:2'`,
+                ],
+                string: `bip32:0'/bip32:2147483647'/bip32:1'/bip32:2147483646'/bip32:2'`,
+              },
+              theirs: `m/0'/2147483647'/1'/2147483646'/2'`,
+            },
+            privateKey:
+              '551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d',
+            publicKey:
+              '0047150c75db263559a70d5778bf36abbab30fb061ad69f69ece61a72b0cfa4fc0',
+          },
+        ],
+      },
+    ],
+
+    // https://github.com/alepop/ed25519-hd-key/tree/d8c0491bc39e197c86816973e80faab54b9cbc26
+    // The state of the default branch as of 2021-10-19
+    'ed25519-hd-key': {
+      hexSeed:
+        'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542',
+      privateKey:
+        'd3de0cf6f12d2c916530a9871c16d0429f3f0152e22e260527a4769fddc1bba8',
+      // The path used is modified from the ed25519-hd-key original, which
+      // isn't BIP-44 compatible. Since we're testing against their
+      // implementation, not any reference values, this is fine.
+      path: {
+        ours: {
+          tuple: [`bip32:44'`, `bip32:0'`, `bip32:0'`, `bip32:1'`],
+          string: [`bip32:44'/bip32:0'/bip32:0'/bip32:1'`],
+        },
+        theirs: `m/44'/0'/0'/1'`,
+      },
+      sampleKeyIndices: [
+        {
+          index: 0,
+          privateKey:
+            '5ff1d76d708c8db54ded88f0f00fd60105d609beb029f50b1051117ca36a61e1',
+          publicKey:
+            '001fd3196b4db863989445c760c9e65de4ce5cebdada0e4ead00e9be44a99ea7f3',
+        },
+        {
+          index: 1,
+          privateKey:
+            '1ae261442406e5f4e87efac331bce3a25016957133ada46d82579c11e6108fc3',
+          publicKey:
+            '009ae7a413c01359fe1d525ca446ebc974c97e535061564da577c6ef55c09d057e',
+        },
+        {
+          index: 5,
+          privateKey:
+            '344d6bc78531985dd4220faa61bfb81653043e171f64d01c36de5a0ef39f9ede',
+          publicKey:
+            '000ab89e1f22d9162e0e3f02736d5c704c95faba6ce2dce72d121852172da4b1e4',
+        },
+        {
+          index: 50,
+          privateKey:
+            '3468ee8024444e88781b2a5c92973ec965f43f8715414bac3e1b7f46589f41d5',
+          publicKey:
+            '00fd4f06acb57dba0c1cffc12e9241d4f9c5afebce724b1b84124e99dbeeb63ae9',
+        },
+        {
+          index: 500,
+          privateKey:
+            '557676494a3b1309487dd990e12ccb22a0c3195ba696afdc96a48b65171f804d',
+          publicKey:
+            '00ee6fb077beb5bd25db75bed73fa3e0e6fa1a1a4a3b912c84722afdfe2c0cabfe',
+        },
+        {
+          index: 5000,
+          privateKey:
+            '5f0df48ccabf174f49a74ec14b518933b7b939f45ace2a4858d0038dfa5ed8dc',
+          publicKey:
+            '00ec36e172507304eebaeb451aaf329f1d6da7b77501a33e2cfa6700bd5bf0815f',
+        },
+        {
+          index: 4_999_999,
+          privateKey:
+            '5e65e057d8324c547ba3fe5eec1ae627c503ea6001dca3f2c077bb9d673d0fbf',
+          publicKey:
+            '009dc2f2dc4434dd8fd7c9728ca7d55c3f15f679da8fd6522d6b514f20d8f27c21',
+        },
+        {
+          index: 5_000_000,
+          privateKey:
+            '759d3e66b20d6f057d1e0873e26430cdce67d0dfc160ecfe36acefe58ec1cb48',
+          publicKey:
+            '005cb94d2247fc84176fe7a43a7ce530b1064642acaf3fb61987c22f8638acf2d8',
+        },
+      ],
+    },
+  },
 } as const;

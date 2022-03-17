@@ -1,6 +1,7 @@
 import { utils } from '@noble/secp256k1';
 
 export type Curve = {
+  name: 'secp256k1' | 'ed25519';
   secret: Uint8Array;
   curve: {
     n: bigint;

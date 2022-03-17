@@ -1,5 +1,6 @@
-import { BIP44Node } from '../src/BIP44Node';
+import { BIP44Node } from '../src';
 import { BIP44PurposeNodeToken, HDPathTuple } from '../src/constants';
+import { ed25519 } from '../src/curves';
 import { deriveKeyFromPath } from '../src/derivation';
 import { privateKeyToEthAddress } from '../src/derivers/bip32';
 import { createBip39KeyFromSeed } from '../src/derivers/bip39';
@@ -212,6 +213,114 @@ describe('reference implementation tests', () => {
             );
           }
         }
+      });
+    });
+  });
+
+  describe('ed25519', () => {
+    describe('SLIP-10', () => {
+      const vectors = fixtures.ed25519.slip10;
+
+      describe('deriveKeyFromPath', () => {
+        it('derives the test vector keys', async () => {
+          for (const { hexSeed, keys } of vectors) {
+            const seedKey = createBip39KeyFromSeed(
+              hexStringToBuffer(hexSeed),
+              ed25519,
+            );
+
+            for (const { path, privateKey, publicKey } of keys) {
+              let targetKey: Buffer;
+              if (path.ours.string === '') {
+                targetKey = seedKey;
+              } else {
+                targetKey = await deriveKeyFromPath(
+                  path.ours.tuple as HDPathTuple,
+                  seedKey,
+                  path.ours.tuple.length,
+                  ed25519,
+                );
+              }
+
+              expect(targetKey.slice(0, 32).toString('hex')).toBe(privateKey);
+              expect(
+                (await ed25519.getPublicKey(targetKey.slice(0, 32))).toString(
+                  'hex',
+                ),
+              ).toBe(publicKey);
+            }
+          }
+        });
+      });
+    });
+
+    describe('ed25519-hd-key', () => {
+      const { sampleKeyIndices, hexSeed, privateKey, path } =
+        fixtures.ed25519['ed25519-hd-key'];
+      const seed = hexStringToBuffer(hexSeed);
+
+      describe('BIP44Node', () => {
+        it('derives the same keys as the reference implementation', async () => {
+          // Ethereum coin type node
+          const seedKey = createBip39KeyFromSeed(seed, ed25519);
+
+          const parentNode = await BIP44Node.create({
+            depth: 0,
+            key: seedKey,
+            curve: ed25519,
+          });
+          const node = await parentNode.derive(path.ours.tuple);
+
+          expect(node.keyBuffer.slice(0, 32).toString('hex')).toStrictEqual(
+            privateKey,
+          );
+
+          for (const {
+            index,
+            privateKey: theirPrivateKey,
+            publicKey: theirPublicKey,
+          } of sampleKeyIndices) {
+            const childNode = await node.derive([`bip32:${index}'`]);
+            const ourPrivateKey = childNode.keyBuffer.slice(0, 32);
+
+            expect(ourPrivateKey.toString('hex')).toStrictEqual(
+              theirPrivateKey,
+            );
+
+            expect(
+              (await ed25519.getPublicKey(ourPrivateKey)).toString('hex'),
+            ).toStrictEqual(theirPublicKey);
+          }
+        });
+      });
+
+      describe('deriveKeyFromPath', () => {
+        it('derives the same keys as the reference implementation', async () => {
+          // Ethereum coin type key
+          const seedKey = createBip39KeyFromSeed(seed, ed25519);
+          const parentKey = await deriveKeyFromPath(
+            [BIP44PurposeNodeToken, `bip32:0'`, `bip32:0'`, `bip32:1'`],
+            seedKey,
+            2,
+            ed25519,
+          );
+
+          for (const {
+            index,
+            privateKey: theirPrivateKey,
+          } of sampleKeyIndices) {
+            const ourPrivateKey = await deriveKeyFromPath(
+              [`bip32:${index}'`],
+              parentKey,
+              1,
+              ed25519,
+            );
+
+            expect(ourPrivateKey.slice(0, 32).toString('hex')).toStrictEqual(
+              theirPrivateKey,
+            );
+          }
+        });
       });
     });
   });

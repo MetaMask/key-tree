@@ -245,7 +245,7 @@ export class BIP44Node implements BIP44NodeInterface {
       );
     }
 
-    return await deriveChildNode(this.keyBuffer, this.depth, path);
+    return await deriveChildNode(this.keyBuffer, this.depth, path, this.curve);
   }
 
   // This is documented in the interface of this class.
@@ -286,7 +286,7 @@ export async function deriveChildNode(
   return BIP44Node.create({
     curve,
     depth: newDepth,
-    key: await deriveKeyFromPath(pathToChild, parentKey),
+    key: await deriveKeyFromPath(pathToChild, parentKey, newDepth, curve),
   });
 }
 
