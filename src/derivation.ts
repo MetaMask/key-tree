@@ -1,10 +1,9 @@
 import {
-  HDPathTuple,
-  BIP44Depth,
   MAX_BIP_44_DEPTH,
   MIN_BIP_44_DEPTH,
   BIP_39_PATH_REGEX,
   BIP_32_PATH_REGEX,
+  SLIP10Path,
 } from './constants';
 import { derivers, Deriver } from './derivers';
 import { Curve } from './curves';
@@ -43,9 +42,9 @@ import { Curve } from './curves';
  * @returns The derived key.
  */
 export async function deriveKeyFromPath(
-  pathSegment: HDPathTuple,
+  pathSegment: SLIP10Path,
   parentKey?: Buffer,
-  depth?: BIP44Depth,
+  depth?: number,
   curve?: Curve,
 ): Promise<Buffer> {
   if (parentKey && !Buffer.isBuffer(parentKey)) {
@@ -88,11 +87,13 @@ function hasDeriver(pathType: string): pathType is keyof typeof derivers {
  * - A multipath
  *
  * @param pathSegment - The path segment string to validate.
+ * @param hasKey
+ * @param depth
  */
 export function validatePathSegment(
-  pathSegment: HDPathTuple,
+  pathSegment: SLIP10Path,
   hasKey: boolean,
-  depth?: BIP44Depth,
+  depth?: number,
 ) {
   if ((pathSegment as any).length === 0) {
     throw new Error(`Invalid HD path segment: The segment must not be empty.`);

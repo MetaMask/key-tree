@@ -8,6 +8,7 @@ import {
   getBIP44CoinTypeToAddressPathTuple,
   hexStringToBuffer,
 } from '../src/utils';
+import { SLIP10Node } from '../src/SLIP10Node';
 import fixtures from './fixtures';
 
 describe('reference implementation tests', () => {
@@ -264,7 +265,7 @@ describe('reference implementation tests', () => {
           // Ethereum coin type node
           const seedKey = createBip39KeyFromSeed(seed, ed25519);
 
-          const parentNode = await BIP44Node.create({
+          const parentNode = await SLIP10Node.create({
             depth: 0,
             key: seedKey,
             curve: ed25519,

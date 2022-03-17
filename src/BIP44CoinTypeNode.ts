@@ -5,12 +5,7 @@ import {
   HardenedBIP32Node,
   BIP44Depth,
 } from './constants';
-import {
-  JsonBIP44Node,
-  BIP44Node,
-  BIP44NodeInterface,
-  deriveChildNode,
-} from './BIP44Node';
+import { JsonBIP44Node, BIP44Node, BIP44NodeInterface } from './BIP44Node';
 import {
   base64StringToBuffer,
   getBIP44CoinTypeToAddressPathTuple,
@@ -22,7 +17,8 @@ import {
   getBIP44ChangePathString,
   getBIP32NodeToken,
 } from './utils';
-import { Curve, secp256k1 } from './curves';
+import { secp256k1 } from './curves';
+import { deriveChildNode } from './SLIP10Node';
 
 export type CoinTypeHDPathTuple = [
   BIP39Node,
@@ -75,12 +71,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    * key of this `coin_type` node.
    * @param coin_type - The coin_type index of this node. Must be a non-negative
    * integer.
-   * @param curve - The curve to use.
    */
   static async create(
     nodeOrPathTuple: CoinTypeHDPathTuple | BIP44Node | JsonBIP44Node,
     coin_type?: number,
-    curve: Curve = secp256k1,
   ): Promise<BIP44CoinTypeNode> {
     if (Array.isArray(nodeOrPathTuple)) {
       if (coin_type !== undefined) {
@@ -93,7 +87,6 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 
       const node = await BIP44Node.create({
         derivationPath: nodeOrPathTuple,
-        curve,
       });
 
       // Split the bip32 string token and extract the coin_type index
@@ -129,7 +122,6 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
         : await BIP44Node.create({
             depth: BIP_44_COIN_TYPE_DEPTH,
             key: keyBuffer,
-            curve,
           });
 
     return new BIP44CoinTypeNode(node, coin_type);
@@ -271,6 +263,7 @@ export async function deriveBIP44AddressKey(
     keyBuffer,
     BIP_44_COIN_TYPE_DEPTH,
     getBIP44CoinTypeToAddressPathTuple({ account, change, address_index }),
+    secp256k1,
   );
 
   return childNode.keyBuffer;
@@ -356,6 +349,7 @@ export function getBIP44AddressKeyDeriver(
           ? getHardenedBIP32NodeToken(address_index)
           : getUnhardenedBIP32NodeToken(address_index),
       ],
+      secp256k1,
     );
 
     return childNode.keyBuffer;

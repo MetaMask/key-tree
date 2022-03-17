@@ -1,5 +1,4 @@
 import fixtures from '../test/fixtures';
-import { ed25519 } from './curves';
 import { BIP44Node, BIP44PurposeNodeToken } from '.';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
@@ -24,44 +23,10 @@ describe('BIP44Node', () => {
       });
     });
 
-    it('initializes a new ed25519 node (depth, derivationPath)', async () => {
-      // Ethereum coin type node
-      const node = await BIP44Node.create({
-        derivationPath: [
-          defaultBip39NodeToken,
-          BIP44PurposeNodeToken,
-          `bip32:60'`,
-        ],
-        curve: ed25519,
-      });
-
-      expect(node.key).toHaveLength(88);
-      expect(node.depth).toStrictEqual(2);
-      expect(node.toJSON()).toStrictEqual({
-        depth: 2,
-        key: node.key,
-      });
-    });
-
     it('initializes a new node (depth, buffer key)', async () => {
       const node = await BIP44Node.create({
         depth: 1,
         key: Buffer.alloc(64).fill(1),
-      });
-
-      expect(node.key).toHaveLength(88);
-      expect(node.depth).toStrictEqual(1);
-      expect(node.toJSON()).toStrictEqual({
-        depth: 1,
-        key: node.key,
-      });
-    });
-
-    it('initializes a new ed25519 node (depth, buffer key)', async () => {
-      const node = await BIP44Node.create({
-        depth: 1,
-        key: Buffer.alloc(64).fill(1),
-        curve: ed25519,
       });
 
       expect(node.key).toHaveLength(88);
@@ -86,21 +51,6 @@ describe('BIP44Node', () => {
       });
     });
 
-    it('initializes a new ed25519 node (depth, Base64 string key)', async () => {
-      const node = await BIP44Node.create({
-        depth: 3,
-        key: Buffer.alloc(64).fill(2).toString('base64'),
-        curve: ed25519,
-      });
-
-      expect(node.key).toHaveLength(88);
-      expect(node.depth).toStrictEqual(3);
-      expect(node.toJSON()).toStrictEqual({
-        depth: 3,
-        key: node.key,
-      });
-    });
-
     it('initializes a new node (depth, hex string key)', async () => {
       const node = await BIP44Node.create({
         depth: 3,
@@ -115,40 +65,10 @@ describe('BIP44Node', () => {
       });
     });
 
-    it('initializes a new ed25519 node (depth, hex string key)', async () => {
-      const node = await BIP44Node.create({
-        depth: 3,
-        key: Buffer.alloc(64).fill(2).toString('hex'),
-        curve: ed25519,
-      });
-
-      expect(node.key).toHaveLength(88);
-      expect(node.depth).toStrictEqual(3);
-      expect(node.toJSON()).toStrictEqual({
-        depth: 3,
-        key: node.key,
-      });
-    });
-
     it('initializes a new node (depth, 0x-prefixed hex string key)', async () => {
       const node = await BIP44Node.create({
         depth: 3,
         key: `0x${Buffer.alloc(64).fill(2).toString('hex')}`,
-      });
-
-      expect(node.key).toHaveLength(88);
-      expect(node.depth).toStrictEqual(3);
-      expect(node.toJSON()).toStrictEqual({
-        depth: 3,
-        key: node.key,
-      });
-    });
-
-    it('initializes a new ed25519 node (depth, 0x-prefixed hex string key)', async () => {
-      const node = await BIP44Node.create({
-        depth: 3,
-        key: `0x${Buffer.alloc(64).fill(2).toString('hex')}`,
-        curve: ed25519,
       });
 
       expect(node.key).toHaveLength(88);
@@ -188,30 +108,15 @@ describe('BIP44Node', () => {
 
     it('throws if the depth is invalid', async () => {
       const validBufferKey = Buffer.alloc(64).fill(1);
-      const inputs = [
-        -1,
-        6,
-        0.1,
-        -0.1,
-        NaN,
-        Infinity,
-        '0',
-        'zero',
-        {},
-        null,
-        undefined,
-      ];
 
-      for (const input of inputs) {
-        await expect(() =>
-          BIP44Node.create({
-            depth: input as any,
-            key: validBufferKey,
-          }),
-        ).rejects.toThrow(
-          `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "${input}"`,
-        );
-      }
+      await expect(() =>
+        BIP44Node.create({
+          depth: 6,
+          key: validBufferKey,
+        }),
+      ).rejects.toThrow(
+        `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "6"`,
+      );
     });
 
     it('throws if both a derivation path and a depth are specified', async () => {
