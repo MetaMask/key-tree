@@ -37,34 +37,38 @@ import { derivers, Deriver } from './derivers';
  *
  * BIP-39 seed phrases must be lowercase, space-delimited, and 12-24 words long.
  * @param parentKey - The parent key of the given path segment, if any.
+ * @param depth - The depth of the segment.
  * @returns The derived key.
  */
-export function deriveKeyFromPath(
+export async function deriveKeyFromPath(
   pathSegment: HDPathTuple,
   parentKey?: Buffer,
   depth?: BIP44Depth,
-): Buffer {
+): Promise<Buffer> {
   if (parentKey && !Buffer.isBuffer(parentKey)) {
     throw new Error('Parent key must be a Buffer if specified.');
   }
   validatePathSegment(pathSegment, Boolean(parentKey), depth);
 
-  let key = parentKey;
-
   // derive through each part of path
-  pathSegment.forEach((node) => {
+  // `pathSegment` needs to be cast to `string[]` because `HDPathTuple.reduce()` doesn't work
+  const derivedKey = await (pathSegment as readonly string[]).reduce<
+    Promise<Buffer>
+  >(async (promise, node) => {
+    const key = await promise;
+
     const [pathType, pathValue] = node.split(':');
     /* istanbul ignore if: should be impossible */
     if (!hasDeriver(pathType)) {
       throw new Error(`Unknown derivation type: "${pathType}"`);
     }
     const deriver = derivers[pathType] as Deriver;
-    const childKey = deriver.deriveChildKey(pathValue, key);
+    const childKey = await deriver.deriveChildKey(pathValue, key);
     // continue deriving from child key
-    key = childKey;
-  });
+    return childKey;
+  }, Promise.resolve(parentKey as Buffer));
 
-  return key as Buffer;
+  return derivedKey;
 }
 
 /**

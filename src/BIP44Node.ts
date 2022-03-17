@@ -19,6 +19,7 @@ import {
   isValidBufferKey,
   isHardened,
 } from './utils';
+import { Curve, secp256k1 } from './curves';
 
 /**
  * A wrapper for BIP-44 Hierarchical Deterministic (HD) tree nodes, i.e.
@@ -62,6 +63,13 @@ type BIP44NodeOptions = {
   readonly depth?: BIP44Depth;
   readonly key?: Buffer | string;
   readonly derivationPath?: RootedHDPathTuple;
+  readonly curve?: Curve;
+};
+
+type BIP44NodeConstructorOptions = {
+  readonly depth: BIP44Depth;
+  readonly key: Buffer;
+  readonly curve: Curve;
 };
 
 /**
@@ -73,6 +81,57 @@ type BIP44NodeOptions = {
  * {@link BIP44Node.toJSON} to get a JSON-compatible representation.
  */
 export class BIP44Node implements BIP44NodeInterface {
+  static async create({
+    depth,
+    key,
+    derivationPath,
+    curve = secp256k1,
+  }: BIP44NodeOptions): Promise<BIP44Node> {
+    const _key = BIP44Node._parseKey(key);
+
+    if (derivationPath) {
+      if (_key) {
+        throw new Error(
+          'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call BIP44Node.derive() with your desired path.',
+        );
+      }
+
+      if (depth) {
+        throw new Error(
+          'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
+        );
+      }
+
+      if ((derivationPath as any).length === 0) {
+        throw new Error(
+          'Invalid derivation path: May not specify an empty derivation path.',
+        );
+      }
+
+      const _depth = derivationPath.length - 1;
+      validateBIP44Depth(_depth);
+
+      validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
+      const keyBuffer = await deriveKeyFromPath(
+        derivationPath,
+        undefined,
+        _depth,
+      );
+
+      return new BIP44Node({ depth: _depth, key: keyBuffer, curve });
+    } else if (_key) {
+      validateBIP44Depth(depth);
+
+      return new BIP44Node({ depth, key: _key, curve });
+    }
+
+    throw new Error(
+      'Invalid parameters: Must specify either key or derivation path.',
+    );
+  }
+
+  private readonly curve: Curve;
+
   public readonly depth: BIP44Depth;
 
   public get key(): string {
@@ -110,44 +169,10 @@ export class BIP44Node implements BIP44NodeInterface {
    * @param options.derivationPath - The rooted HD tree path that will be used
    * to derive the key of this node. Mutually exclusive with `key`.
    */
-  constructor({ depth, key, derivationPath }: BIP44NodeOptions) {
-    const _key = BIP44Node._parseKey(key);
-
-    if (derivationPath) {
-      if (_key) {
-        throw new Error(
-          'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call BIP44Node.derive() with your desired path.',
-        );
-      }
-
-      if (depth) {
-        throw new Error(
-          'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
-        );
-      }
-
-      if ((derivationPath as any).length === 0) {
-        throw new Error(
-          'Invalid derivation path: May not specify an empty derivation path.',
-        );
-      }
-
-      const _depth = derivationPath.length - 1;
-      validateBIP44Depth(_depth);
-      this.depth = _depth as BIP44Depth;
-
-      validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
-      this.keyBuffer = deriveKeyFromPath(derivationPath, undefined, this.depth);
-    } else if (_key) {
-      validateBIP44Depth(depth);
-      this.depth = depth as BIP44Depth;
-
-      this.keyBuffer = _key;
-    } else {
-      throw new Error(
-        'Invalid parameters: Must specify either key or derivation path.',
-      );
-    }
+  private constructor({ depth, key, curve }: BIP44NodeConstructorOptions) {
+    this.depth = depth;
+    this.keyBuffer = key;
+    this.curve = curve;
 
     Object.freeze(this);
   }
@@ -213,14 +238,14 @@ export class BIP44Node implements BIP44NodeInterface {
    * to derive a child key from the parent key contained within this node.
    * @returns The {@link BIP44Node} corresponding to the derived child key.
    */
-  public derive(path: PartialHDPathTuple): BIP44Node {
+  public async derive(path: PartialHDPathTuple): Promise<BIP44Node> {
     if (this.depth === MAX_BIP_44_DEPTH) {
       throw new Error(
         'Illegal operation: This HD tree node is already a leaf node.',
       );
     }
 
-    return deriveChildNode(this.keyBuffer, this.depth, path);
+    return await deriveChildNode(this.keyBuffer, this.depth, path);
   }
 
   // This is documented in the interface of this class.
@@ -237,12 +262,14 @@ export class BIP44Node implements BIP44NodeInterface {
  * @param parentKey - The parent key to derive from.
  * @param parentDepth - The depth of the parent key.
  * @param pathToChild - The path to the child node / key.
+ * @param curve - The curve to use.
  * @returns The {@link BIP44Node} corresponding to the derived child key.
  */
-export function deriveChildNode(
+export async function deriveChildNode(
   parentKey: Buffer,
   parentDepth: BIP44Depth,
   pathToChild: PartialHDPathTuple,
+  curve?: Curve,
 ) {
   if ((pathToChild as any).length === 0) {
     throw new Error(
@@ -252,13 +279,14 @@ export function deriveChildNode(
 
   // Note that we do not subtract 1 from the length of the path to the child,
   // unlike when we calculate the depth of a rooted path.
-  const newDepth = (parentDepth + pathToChild.length) as BIP44Depth;
+  const newDepth = parentDepth + pathToChild.length;
   validateBIP44Depth(newDepth);
   validateBIP44DerivationPath(pathToChild, (parentDepth + 1) as BIP44Depth);
 
-  return new BIP44Node({
+  return BIP44Node.create({
+    curve,
     depth: newDepth,
-    key: deriveKeyFromPath(pathToChild, parentKey),
+    key: await deriveKeyFromPath(pathToChild, parentKey),
   });
 }
 
@@ -269,7 +297,7 @@ export function deriveChildNode(
  *
  * @param depth - The depth to validate.
  */
-function validateBIP44Depth(depth: unknown) {
+function validateBIP44Depth(depth: unknown): asserts depth is BIP44Depth {
   if (
     typeof depth !== 'number' ||
     !Number.isInteger(depth) ||
