@@ -175,12 +175,12 @@ export class BIP44Node extends SLIP10Node implements BIP44NodeInterface {
     validateBIP44Depth(newDepth);
     validateBIP44DerivationPath(path, newDepth);
 
-    const { keyBuffer, depth } = await super.derive(path);
+    const { key, depth } = await this._derive(path);
 
     // Need to re-assert the depth here to keep TypeScript happy
     validateBIP44Depth(depth);
 
-    return new BIP44Node({ depth, key: keyBuffer });
+    return new BIP44Node({ key, depth });
   }
 
   // This is documented in the interface of this class.

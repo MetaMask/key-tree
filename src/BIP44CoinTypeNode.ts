@@ -266,7 +266,7 @@ export async function deriveBIP44AddressKey(
     secp256k1,
   );
 
-  return childNode.keyBuffer;
+  return childNode.key;
 }
 
 type BIP44AddressKeyDeriver = {
@@ -352,7 +352,7 @@ export function getBIP44AddressKeyDeriver(
       secp256k1,
     );
 
-    return childNode.keyBuffer;
+    return childNode.key;
   };
 
   bip44AddressKeyDeriver.coin_type = node.coin_type;

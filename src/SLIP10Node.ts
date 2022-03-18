@@ -164,7 +164,13 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * @returns The {@link SLIP10Node} corresponding to the derived child key.
    */
   public async derive(path: SLIP10PathTuple): Promise<SLIP10Node> {
-    return await deriveChildNode(this.keyBuffer, this.depth, path, this.curve);
+    const { key, depth } = await this._derive(path);
+
+    return new SLIP10Node({
+      key,
+      depth,
+      curve: this.curve,
+    });
   }
 
   // This is documented in the interface of this class.
@@ -173,6 +179,12 @@ export class SLIP10Node implements SLIP10NodeInterface {
       depth: this.depth,
       key: this.key,
     };
+  }
+
+  async _derive(
+    path: SLIP10PathTuple,
+  ): Promise<{ key: Buffer; depth: number }> {
+    return await deriveChildNode(this.keyBuffer, this.depth, path, this.curve);
   }
 }
 
@@ -222,7 +234,7 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
 }
 
 /**
- * Derives a child key from the given parent key, as a {@link BIP44Node}.
+ * Derives a child key from the given parent key.
  * @param parentKey - The parent key to derive from.
  * @param parentDepth - The depth of the parent key.
  * @param pathToChild - The path to the child node / key.
@@ -234,7 +246,7 @@ export async function deriveChildNode(
   parentDepth: number,
   pathToChild: SLIP10PathTuple,
   curve: Curve,
-): Promise<SLIP10Node> {
+): Promise<{ key: Buffer; depth: number }> {
   if (pathToChild.length === 0) {
     throw new Error(
       'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
@@ -247,11 +259,10 @@ export async function deriveChildNode(
   validateBIP32Depth(newDepth);
   validateSLIP10DerivationPath(pathToChild, parentDepth + 1);
 
-  return SLIP10Node.create({
-    curve,
-    depth: newDepth,
+  return {
     key: await deriveKeyFromPath(pathToChild, parentKey, newDepth, curve),
-  });
+    depth: newDepth,
+  };
 }
 
 /**
