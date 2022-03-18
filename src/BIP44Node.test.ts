@@ -152,14 +152,6 @@ describe('BIP44Node', () => {
       );
     });
 
-    it('throws if the derivation path is empty', async () => {
-      await expect(() =>
-        BIP44Node.create({ derivationPath: [] as any }),
-      ).rejects.toThrow(
-        'Invalid derivation path: May not specify an empty derivation path.',
-      );
-    });
-
     it('throws if the derivation path is of depth 0 and not a single BIP-39 node', async () => {
       await expect(() =>
         BIP44Node.create({ derivationPath: [`bip32:0'`] as any }),

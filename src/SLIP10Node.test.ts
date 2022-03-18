@@ -1,5 +1,6 @@
 import { secp256k1 } from './curves';
 import { SLIP10Node } from './SLIP10Node';
+import { BIP44Node } from './BIP44Node';
 
 describe('SLIP10Node', () => {
   describe('create', () => {
@@ -29,6 +30,14 @@ describe('SLIP10Node', () => {
           `Invalid HD tree path depth: The depth must be a positive integer. Received: "${input}"`,
         );
       }
+    });
+
+    it('throws if the derivation path is empty', async () => {
+      await expect(() =>
+        SLIP10Node.create({ derivationPath: [] as any, curve: secp256k1 }),
+      ).rejects.toThrow(
+        'Invalid derivation path: May not specify an empty derivation path.',
+      );
     });
   });
 });

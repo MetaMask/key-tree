@@ -12,6 +12,7 @@ import {
 import { isHardened } from './utils';
 import { secp256k1 } from './curves';
 import {
+  createKeyFromPath,
   SLIP10Node,
   SLIP10NodeOptions,
   validateBIP32Depth,
@@ -106,36 +107,22 @@ export class BIP44Node extends SLIP10Node implements BIP44NodeInterface {
     const _key = BIP44Node._parseKey(key);
 
     if (derivationPath) {
-      if (_key) {
-        throw new Error(
-          'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call BIP44Node.derive() with your desired path.',
-        );
-      }
-
-      if (depth) {
-        throw new Error(
-          'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
-        );
-      }
-
-      if ((derivationPath as any).length === 0) {
-        throw new Error(
-          'Invalid derivation path: May not specify an empty derivation path.',
-        );
-      }
-
       const _depth = derivationPath.length - 1;
 
       validateBIP44Depth(_depth);
       validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
 
-      const keyBuffer = await deriveKeyFromPath(
+      const keyBuffer = await createKeyFromPath({
         derivationPath,
-        undefined,
-        _depth,
-      );
+        depth,
+        key,
+        curve: secp256k1,
+      });
 
-      return new BIP44Node({ depth: _depth, key: keyBuffer });
+      return new BIP44Node({
+        depth: _depth,
+        key: keyBuffer,
+      });
     } else if (_key) {
       validateBIP44Depth(depth);
 

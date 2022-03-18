@@ -68,33 +68,18 @@ export class SLIP10Node implements SLIP10NodeInterface {
     const _key = SLIP10Node._parseKey(key);
 
     if (derivationPath) {
-      if (_key) {
-        throw new Error(
-          'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call SLIP10Node.derive() with your desired path.',
-        );
-      }
-
-      if (depth) {
-        throw new Error(
-          'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
-        );
-      }
-
-      if (derivationPath.length === 0) {
-        throw new Error(
-          'Invalid derivation path: May not specify an empty derivation path.',
-        );
-      }
-
-      const _depth = derivationPath.length - 1;
-
-      const keyBuffer = await deriveKeyFromPath(
+      const keyBuffer = await createKeyFromPath({
         derivationPath,
-        undefined,
-        _depth,
-      );
+        depth,
+        key,
+        curve,
+      });
 
-      return new SLIP10Node({ depth: _depth, key: keyBuffer, curve });
+      return new SLIP10Node({
+        depth: derivationPath.length - 1,
+        key: keyBuffer,
+        curve,
+      });
     } else if (_key) {
       validateBIP32Depth(depth);
 
@@ -189,6 +174,37 @@ export class SLIP10Node implements SLIP10NodeInterface {
       key: this.key,
     };
   }
+}
+
+export async function createKeyFromPath({
+  derivationPath,
+  depth,
+  key,
+  curve,
+}: Required<Pick<SLIP10NodeOptions, 'derivationPath'>> &
+  Omit<SLIP10NodeOptions, 'derivationPath'>) {
+  if (key) {
+    throw new Error(
+      'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call BIP44Node.derive() with your desired path.',
+    );
+  }
+
+  if (depth) {
+    throw new Error(
+      'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
+    );
+  }
+
+  if (derivationPath.length === 0) {
+    throw new Error(
+      'Invalid derivation path: May not specify an empty derivation path.',
+    );
+  }
+
+  const _depth = derivationPath.length - 1;
+  validateBIP32Depth(_depth);
+
+  return await deriveKeyFromPath(derivationPath, undefined, _depth, curve);
 }
 
 /**
