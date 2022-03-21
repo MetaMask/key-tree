@@ -89,17 +89,12 @@ describe('BIP44Node', () => {
       });
 
       // getter
-      expect(() => (node.key = 'foo')).toThrow(
-        /^Cannot set property key of .+ which has only a getter/iu,
-      );
-
-      // frozen / readonly
-      ['depth', 'keyBuffer'].forEach((property) => {
+      ['key', 'depth', 'keyBuffer'].forEach((property) => {
         expect(() => (node[property] = Buffer.allocUnsafe(64).fill(1))).toThrow(
           expect.objectContaining({
             name: 'TypeError',
             message: expect.stringMatching(
-              `Cannot assign to read only property '${property}' of object`,
+              /^Cannot set property .+ of .+ which has only a getter/iu,
             ),
           }),
         );

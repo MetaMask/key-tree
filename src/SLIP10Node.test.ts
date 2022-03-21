@@ -1,6 +1,9 @@
+import fixtures from '../test/fixtures';
 import { secp256k1 } from './curves';
 import { SLIP10Node } from './SLIP10Node';
-import { BIP44Node } from './BIP44Node';
+import { BIP44PurposeNodeToken } from './constants';
+
+const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('SLIP10Node', () => {
   describe('create', () => {
@@ -38,6 +41,34 @@ describe('SLIP10Node', () => {
       ).rejects.toThrow(
         'Invalid derivation path: May not specify an empty derivation path.',
       );
+    });
+
+    it('throws an error if attempting to modify the fields of a node', async () => {
+      const node: any = await SLIP10Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
+        curve: secp256k1,
+      });
+
+      // getter
+      expect(() => (node.key = 'foo')).toThrow(
+        /^Cannot set property key of .+ which has only a getter/iu,
+      );
+
+      // frozen / readonly
+      ['depth', 'keyBuffer'].forEach((property) => {
+        expect(() => (node[property] = Buffer.allocUnsafe(64).fill(1))).toThrow(
+          expect.objectContaining({
+            name: 'TypeError',
+            message: expect.stringMatching(
+              `Cannot assign to read only property '${property}' of object`,
+            ),
+          }),
+        );
+      });
     });
   });
 });

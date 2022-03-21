@@ -1,4 +1,3 @@
-import { deriveKeyFromPath } from './derivation';
 import {
   BIP44Depth,
   BIP44PurposeNodeToken,
@@ -12,7 +11,6 @@ import {
 import { isHardened } from './utils';
 import { secp256k1 } from './curves';
 import {
-  createKeyFromPath,
   SLIP10Node,
   SLIP10NodeOptions,
   validateBIP32Depth,
@@ -56,11 +54,6 @@ export type BIP44NodeInterface = JsonBIP44Node & {
   toJSON(): JsonBIP44Node;
 };
 
-type BIP44NodeConstructorOptions = {
-  readonly depth: BIP44Depth;
-  readonly key: Buffer;
-};
-
 /**
  * A wrapper for BIP-44 Hierarchical Deterministic (HD) tree nodes, i.e.
  * cryptographic keys used to generate keypairs and addresses for cryptocurrency
@@ -69,7 +62,7 @@ type BIP44NodeConstructorOptions = {
  * This class contains methods and fields that may not serialize well. Use
  * {@link BIP44Node.toJSON} to get a JSON-compatible representation.
  */
-export class BIP44Node extends SLIP10Node implements BIP44NodeInterface {
+export class BIP44Node implements BIP44NodeInterface {
   /**
    * Initializes a BIP-44 node. Accepts either:
    * - An existing 64-byte BIP-44 key, and its **0-indexed** BIP-44 path depth.
@@ -104,41 +97,44 @@ export class BIP44Node extends SLIP10Node implements BIP44NodeInterface {
     key,
     derivationPath,
   }: Omit<SLIP10NodeOptions, 'curve'>): Promise<BIP44Node> {
-    const _key = BIP44Node._parseKey(key);
-
     if (derivationPath) {
       const _depth = derivationPath.length - 1;
 
       validateBIP44Depth(_depth);
       validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
-
-      const keyBuffer = await createKeyFromPath({
-        derivationPath,
-        depth,
-        key,
-        curve: secp256k1,
-      });
-
-      return new BIP44Node({
-        depth: _depth,
-        key: keyBuffer,
-      });
-    } else if (_key) {
-      validateBIP44Depth(depth);
-
-      return new BIP44Node({ depth, key: _key });
     }
 
-    throw new Error(
-      'Invalid parameters: Must specify either key or derivation path.',
-    );
+    if (key) {
+      validateBIP44Depth(depth);
+    }
+
+    const node = await SLIP10Node.create({
+      key,
+      derivationPath,
+      depth,
+      curve: secp256k1,
+    });
+
+    return new BIP44Node(node);
   }
 
-  public readonly depth: BIP44Depth;
+  #node: SLIP10Node;
 
-  constructor({ depth, key }: BIP44NodeConstructorOptions) {
-    super({ depth, key, curve: secp256k1 });
-    this.depth = depth;
+  public get depth(): BIP44Depth {
+    validateBIP44Depth(this.#node.depth);
+    return this.#node.depth;
+  }
+
+  public get key(): string {
+    return this.#node.key;
+  }
+
+  public get keyBuffer(): Buffer {
+    return this.#node.keyBuffer;
+  }
+
+  constructor(node: SLIP10Node) {
+    this.#node = node;
 
     Object.freeze(this);
   }
@@ -175,12 +171,8 @@ export class BIP44Node extends SLIP10Node implements BIP44NodeInterface {
     validateBIP44Depth(newDepth);
     validateBIP44DerivationPath(path, newDepth);
 
-    const { key, depth } = await this._derive(path);
-
-    // Need to re-assert the depth here to keep TypeScript happy
-    validateBIP44Depth(depth);
-
-    return new BIP44Node({ key, depth });
+    const node = await this.#node.derive(path);
+    return new BIP44Node(node);
   }
 
   // This is documented in the interface of this class.

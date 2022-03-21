@@ -65,7 +65,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
     derivationPath,
     curve,
   }: SLIP10NodeOptions): Promise<SLIP10Node> {
-    const _key = SLIP10Node._parseKey(key);
+    const _key = SLIP10Node.#parseKey(key);
 
     if (derivationPath) {
       const keyBuffer = await createKeyFromPath({
@@ -99,7 +99,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * @returns A {@link Buffer}, or `undefined` if no key parameter was
    * specified.
    */
-  protected static _parseKey(key: unknown): Buffer | undefined {
+  static #parseKey(key: unknown): Buffer | undefined {
     if (key === undefined || key === null) {
       return undefined;
     }
@@ -142,15 +142,12 @@ export class SLIP10Node implements SLIP10NodeInterface {
     return bufferToBase64String(this.keyBuffer);
   }
 
-  protected constructor({ depth, key, curve }: SLIP10NodeConstructorOptions) {
+  constructor({ depth, key, curve }: SLIP10NodeConstructorOptions) {
     this.depth = depth;
     this.keyBuffer = key;
     this.curve = curve;
 
-    // Only freeze if directly instantiated
-    if (new.target === SLIP10Node) {
-      Object.freeze(this);
-    }
+    Object.freeze(this);
   }
 
   /**
@@ -164,7 +161,12 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * @returns The {@link SLIP10Node} corresponding to the derived child key.
    */
   public async derive(path: SLIP10PathTuple): Promise<SLIP10Node> {
-    const { key, depth } = await this._derive(path);
+    const { key, depth } = await deriveChildNode(
+      this.keyBuffer,
+      this.depth,
+      path,
+      this.curve,
+    );
 
     return new SLIP10Node({
       key,
@@ -180,15 +182,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
       key: this.key,
     };
   }
-
-  async _derive(
-    path: SLIP10PathTuple,
-  ): Promise<{ key: Buffer; depth: number }> {
-    return await deriveChildNode(this.keyBuffer, this.depth, path, this.curve);
-  }
 }
 
-export async function createKeyFromPath({
+async function createKeyFromPath({
   derivationPath,
   depth,
   key,
