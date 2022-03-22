@@ -65,6 +65,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
     derivationPath,
     curve,
   }: SLIP10NodeOptions): Promise<SLIP10Node> {
+    validateCurve(curve);
+
     const _key = SLIP10Node.#parseKey(key);
 
     if (derivationPath) {
@@ -213,6 +215,20 @@ async function createKeyFromPath({
   validateBIP32Depth(_depth);
 
   return await deriveKeyFromPath(derivationPath, undefined, _depth, curve);
+}
+
+/**
+ * Validates the curve.
+ * @param curve
+ */
+function validateCurve(curve: Curve): asserts curve is Curve {
+  if (!curve) {
+    throw new Error('Invalid curve: Must specify a curve.');
+  }
+
+  if (curve.name !== 'secp256k1' && curve.name !== 'ed25519') {
+    throw new Error('Invalid curve: Only secp256k1 and ed25519 are supported.');
+  }
 }
 
 /**

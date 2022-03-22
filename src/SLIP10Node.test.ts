@@ -7,6 +7,85 @@ const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('SLIP10Node', () => {
   describe('create', () => {
+    it('initializes a new node (depth, derivationPath)', async () => {
+      // Ethereum coin type node
+      const node = await SLIP10Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
+        curve: secp256k1,
+      });
+
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(2);
+      expect(node.toJSON()).toStrictEqual({
+        depth: 2,
+        key: node.key,
+      });
+    });
+
+    it('initializes a new node (depth, buffer key)', async () => {
+      const node = await SLIP10Node.create({
+        depth: 1,
+        key: Buffer.alloc(64).fill(1),
+        curve: secp256k1,
+      });
+
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(1);
+      expect(node.toJSON()).toStrictEqual({
+        depth: 1,
+        key: node.key,
+      });
+    });
+
+    it('initializes a new node (depth, Base64 string key)', async () => {
+      const node = await SLIP10Node.create({
+        depth: 3,
+        key: Buffer.alloc(64).fill(2).toString('base64'),
+        curve: secp256k1,
+      });
+
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(3);
+      expect(node.toJSON()).toStrictEqual({
+        depth: 3,
+        key: node.key,
+      });
+    });
+
+    it('initializes a new node (depth, hex string key)', async () => {
+      const node = await SLIP10Node.create({
+        depth: 3,
+        key: Buffer.alloc(64).fill(2).toString('hex'),
+        curve: secp256k1,
+      });
+
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(3);
+      expect(node.toJSON()).toStrictEqual({
+        depth: 3,
+        key: node.key,
+      });
+    });
+
+    it('initializes a new node (depth, 0x-prefixed hex string key)', async () => {
+      const node = await SLIP10Node.create({
+        depth: 3,
+        key: `0x${Buffer.alloc(64).fill(2).toString('hex')}`,
+        curve: secp256k1,
+      });
+
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(3);
+      expect(node.toJSON()).toStrictEqual({
+        depth: 3,
+        key: node.key,
+      });
+    });
+
     it('throws if the depth is invalid', async () => {
       const validBufferKey = Buffer.alloc(64).fill(1);
       const inputs = [
@@ -35,12 +114,101 @@ describe('SLIP10Node', () => {
       }
     });
 
+    it('throws if both a derivation path and a depth are specified', async () => {
+      await expect(() =>
+        SLIP10Node.create({
+          depth: 2, // This is the correct depth, but it's still forbidden
+          derivationPath: [
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
+            `bip32:60'`,
+          ],
+          curve: secp256k1,
+        }),
+      ).rejects.toThrow(
+        'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
+      );
+    });
+
+    it('throws if neither a derivation path nor a key is specified', async () => {
+      await expect(() =>
+        SLIP10Node.create({ depth: 1, curve: secp256k1 }),
+      ).rejects.toThrow(
+        'Invalid parameters: Must specify either key or derivation path.',
+      );
+    });
+
     it('throws if the derivation path is empty', async () => {
       await expect(() =>
         SLIP10Node.create({ derivationPath: [] as any, curve: secp256k1 }),
       ).rejects.toThrow(
         'Invalid derivation path: May not specify an empty derivation path.',
       );
+    });
+
+    it('throws if the derivation path is of depth 0 and not a single BIP-39 node', async () => {
+      await expect(() =>
+        SLIP10Node.create({
+          derivationPath: [`bip32:0'`] as any,
+          curve: secp256k1,
+        }),
+      ).rejects.toThrow(
+        'Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of 0. Received: "bip32:0\'".',
+      );
+    });
+
+    it('throws if the key is neither a string nor a buffer', async () => {
+      await expect(() =>
+        SLIP10Node.create({ depth: 0, key: {} as any, curve: secp256k1 }),
+      ).rejects.toThrow(
+        'Invalid key: Must be a Buffer or string if specified. Received: "object"',
+      );
+    });
+
+    it('throws if the key is an invalid Buffer', async () => {
+      const invalidLengthBuffer = Buffer.alloc(63).fill(1);
+      const zeroBuffer = Buffer.alloc(64);
+
+      await expect(() =>
+        SLIP10Node.create({
+          depth: 0,
+          key: invalidLengthBuffer,
+          curve: secp256k1,
+        }),
+      ).rejects.toThrow(
+        'Invalid buffer key: Must be a 64-byte, non-empty Buffer.',
+      );
+
+      await expect(() =>
+        SLIP10Node.create({ depth: 0, key: zeroBuffer, curve: secp256k1 }),
+      ).rejects.toThrow(
+        'Invalid buffer key: Must be a 64-byte, non-empty Buffer.',
+      );
+    });
+
+    it('throws if the key is an invalid string', async () => {
+      const hexInputs = [
+        Buffer.alloc(64).toString('hex'),
+        Buffer.alloc(63).fill(1).toString('hex'),
+      ];
+
+      const inputs = [
+        // Base64
+        Buffer.alloc(64).toString('base64'),
+        Buffer.alloc(63).fill(1).toString('base64'),
+
+        // Hexadecimal
+        ...hexInputs,
+        ...hexInputs.map((input) => `0x${input}`),
+      ];
+
+      for (const input of inputs) {
+        await expect(() =>
+          SLIP10Node.create({ depth: 0, key: input, curve: secp256k1 }),
+        ).rejects.toThrow(
+          'Invalid string key: Must be a 64-byte hexadecimal or Base64 string.',
+        );
+      }
     });
 
     it('throws an error if attempting to modify the fields of a node', async () => {
@@ -69,6 +237,22 @@ describe('SLIP10Node', () => {
           }),
         );
       });
+    });
+
+    it('throws an error if no curve is specified', async () => {
+      // @ts-expect-error No curve specified, but required in type
+      await expect(() => SLIP10Node.create({})).rejects.toThrow(
+        'Invalid curve: Must specify a curve.',
+      );
+    });
+
+    it('throws an error for unsupported curves', async () => {
+      await expect(() =>
+        // @ts-expect-error Invalid curve name for type
+        SLIP10Node.create({ curve: { ...secp256k1, name: 'foo bar' } }),
+      ).rejects.toThrow(
+        'Invalid curve: Only secp256k1 and ed25519 are supported.',
+      );
     });
   });
 });

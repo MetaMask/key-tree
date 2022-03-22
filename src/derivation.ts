@@ -122,7 +122,7 @@ export function validatePathSegment(
     (!startsWithBip39 || pathSegment.length !== 1)
   ) {
     throw new Error(
-      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_BIP_44_DEPTH}. Received: "${pathSegment}"`,
+      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_BIP_44_DEPTH}. Received: "${pathSegment}".`,
     );
   }
 
