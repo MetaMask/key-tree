@@ -1,9 +1,4 @@
-import {
-  BIP_39_PATH_REGEX,
-  MIN_BIP_44_DEPTH,
-  RootedSLIP10PathTuple,
-  SLIP10PathTuple,
-} from './constants';
+import { RootedSLIP10PathTuple, SLIP10PathTuple } from './constants';
 import { Curve } from './curves';
 import {
   base64StringToBuffer,
@@ -269,27 +264,9 @@ export async function deriveChildNode(
   // unlike when we calculate the depth of a rooted path.
   const newDepth = parentDepth + pathToChild.length;
   validateBIP32Depth(newDepth);
-  validateSLIP10DerivationPath(pathToChild, parentDepth + 1);
 
   return {
     key: await deriveKeyFromPath(pathToChild, parentKey, newDepth, curve),
     depth: newDepth,
   };
-}
-
-/**
- * Ensures that the given derivation is valid by SLIP-10.
- *
- * @param path - The path to validate.
- * @param startingDepth - The depth of the first node of the derivation path.
- */
-function validateSLIP10DerivationPath(
-  path: SLIP10PathTuple,
-  startingDepth: number,
-) {
-  if (startingDepth === MIN_BIP_44_DEPTH && !BIP_39_PATH_REGEX.test(path[0])) {
-    throw new Error(
-      'Invalid derivation path: The "m" / seed node (depth 0) must be a BIP-39 node.',
-    );
-  }
 }

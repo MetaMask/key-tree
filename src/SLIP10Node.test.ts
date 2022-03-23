@@ -1,7 +1,8 @@
 import fixtures from '../test/fixtures';
-import { secp256k1 } from './curves';
+import { ed25519, secp256k1 } from './curves';
 import { SLIP10Node } from './SLIP10Node';
 import { BIP44PurposeNodeToken } from './constants';
+import { BIP44Node } from './BIP44Node';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
@@ -253,6 +254,92 @@ describe('SLIP10Node', () => {
       ).rejects.toThrow(
         'Invalid curve: Only secp256k1 and ed25519 are supported.',
       );
+    });
+  });
+
+  describe('derive', () => {
+    it('derives a child node', async () => {
+      const coinTypeNode = `bip32:40'`;
+      const targetNode = await SLIP10Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          coinTypeNode,
+        ],
+        curve: secp256k1,
+      });
+
+      const node = await SLIP10Node.create({
+        derivationPath: [defaultBip39NodeToken, BIP44PurposeNodeToken],
+        curve: secp256k1,
+      });
+
+      const childNode = await node.derive([coinTypeNode]);
+
+      expect(childNode).toMatchObject({
+        depth: targetNode.depth,
+        key: targetNode.key,
+      });
+    });
+
+    it('throws if the child derivation path is zero', async () => {
+      const node = await SLIP10Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:3'`,
+          `bip32:0'`,
+        ],
+        curve: secp256k1,
+      });
+
+      await expect(() => node.derive([] as any)).rejects.toThrow(
+        'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
+      );
+    });
+
+    it('throws when trying to derive a unhardened node with ed25519', async () => {
+      const node = await SLIP10Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:3'`,
+          `bip32:0'`,
+        ],
+        curve: ed25519,
+      });
+
+      await expect(() => node.derive(['bip32:0'])).rejects.toThrow(
+        'Invalid path: Cannot derive unhardened child keys with ed25519.',
+      );
+    });
+  });
+
+  describe('toJSON', () => {
+    it('returns a JSON-compatible representation of the node', async () => {
+      const node = await SLIP10Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
+        curve: secp256k1,
+      });
+
+      expect(typeof node.key).toStrictEqual('string');
+      expect(node.key).toHaveLength(88);
+      expect(node.depth).toStrictEqual(2);
+
+      const nodeJson = node.toJSON();
+      expect(nodeJson).toStrictEqual({
+        depth: node.depth,
+        key: node.key,
+      });
+
+      expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
+        depth: node.depth,
+        key: node.key,
+      });
     });
   });
 });
