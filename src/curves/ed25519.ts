@@ -8,6 +8,8 @@ export const secret = Buffer.from('ed25519 seed', 'utf8');
 // All private keys are valid for ed25519
 export const isValidPrivateKey = () => true;
 
+export const deriveUnhardenedKeys = false;
+
 export const getPublicKey = async (
   privateKey: Uint8Array | string | bigint,
   _compressed?: boolean,

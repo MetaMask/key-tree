@@ -6,6 +6,8 @@ export const { isValidPrivateKey } = utils;
 export const name = 'secp256k1';
 export const secret = Buffer.from('Bitcoin seed', 'utf8');
 
+export const deriveUnhardenedKeys = true;
+
 export const getPublicKey = (
   privateKey: Uint8Array | string | bigint,
   compressed?: boolean,

@@ -2,7 +2,6 @@ import fixtures from '../test/fixtures';
 import { ed25519, secp256k1 } from './curves';
 import { SLIP10Node } from './SLIP10Node';
 import { BIP44PurposeNodeToken } from './constants';
-import { BIP44Node } from './BIP44Node';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
@@ -252,7 +251,7 @@ describe('SLIP10Node', () => {
         // @ts-expect-error Invalid curve name for type
         SLIP10Node.create({ curve: { ...secp256k1, name: 'foo bar' } }),
       ).rejects.toThrow(
-        'Invalid curve: Only secp256k1 and ed25519 are supported.',
+        'Invalid curve: Only the following curves are supported: secp256k1, ed25519.',
       );
     });
   });

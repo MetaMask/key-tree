@@ -161,7 +161,7 @@ describe('BIP44Node', () => {
           derivationPath: [defaultBip39NodeToken, `bip32:43'`] as any,
         }),
       ).rejects.toThrow(
-        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
+        `Invalid derivation path: The "purpose" node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
       );
     });
 
@@ -339,7 +339,7 @@ describe('BIP44Node', () => {
       });
 
       await expect(() => node.derive([`bip32:43'`])).rejects.toThrow(
-        `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
+        `Invalid derivation path: The "purpose" node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
       );
     });
 

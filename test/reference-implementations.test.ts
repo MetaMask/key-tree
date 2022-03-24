@@ -200,6 +200,8 @@ describe('reference implementation tests', () => {
             const { path, privateKey } = keyObj;
 
             let targetKey: Buffer;
+
+            // If the path is empty, use the master node
             if (path.ours.string === '') {
               targetKey = seedKey;
             } else {

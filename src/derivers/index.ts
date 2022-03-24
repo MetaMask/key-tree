@@ -7,7 +7,7 @@ export type Deriver = {
     pathPart: string,
     parentKey?: Buffer,
     curve?: Curve,
-  ) => Buffer | Promise<Buffer>;
+  ) => Promise<Buffer>;
 };
 
 export const derivers = {

@@ -11,7 +11,7 @@ import {
 import { deriveKeyFromPath } from './derivation';
 
 /**
- * A wrapper for BIP-44 Hierarchical Deterministic (HD) tree nodes, i.e.
+ * A wrapper for SLIP-10 Hierarchical Deterministic (HD) tree nodes, i.e.
  * cryptographic keys used to generate keypairs and addresses for cryptocurrency
  * protocols.
  */
@@ -52,6 +52,8 @@ type SLIP10NodeConstructorOptions = {
   readonly key: Buffer;
   readonly curve: Curve;
 };
+
+const SUPPORTED_CURVES = ['secp256k1', 'ed25519'];
 
 export class SLIP10Node implements SLIP10NodeInterface {
   static async create({
@@ -221,8 +223,12 @@ function validateCurve(curve: Curve): asserts curve is Curve {
     throw new Error('Invalid curve: Must specify a curve.');
   }
 
-  if (curve.name !== 'secp256k1' && curve.name !== 'ed25519') {
-    throw new Error('Invalid curve: Only secp256k1 and ed25519 are supported.');
+  if (!SUPPORTED_CURVES.includes(curve.name)) {
+    throw new Error(
+      `Invalid curve: Only the following curves are supported: ${SUPPORTED_CURVES.join(
+        ', ',
+      )}.`,
+    );
   }
 }
 
@@ -246,7 +252,7 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
  * @param parentDepth - The depth of the parent key.
  * @param pathToChild - The path to the child node / key.
  * @param curve - The curve to use.
- * @returns The {@link BIP44Node} corresponding to the derived child key.
+ * @returns The derived key and depth.
  */
 export async function deriveChildNode(
   parentKey: Buffer,

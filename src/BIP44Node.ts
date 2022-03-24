@@ -166,10 +166,10 @@ export class BIP44Node implements BIP44NodeInterface {
       );
     }
 
-    const newDepth = this.depth + 1;
+    const newDepth = this.depth + path.length;
 
     validateBIP44Depth(newDepth);
-    validateBIP44DerivationPath(path, newDepth);
+    validateBIP44DerivationPath(path, (this.depth + 1) as BIP44Depth);
 
     const node = await this.#node.derive(path);
     return new BIP44Node(node);
@@ -234,7 +234,7 @@ function validateBIP44DerivationPath(
       case 1:
         if (nodeToken !== BIP44PurposeNodeToken) {
           throw new Error(
-            `Invalid derivation path: The "purpose" node node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
+            `Invalid derivation path: The "purpose" node (depth 1) must be the string "${BIP44PurposeNodeToken}".`,
           );
         }
         break;

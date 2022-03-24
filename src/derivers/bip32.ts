@@ -46,9 +46,9 @@ export async function deriveChildKey(
   }
 
   const isHardened = pathPart.includes(`'`);
-  if (!isHardened && curve.name === 'ed25519') {
+  if (!isHardened && !curve.deriveUnhardenedKeys) {
     throw new Error(
-      'Invalid path: Cannot derive unhardened child keys with ed25519.',
+      `Invalid path: Cannot derive unhardened child keys with ${curve.name}.`,
     );
   }
 
