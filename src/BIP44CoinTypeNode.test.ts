@@ -1,4 +1,6 @@
 import fixtures from '../test/fixtures';
+import { createBip39KeyFromSeed } from './derivers/bip39';
+import { hexStringToBuffer } from './utils';
 import {
   BIP_44_COIN_TYPE_DEPTH,
   BIP44Node,
@@ -295,6 +297,42 @@ describe('BIP44CoinTypeNode', () => {
           })
         ).toString('base64'),
       ).toStrictEqual(expectedKey);
+    });
+  });
+
+  describe('getPublicKey', () => {
+    it('returns the public key for a node', async () => {
+      const coinType = 60;
+      const node = await BIP44Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:${coinType}'`,
+        ],
+      });
+
+      const parentNode = await BIP44CoinTypeNode.create(node, coinType);
+      const expectedKey = await node.getPublicKey();
+
+      expect(await parentNode.getPublicKey()).toBe(expectedKey);
+    });
+  });
+
+  describe('getAddress', () => {
+    it('returns an Ethereum address for a node', async () => {
+      const coinType = 60;
+      const node = await BIP44Node.create({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:${coinType}'`,
+        ],
+      });
+
+      const parentNode = await BIP44CoinTypeNode.create(node, coinType);
+      const expectedKey = await node.getAddress();
+
+      expect(await parentNode.getAddress()).toBe(expectedKey);
     });
   });
 
