@@ -17,7 +17,9 @@ describe('ed25519', () => {
 
   describe('isValidPrivateKey', () => {
     it('returns true', () => {
-      expect(isValidPrivateKey()).toBe(true);
+      expect(
+        isValidPrivateKey(fixtures.ed25519.slip10[0].keys[0].privateKey),
+      ).toBe(true);
     });
   });
 

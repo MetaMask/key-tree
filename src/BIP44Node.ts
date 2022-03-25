@@ -98,31 +98,52 @@ export class BIP44Node implements BIP44NodeInterface {
     derivationPath,
   }: Omit<SLIP10NodeOptions, 'curve'>): Promise<BIP44Node> {
     if (derivationPath) {
+      if (key) {
+        throw new Error(
+          'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call node.derive() with your desired path.',
+        );
+      }
+
+      if (depth) {
+        throw new Error(
+          'Invalid parameters: May not specify a depth if a derivation path is specified. The depth will be calculated from the path.',
+        );
+      }
+
       const _depth = derivationPath.length - 1;
 
       validateBIP44Depth(_depth);
       validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
+
+      const node = await SLIP10Node.create({
+        derivationPath,
+        curve: secp256k1,
+      });
+
+      return new BIP44Node(node);
     }
 
     if (key) {
       validateBIP44Depth(depth);
+
+      const node = await SLIP10Node.create({
+        key,
+        depth,
+        curve: secp256k1,
+      });
+
+      return new BIP44Node(node);
     }
 
-    const node = await SLIP10Node.create({
-      key,
-      derivationPath,
-      depth,
-      curve: secp256k1,
-    });
-
-    return new BIP44Node(node);
+    throw new Error(
+      'Invalid parameters: Must specify either key or derivation path.',
+    );
   }
 
   #node: SLIP10Node;
 
   public get depth(): BIP44Depth {
-    validateBIP44Depth(this.#node.depth);
-    return this.#node.depth;
+    return this.#node.depth as BIP44Depth;
   }
 
   public get key(): string {

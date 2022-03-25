@@ -129,7 +129,7 @@ describe('derivation', () => {
         /Invalid HD path segment: The path segment is malformed\./u,
       );
 
-      await expect(() =>
+      await expect(
         deriveKeyFromPath(
           [bip39Part, ethereumBip32PathParts[0]],
           Buffer.alloc(64).fill(1),
@@ -140,26 +140,24 @@ describe('derivation', () => {
       );
 
       // bip39 seed phrase component must be completely lowercase
-      await expect(() =>
+      await expect(
         deriveKeyFromPath([bip39Part.replace('r', 'R') as any]),
       ).rejects.toThrow(
         /Invalid HD path segment: The path segment is malformed\./u,
       );
 
       // Multipaths that start with bip39 segment require _no_ parentKey
-      await expect(() =>
-        deriveKeyFromPath([bip39Part], parentKey),
-      ).rejects.toThrow(
+      await expect(deriveKeyFromPath([bip39Part], parentKey)).rejects.toThrow(
         /Invalid derivation parameters: May not specify parent key if the path segment starts with a BIP-39 node\./u,
       );
 
       // Multipaths that start with bip32 segment require parentKey
-      await expect(() => deriveKeyFromPath([`bip32:1'`])).rejects.toThrow(
+      await expect(deriveKeyFromPath([`bip32:1'`])).rejects.toThrow(
         /Invalid derivation parameters: Must specify parent key if the first node of the path segment is not a BIP-39 node\./u,
       );
 
       // parentKey must be a buffer if specified
-      await expect(() =>
+      await expect(
         deriveKeyFromPath([`bip32:1'`], parentKey.toString('base64') as any),
       ).rejects.toThrow('Parent key must be a Buffer if specified.');
     });
@@ -203,18 +201,18 @@ describe('derivation', () => {
 
       for (const input of inputs) {
         // eslint-disable-next-line no-loop-func
-        await expect(() =>
+        await expect(
           bip32Derive(input as any, Buffer.allocUnsafe(64).fill(1)),
         ).rejects.toThrow(
           'Invalid BIP-32 index: The index must be a non-negative decimal integer less than 2147483648.',
         );
       }
 
-      await expect(() => bip32Derive(`44'`, undefined as any)).rejects.toThrow(
+      await expect(bip32Derive(`44'`, undefined as any)).rejects.toThrow(
         'Invalid parameters: Must specify a parent key.',
       );
 
-      await expect(() =>
+      await expect(
         bip32Derive(`44'`, Buffer.allocUnsafe(63).fill(1)),
       ).rejects.toThrow('Invalid parent key: Must be 64 bytes long.');
     });

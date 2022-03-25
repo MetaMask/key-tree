@@ -40,12 +40,23 @@ export type SLIP10NodeInterface = JsonSLIP10Node & {
   toJSON(): JsonSLIP10Node;
 };
 
-export type SLIP10NodeOptions = {
-  readonly depth?: number;
-  readonly key?: Buffer | string;
-  readonly derivationPath?: RootedSLIP10PathTuple;
+type SLIP10NodeKeyDepthOptions = {
+  readonly depth: number;
+  readonly key: Buffer | string;
+  readonly derivationPath?: never;
   readonly curve: Curve;
 };
+
+type SLIP10NodeDerivationPathOptions = {
+  readonly derivationPath: RootedSLIP10PathTuple;
+  readonly depth?: never;
+  readonly key?: never;
+  readonly curve: Curve;
+};
+
+export type SLIP10NodeOptions =
+  | SLIP10NodeKeyDepthOptions
+  | SLIP10NodeDerivationPathOptions;
 
 type SLIP10NodeConstructorOptions = {
   readonly depth: number;
@@ -124,7 +135,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       }
     } else {
       throw new Error(
-        `Invalid key: Must be a Buffer or string if specified. Received: "${typeof key}"`,
+        `Invalid key: Must be a Buffer or string if specified. Received: "${typeof key}".`,
       );
     }
 
@@ -192,7 +203,7 @@ async function createKeyFromPath({
   Omit<SLIP10NodeOptions, 'derivationPath'>) {
   if (key) {
     throw new Error(
-      'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call BIP44Node.derive() with your desired path.',
+      'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call node.derive() with your desired path.',
     );
   }
 
@@ -241,7 +252,7 @@ function validateCurve(curve: Curve): asserts curve is Curve {
 export function validateBIP32Depth(depth: unknown): asserts depth is number {
   if (typeof depth !== 'number' || !Number.isInteger(depth) || depth < 0) {
     throw new Error(
-      `Invalid HD tree path depth: The depth must be a positive integer. Received: "${depth}"`,
+      `Invalid HD tree path depth: The depth must be a positive integer. Received: "${depth}".`,
     );
   }
 }
@@ -262,7 +273,7 @@ export async function deriveChildNode(
 ): Promise<{ key: Buffer; depth: number }> {
   if (pathToChild.length === 0) {
     throw new Error(
-      'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
+      'Invalid HD tree derivation path: Deriving a path of length 0 is not defined.',
     );
   }
 

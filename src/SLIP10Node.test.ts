@@ -102,7 +102,7 @@ describe('SLIP10Node', () => {
       ];
 
       for (const input of inputs) {
-        await expect(() =>
+        await expect(
           SLIP10Node.create({
             depth: input as any,
             key: validBufferKey,
@@ -115,9 +115,9 @@ describe('SLIP10Node', () => {
     });
 
     it('throws if both a derivation path and a depth are specified', async () => {
-      await expect(() =>
+      await expect(
         SLIP10Node.create({
-          depth: 2, // This is the correct depth, but it's still forbidden
+          depth: 2 as any, // This is the correct depth, but it's still forbidden
           derivationPath: [
             defaultBip39NodeToken,
             BIP44PurposeNodeToken,
@@ -130,8 +130,25 @@ describe('SLIP10Node', () => {
       );
     });
 
+    it('throws if both a derivation path and a key are specified', async () => {
+      await expect(
+        SLIP10Node.create({
+          derivationPath: [
+            defaultBip39NodeToken,
+            BIP44PurposeNodeToken,
+            `bip32:60'`,
+          ],
+          key: Buffer.alloc(64).fill(1) as any,
+          curve: secp256k1,
+        }),
+      ).rejects.toThrow(
+        'Invalid parameters: May not specify a derivation path if a key is specified. Initialize the node with just the parent key and its depth, then call node.derive() with your desired path.',
+      );
+    });
+
     it('throws if neither a derivation path nor a key is specified', async () => {
-      await expect(() =>
+      await expect(
+        // @ts-expect-error Missing key or derivation path
         SLIP10Node.create({ depth: 1, curve: secp256k1 }),
       ).rejects.toThrow(
         'Invalid parameters: Must specify either key or derivation path.',
@@ -139,7 +156,7 @@ describe('SLIP10Node', () => {
     });
 
     it('throws if the derivation path is empty', async () => {
-      await expect(() =>
+      await expect(
         SLIP10Node.create({ derivationPath: [] as any, curve: secp256k1 }),
       ).rejects.toThrow(
         'Invalid derivation path: May not specify an empty derivation path.',
@@ -147,7 +164,7 @@ describe('SLIP10Node', () => {
     });
 
     it('throws if the derivation path is of depth 0 and not a single BIP-39 node', async () => {
-      await expect(() =>
+      await expect(
         SLIP10Node.create({
           derivationPath: [`bip32:0'`] as any,
           curve: secp256k1,
@@ -158,7 +175,7 @@ describe('SLIP10Node', () => {
     });
 
     it('throws if the key is neither a string nor a buffer', async () => {
-      await expect(() =>
+      await expect(
         SLIP10Node.create({ depth: 0, key: {} as any, curve: secp256k1 }),
       ).rejects.toThrow(
         'Invalid key: Must be a Buffer or string if specified. Received: "object"',
@@ -169,7 +186,7 @@ describe('SLIP10Node', () => {
       const invalidLengthBuffer = Buffer.alloc(63).fill(1);
       const zeroBuffer = Buffer.alloc(64);
 
-      await expect(() =>
+      await expect(
         SLIP10Node.create({
           depth: 0,
           key: invalidLengthBuffer,
@@ -179,7 +196,7 @@ describe('SLIP10Node', () => {
         'Invalid buffer key: Must be a 64-byte, non-empty Buffer.',
       );
 
-      await expect(() =>
+      await expect(
         SLIP10Node.create({ depth: 0, key: zeroBuffer, curve: secp256k1 }),
       ).rejects.toThrow(
         'Invalid buffer key: Must be a 64-byte, non-empty Buffer.',
@@ -203,7 +220,7 @@ describe('SLIP10Node', () => {
       ];
 
       for (const input of inputs) {
-        await expect(() =>
+        await expect(
           SLIP10Node.create({ depth: 0, key: input, curve: secp256k1 }),
         ).rejects.toThrow(
           'Invalid string key: Must be a 64-byte hexadecimal or Base64 string.',
@@ -241,13 +258,13 @@ describe('SLIP10Node', () => {
 
     it('throws an error if no curve is specified', async () => {
       // @ts-expect-error No curve specified, but required in type
-      await expect(() => SLIP10Node.create({})).rejects.toThrow(
+      await expect(SLIP10Node.create({})).rejects.toThrow(
         'Invalid curve: Must specify a curve.',
       );
     });
 
     it('throws an error for unsupported curves', async () => {
-      await expect(() =>
+      await expect(
         // @ts-expect-error Invalid curve name for type
         SLIP10Node.create({ curve: { ...secp256k1, name: 'foo bar' } }),
       ).rejects.toThrow(
@@ -292,7 +309,7 @@ describe('SLIP10Node', () => {
         curve: secp256k1,
       });
 
-      await expect(() => node.derive([] as any)).rejects.toThrow(
+      await expect(node.derive([] as any)).rejects.toThrow(
         'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
       );
     });
@@ -308,7 +325,7 @@ describe('SLIP10Node', () => {
         curve: ed25519,
       });
 
-      await expect(() => node.derive(['bip32:0'])).rejects.toThrow(
+      await expect(node.derive(['bip32:0'])).rejects.toThrow(
         'Invalid path: Cannot derive unhardened child keys with ed25519.',
       );
     });

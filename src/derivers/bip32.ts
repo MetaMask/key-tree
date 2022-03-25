@@ -177,6 +177,7 @@ function generateKey({
   const extraEntropy = entropy.slice(32);
 
   // If curve is ed25519: The returned child key ki is parse256(IL).
+  // https://github.com/satoshilabs/slips/blob/133ea52a8e43d338b98be208907e144277e44c0e/slip-0010.md#private-parent-key--private-child-key
   if (curve.name === 'ed25519') {
     return { privateKey: keyMaterial, extraEntropy };
   }

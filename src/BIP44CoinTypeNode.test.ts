@@ -90,7 +90,7 @@ describe('BIP44CoinTypeNode', () => {
     });
 
     it('throws if both coin type and derivation path are specified', async () => {
-      await expect(() =>
+      await expect(
         BIP44CoinTypeNode.create(
           [defaultBip39NodeToken, BIP44PurposeNodeToken, `bip32:60'`],
           60,
@@ -101,7 +101,7 @@ describe('BIP44CoinTypeNode', () => {
     });
 
     it('throws if derivation path has invalid depth', async () => {
-      await expect(() =>
+      await expect(
         BIP44CoinTypeNode.create([
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -110,7 +110,7 @@ describe('BIP44CoinTypeNode', () => {
         `Invalid depth: Coin type nodes must be of depth ${BIP_44_COIN_TYPE_DEPTH}. Received: "1"`,
       );
 
-      await expect(() =>
+      await expect(
         BIP44CoinTypeNode.create([
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -125,7 +125,7 @@ describe('BIP44CoinTypeNode', () => {
     it('throws if node has invalid depth', async () => {
       const arbitraryCoinType = 78;
 
-      await expect(() =>
+      await expect(
         BIP44CoinTypeNode.create(
           { key: 'foo', depth: 1 } as any,
           arbitraryCoinType,
@@ -134,7 +134,7 @@ describe('BIP44CoinTypeNode', () => {
         `Invalid depth: Coin type nodes must be of depth ${BIP_44_COIN_TYPE_DEPTH}. Received: "1"`,
       );
 
-      await expect(() =>
+      await expect(
         BIP44CoinTypeNode.create(
           { key: 'foo', depth: 3 } as any,
           arbitraryCoinType,
@@ -155,7 +155,7 @@ describe('BIP44CoinTypeNode', () => {
       ];
 
       for (const input of inputs) {
-        await expect(() =>
+        await expect(
           BIP44CoinTypeNode.create(input as any, arbitraryCoinType),
         ).rejects.toThrow(
           'Invalid parent key: Must be a non-zero 64-byte key.',
@@ -176,7 +176,7 @@ describe('BIP44CoinTypeNode', () => {
       const inputs = ['60', 1.1, -1, {}];
 
       for (const input of inputs) {
-        await expect(() =>
+        await expect(
           BIP44CoinTypeNode.create(jsonNode, input as any),
         ).rejects.toThrow(
           'Invalid coin type: The specified coin type must be a non-negative integer number.',
@@ -616,7 +616,7 @@ describe('deriveBIP44AddressKey', () => {
     ];
 
     for (const input of inputs) {
-      await expect(() =>
+      await expect(
         deriveBIP44AddressKey(parentNode, input as any),
       ).rejects.toThrow(
         `Invalid BIP-32 index: Must be a non-negative integer.`,
@@ -646,7 +646,7 @@ describe('deriveBIP44AddressKey', () => {
     ];
 
     for (const input of inputs) {
-      await expect(() =>
+      await expect(
         deriveBIP44AddressKey(parentNode, input as any),
       ).rejects.toThrow(
         `Invalid BIP-32 index: Must be an object containing the index and whether it is hardened.`,
@@ -1027,7 +1027,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ];
 
     for (const input of inputs) {
-      await expect(() => deriver(input as any)).rejects.toThrow(
+      await expect(deriver(input as any)).rejects.toThrow(
         `Invalid BIP-32 index: Must be a non-negative integer.`,
       );
     }
