@@ -154,6 +154,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
   }
 
   get #privateKeyBuffer(): Buffer {
+    // `keyBuffer` consists of both the private key (first 32 bytes) and chain code
+    // (last 32 bytes), so we slice off the chain code here.
     return this.keyBuffer.slice(0, 32);
   }
 

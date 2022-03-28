@@ -14,7 +14,6 @@ import { Curve, mod, secp256k1 } from '../curves';
  *
  * @param key - The `address_index` key buffer to convert to an Ethereum
  * address.
- * @param curve - The curve to use.
  * @returns The Ethereum address corresponding to the given key.
  */
 export function privateKeyToEthAddress(key: Buffer) {
