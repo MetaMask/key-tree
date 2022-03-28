@@ -96,10 +96,7 @@ import { SLIP10Node, secp256k1 } from '@metamask/key-tree';
 // Create a SLIP10Node from a derivation path. You can also specify a key and depth instead.
 const node = await SLIP10Node.create({
   curve: secp256k1, // or ed25519
-  derivationPath: [
-    `bip39:${mnemonic}`,
-    `bip32:0'`,
-  ],
+  derivationPath: [`bip39:${mnemonic}`, `bip32:0'`],
 });
 
 // Derive the child node at m / 0' / 1' / 2'. This results in a new SLIP10Node.
