@@ -94,7 +94,7 @@ You can derive SLIP-10 keys as follows.
 import { SLIP10Node, secp256k1 } from '@metamask/key-tree';
 
 // Create a SLIP10Node from a derivation path. You can also specify a key and depth instead.
-const node = SLIP10Node.create({
+const node = await SLIP10Node.create({
   curve: secp256k1, // or ed25519
   derivationPath: [
     `bip39:${mnemonic}`,
@@ -104,7 +104,7 @@ const node = SLIP10Node.create({
 
 // Derive the child node at m / 0' / 1' / 2'. This results in a new SLIP10Node.
 // Note that you cannot derive unhardened child nodes when using Ed25519
-const childNode = node.derive([`bip32:1'`, `bip32:2'`]);
+const childNode = await node.derive([`bip32:1'`, `bip32:2'`]);
 ```
 
 There are other ways of deriving keys in addition to the above example.
