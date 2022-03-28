@@ -1,6 +1,4 @@
 import fixtures from '../test/fixtures';
-import { createBip39KeyFromSeed } from './derivers/bip39';
-import { hexStringToBuffer } from './utils';
 import {
   BIP_44_COIN_TYPE_DEPTH,
   BIP44Node,
