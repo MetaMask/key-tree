@@ -14,5 +14,7 @@ export type Curve = {
   isValidPrivateKey: (privateKey: Uint8Array | string | bigint) => boolean;
 };
 
+export type SupportedCurve = Curve['name'];
+
 // As long as both parameters are specified, this function is the same for all curves.
 export const { mod } = utils;
