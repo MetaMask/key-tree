@@ -70,8 +70,6 @@ type SLIP10NodeConstructorOptions = {
   readonly curve: SupportedCurve;
 };
 
-const SUPPORTED_CURVES = ['secp256k1', 'ed25519'];
-
 export class SLIP10Node implements SLIP10NodeInterface {
   static async create({
     depth,
@@ -273,11 +271,11 @@ function validateCurve(
     throw new Error('Invalid curve: Must specify a curve.');
   }
 
-  if (!SUPPORTED_CURVES.includes(curveName)) {
+  if (!Object.keys(curves).includes(curveName)) {
     throw new Error(
-      `Invalid curve: Only the following curves are supported: ${SUPPORTED_CURVES.join(
-        ', ',
-      )}.`,
+      `Invalid curve: Only the following curves are supported: ${Object.keys(
+        curves,
+      ).join(', ')}.`,
     );
   }
 }
