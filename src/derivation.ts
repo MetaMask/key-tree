@@ -1,11 +1,11 @@
 import {
+  BIP_32_PATH_REGEX,
+  BIP_39_PATH_REGEX,
   MAX_BIP_44_DEPTH,
   MIN_BIP_44_DEPTH,
-  BIP_39_PATH_REGEX,
-  BIP_32_PATH_REGEX,
   SLIP10Path,
 } from './constants';
-import { derivers, Deriver } from './derivers';
+import { Deriver, derivers } from './derivers';
 import { Curve } from './curves';
 
 /**
@@ -13,11 +13,16 @@ import { Curve } from './curves';
  * multipath: "bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:{account_index}"
  *
  * m: { privateKey, chainCode } = sha512Hmac("Bitcoin seed", masterSeed)
- * 44': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00, parentKey.privateKey, index + HARDENED_OFFSET])
- * 60': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00, parentKey.privateKey, index + HARDENED_OFFSET])
- * 0': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00, parentKey.privateKey, index + HARDENED_OFFSET])
- * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
- * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
+ * 44': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00,
+ * parentKey.privateKey, index + HARDENED_OFFSET])
+ * 60': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00,
+ * parentKey.privateKey, index + HARDENED_OFFSET])
+ * 0': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00,
+ * parentKey.privateKey, index + HARDENED_OFFSET])
+ * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode,
+ * [parentKey.publicKey, index])
+ * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode,
+ * [parentKey.publicKey, index])
  */
 
 /**
@@ -37,40 +42,49 @@ import { Curve } from './curves';
  *
  * BIP-39 seed phrases must be lowercase, space-delimited, and 12-24 words long.
  * @param parentKey - The parent key of the given path segment, if any.
+ * @param parentPublicKey - The parent public key of the given path segment, if any.
+ * @param parentChainCode - The chain code of the given path segment, if any.
  * @param depth - The depth of the segment.
  * @param curve - The curve to use.
+ * @param isPublic - Whether the key is public or private.
  * @returns The derived key.
  */
 export async function deriveKeyFromPath(
   pathSegment: SLIP10Path,
   parentKey?: Buffer,
+  parentPublicKey?: Buffer,
+  parentChainCode?: Buffer,
   depth?: number,
   curve?: Curve,
-): Promise<Buffer> {
+): Promise<[privateKey: Buffer, publicKey: Buffer, chainCode: Buffer]> {
   if (parentKey && !Buffer.isBuffer(parentKey)) {
     throw new Error('Parent key must be a Buffer if specified.');
   }
+
   validatePathSegment(pathSegment, Boolean(parentKey), depth);
 
   // derive through each part of path
   // `pathSegment` needs to be cast to `string[]` because `HDPathTuple.reduce()` doesn't work
-  const derivedKey = await (pathSegment as readonly string[]).reduce<
-    Promise<Buffer>
+  return await (pathSegment as readonly string[]).reduce<
+    Promise<[Buffer, Buffer, Buffer]>
   >(async (promise, node) => {
-    const key = await promise;
+    const [privateKey, publicKey, chainCode] = await promise;
 
     const [pathType, pathValue] = node.split(':');
     /* istanbul ignore if: should be impossible */
     if (!hasDeriver(pathType)) {
       throw new Error(`Unknown derivation type: "${pathType}"`);
     }
-    const deriver = derivers[pathType] as Deriver;
-    const childKey = await deriver.deriveChildKey(pathValue, key, curve);
-    // continue deriving from child key
-    return childKey;
-  }, Promise.resolve(parentKey as Buffer));
 
-  return derivedKey;
+    const deriver = derivers[pathType] as Deriver;
+    return await deriver.deriveChildKey(
+      pathValue,
+      privateKey,
+      publicKey,
+      chainCode,
+      curve,
+    );
+  }, Promise.resolve([parentKey as Buffer, parentPublicKey as Buffer, parentChainCode as Buffer]));
 }
 
 /**

@@ -5,7 +5,7 @@ import {
   BASE_64_ZERO,
   BIP32Node,
   BIP44PurposeNodeToken,
-  BUFFER_KEY_LENGTH,
+  BUFFER_EXTENDED_KEY_LENGTH,
   ChangeHDPathString,
   CoinTypeHDPathString,
   CoinTypeToAddressTuple,
@@ -195,19 +195,33 @@ export function isValidHexString(hexString: string): boolean {
 }
 
 /**
- * @param base64String - The Base64 string to convert.
- * @returns The {@link Buffer} corresponding to the Base64 string.
+ * @param hexString - The hexadecimal string to convert.
+ * @returns The {@link Buffer} corresponding to the hexadecimal string.
  */
-export function base64StringToBuffer(base64String: string): Buffer {
-  return Buffer.from(base64String, 'base64');
+export function hexStringToBuffer(hexString: string | Buffer): Buffer {
+  if (Buffer.isBuffer(hexString)) {
+    return hexString;
+  }
+
+  if (typeof hexString === 'string') {
+    return Buffer.from(stripHexPrefix(hexString), 'hex');
+  }
+
+  throw new Error(`Invalid hex string: "${hexString}".`);
 }
 
 /**
  * @param hexString - The hexadecimal string to convert.
  * @returns The {@link Buffer} corresponding to the hexadecimal string.
  */
-export function hexStringToBuffer(hexString: string): Buffer {
-  return Buffer.from(stripHexPrefix(hexString), 'hex');
+export function nullableHexStringToBuffer(
+  hexString?: string | Buffer,
+): Buffer | undefined {
+  if (hexString) {
+    return hexStringToBuffer(hexString);
+  }
+
+  return undefined;
 }
 
 /**
@@ -223,10 +237,14 @@ export function bufferToBase64String(input: Buffer): string {
  * A valid buffer key is 64 bytes long and has at least one non-zero byte.
  *
  * @param buffer - The {@link Buffer} to test.
+ * @param expectedLength - The expected length of the buffer.
  * @returns Whether the buffer represents a valid BIP-32 key.
  */
-export function isValidBufferKey(buffer: Buffer): boolean {
-  if (buffer.length !== BUFFER_KEY_LENGTH) {
+export function isValidBufferKey(
+  buffer: Buffer,
+  expectedLength: number = BUFFER_EXTENDED_KEY_LENGTH,
+): boolean {
+  if (buffer.length !== expectedLength) {
     return false;
   }
 
