@@ -40,7 +40,7 @@ describe('SLIP10Node', () => {
 
       const node = await SLIP10Node.fromExtendedKey({
         publicKey: privateNode.publicKeyBuffer,
-        chainCode: privateNode.chainCode,
+        chainCode: privateNode.chainCodeBuffer,
         depth: 0,
         curve: 'secp256k1',
       });
@@ -115,12 +115,13 @@ describe('SLIP10Node', () => {
         curve: 'secp256k1',
       });
 
-      expect(node.key).toHaveLength(88);
       expect(node.depth).toStrictEqual(2);
       expect(node.toJSON()).toStrictEqual({
         depth: 2,
-        key: node.key,
         curve: 'secp256k1',
+        privateKey: node.privateKey,
+        publicKey: node.publicKey,
+        chainCode: node.chainCode,
       });
     });
 
@@ -166,25 +167,26 @@ describe('SLIP10Node', () => {
       });
 
       // getter
-      expect(() => (node.key = 'foo')).toThrow(
-        /^Cannot set property key of .+ which has only a getter/iu,
+      expect(() => (node.privateKey = 'foo')).toThrow(
+        /^Cannot set property privateKey of .+ which has only a getter/iu,
       );
 
       // frozen / readonly
-      ['depth', 'privateKeyBuffer', 'publicKeyBuffer', 'chainCode'].forEach(
-        (property) => {
-          expect(
-            () => (node[property] = Buffer.allocUnsafe(64).fill(1)),
-          ).toThrow(
-            expect.objectContaining({
-              name: 'TypeError',
-              message: expect.stringMatching(
-                `Cannot assign to read only property '${property}' of object`,
-              ),
-            }),
-          );
-        },
-      );
+      [
+        'depth',
+        'privateKeyBuffer',
+        'publicKeyBuffer',
+        'chainCodeBuffer',
+      ].forEach((property) => {
+        expect(() => (node[property] = Buffer.allocUnsafe(64).fill(1))).toThrow(
+          expect.objectContaining({
+            name: 'TypeError',
+            message: expect.stringMatching(
+              `Cannot assign to read only property '${property}' of object`,
+            ),
+          }),
+        );
+      });
     });
 
     it('throws an error if no curve is specified', async () => {
@@ -413,14 +415,18 @@ describe('SLIP10Node', () => {
       const nodeJson = node.toJSON();
       expect(nodeJson).toStrictEqual({
         depth: node.depth,
-        key: node.key,
         curve: 'secp256k1',
+        privateKey: node.privateKey,
+        publicKey: node.publicKey,
+        chainCode: node.chainCode,
       });
 
       expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
         depth: node.depth,
-        key: node.key,
         curve: 'secp256k1',
+        privateKey: node.privateKey,
+        publicKey: node.publicKey,
+        chainCode: node.chainCode,
       });
     });
   });

@@ -148,10 +148,6 @@ export class BIP44Node implements BIP44NodeInterface {
     return this.#node.depth as BIP44Depth;
   }
 
-  public get key(): string {
-    return this.#node.key;
-  }
-
   public get privateKeyBuffer(): Buffer | undefined {
     return this.#node.privateKeyBuffer;
   }
@@ -161,7 +157,7 @@ export class BIP44Node implements BIP44NodeInterface {
   }
 
   public get chainCodeBuffer(): Buffer {
-    return this.#node.chainCode;
+    return this.#node.chainCodeBuffer;
   }
 
   public get privateKey(): string | undefined {
@@ -173,7 +169,7 @@ export class BIP44Node implements BIP44NodeInterface {
   }
 
   public get chainCode(): string {
-    return this.#node.chainCode.toString('hex');
+    return this.#node.chainCode;
   }
 
   public get address(): string {

@@ -35,7 +35,6 @@ describe('BIP44Node', () => {
         ],
       });
 
-      expect(node.key).toHaveLength(88);
       expect(node.depth).toStrictEqual(2);
       expect(node.toJSON()).toStrictEqual({
         depth: 2,
@@ -55,20 +54,16 @@ describe('BIP44Node', () => {
       });
 
       // getter
-      ['key', 'depth', 'privateKey', 'publicKey', 'address'].forEach(
-        (property) => {
-          expect(
-            () => (node[property] = Buffer.allocUnsafe(64).fill(1)),
-          ).toThrow(
-            expect.objectContaining({
-              name: 'TypeError',
-              message: expect.stringMatching(
-                /^Cannot set property .+ of .+ which has only a getter/iu,
-              ),
-            }),
-          );
-        },
-      );
+      ['depth', 'privateKey', 'publicKey', 'address'].forEach((property) => {
+        expect(() => (node[property] = Buffer.allocUnsafe(64).fill(1))).toThrow(
+          expect.objectContaining({
+            name: 'TypeError',
+            message: expect.stringMatching(
+              /^Cannot set property .+ of .+ which has only a getter/iu,
+            ),
+          }),
+        );
+      });
     });
 
     it('throws if the derivation path is of depth 0 and not a single BIP-39 node', async () => {
@@ -171,7 +166,8 @@ describe('BIP44Node', () => {
 
       expect(childNode).toMatchObject({
         depth: targetNode.depth,
-        key: targetNode.key,
+        privateKey: targetNode.privateKey,
+        publicKey: targetNode.publicKey,
       });
     });
 
@@ -337,8 +333,6 @@ describe('BIP44Node', () => {
         ],
       });
 
-      expect(typeof node.key).toStrictEqual('string');
-      expect(node.key).toHaveLength(88);
       expect(node.depth).toStrictEqual(2);
 
       const nodeJson = node.toJSON();

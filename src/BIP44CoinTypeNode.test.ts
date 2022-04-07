@@ -30,7 +30,6 @@ describe('BIP44CoinTypeNode', () => {
 
       expect(node.coin_type).toStrictEqual(coinType);
       expect(node.depth).toStrictEqual(2);
-      expect(node.key).toHaveLength(88);
       expect(node.privateKey).toStrictEqual(bip44Node.privateKey);
       expect(node.publicKey).toStrictEqual(bip44Node.publicKey);
       expect(node.path).toStrictEqual(pathString);

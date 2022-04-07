@@ -1,12 +1,12 @@
 import { RootedSLIP10PathTuple, SLIP10PathTuple } from './constants';
 import { Curve, curves, SupportedCurve } from './curves';
-import { bufferToBase64String, isValidBufferKey } from './utils';
+import { isValidBufferKey } from './utils';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
 
 /**
  * A wrapper for SLIP-10 Hierarchical Deterministic (HD) tree nodes, i.e.
- * cryptographic keys used to generate keypairs and addresses for cryptocurrency
+ * cryptographic keys used to generate key pairs and addresses for cryptocurrency
  * protocols.
  */
 export type JsonSLIP10Node = {
@@ -16,9 +16,19 @@ export type JsonSLIP10Node = {
   readonly depth: number;
 
   /**
-   * The Base64 string representation of the key material for this node.
+   * The (optional) private key of this node.
    */
-  readonly key: string;
+  readonly privateKey?: string;
+
+  /**
+   * The public key of this node.
+   */
+  readonly publicKey: string;
+
+  /**
+   * The chain code of this node.
+   */
+  readonly chainCode: string;
 
   /**
    * The name of the curve used by the node.
@@ -27,7 +37,7 @@ export type JsonSLIP10Node = {
 };
 
 export type SLIP10NodeInterface = JsonSLIP10Node & {
-  chainCode: Buffer;
+  chainCodeBuffer: Buffer;
 
   /**
    * The private key for this node, as a Node.js Buffer or browser-equivalent.
@@ -45,24 +55,6 @@ export type SLIP10NodeInterface = JsonSLIP10Node & {
    */
   toJSON(): JsonSLIP10Node;
 };
-
-type SLIP10NodeKeyDepthOptions = {
-  readonly depth: number;
-  readonly key: Buffer | string;
-  readonly derivationPath?: never;
-  readonly curve: SupportedCurve;
-};
-
-type SLIP10NodeDerivationPathOptions = {
-  readonly derivationPath: RootedSLIP10PathTuple;
-  readonly depth?: never;
-  readonly key?: never;
-  readonly curve: SupportedCurve;
-};
-
-export type SLIP10NodeOptions =
-  | SLIP10NodeKeyDepthOptions
-  | SLIP10NodeDerivationPathOptions;
 
 type SLIP10NodeConstructorOptions = {
   readonly depth: number;
@@ -192,7 +184,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   public readonly depth: number;
 
-  public readonly chainCode: Buffer;
+  public readonly chainCodeBuffer: Buffer;
 
   public readonly privateKeyBuffer?: Buffer;
 
@@ -206,7 +198,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
     curve,
   }: SLIP10NodeConstructorOptions) {
     this.depth = depth;
-    this.chainCode = chainCode;
+    this.chainCodeBuffer = chainCode;
     this.privateKeyBuffer = privateKey;
     this.publicKeyBuffer = publicKey;
     this.curve = curve;
@@ -214,13 +206,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
     Object.freeze(this);
   }
 
-  public get key(): string {
-    return bufferToBase64String(
-      Buffer.concat([
-        this.privateKeyBuffer ?? this.publicKeyBuffer,
-        this.chainCode,
-      ]),
-    );
+  public get chainCode() {
+    return this.chainCodeBuffer.toString('hex');
   }
 
   public get privateKey(): string | undefined {
@@ -247,7 +234,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
   public neuter(): SLIP10Node {
     return new SLIP10Node({
       depth: this.depth,
-      chainCode: this.chainCode,
+      chainCode: this.chainCodeBuffer,
       publicKey: this.publicKeyBuffer,
       curve: this.curve,
     });
@@ -272,7 +259,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
     const { privateKey, publicKey, chainCode, depth } = await deriveChildNode(
       this.privateKeyBuffer,
       this.publicKeyBuffer,
-      this.chainCode,
+      this.chainCodeBuffer,
       this.depth,
       path,
       getCurveByName(this.curve),
@@ -291,8 +278,10 @@ export class SLIP10Node implements SLIP10NodeInterface {
   public toJSON(): JsonSLIP10Node {
     return {
       depth: this.depth,
-      key: this.key,
       curve: this.curve,
+      privateKey: this.privateKey,
+      publicKey: this.publicKey,
+      chainCode: this.chainCodeBuffer.toString('hex'),
     };
   }
 }

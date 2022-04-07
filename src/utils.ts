@@ -220,14 +220,6 @@ export function nullableHexStringToBuffer(
 }
 
 /**
- * @param input - The {@link Buffer} to convert.
- * @returns The buffer as a Base64 string.
- */
-export function bufferToBase64String(input: Buffer): string {
-  return input.toString('base64');
-}
-
-/**
  * Tests whether the specified {@link Buffer} is a valid BIP-32 key.
  * A valid buffer key is 64 bytes long and has at least one non-zero byte.
  *

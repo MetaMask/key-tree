@@ -160,10 +160,6 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     return this.#node.depth;
   }
 
-  public get key(): string {
-    return this.#node.key;
-  }
-
   public get privateKeyBuffer(): Buffer | undefined {
     return this.#node.privateKeyBuffer;
   }
