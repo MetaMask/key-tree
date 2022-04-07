@@ -260,6 +260,46 @@ describe('derivation', () => {
         ),
       ).rejects.toThrow('Invalid parent key: Must be 32 bytes long.');
     });
+
+    it('throws for an invalid private key', async () => {
+      await expect(
+        bip32Derive(
+          `44'`,
+          Buffer.alloc(31).fill(1),
+          undefined,
+          Buffer.alloc(32).fill(1),
+        ),
+      ).rejects.toThrow('Invalid parent key: Must be 32 bytes long.');
+    });
+
+    it('throws for an invalid public key', async () => {
+      await expect(
+        bip32Derive(
+          `44'`,
+          undefined,
+          Buffer.alloc(64).fill(1),
+          Buffer.alloc(32).fill(1),
+        ),
+      ).rejects.toThrow('Invalid parent public key: Must be 65 bytes long.');
+    });
+
+    it('throws if no chain code is specified', async () => {
+      await expect(
+        // @ts-expect-error Invalid chain code type.
+        bip32Derive(`44'`, Buffer.alloc(32, 1), undefined, undefined),
+      ).rejects.toThrow('Invalid parameters: Must specify a chain code.');
+    });
+
+    it('throws for an invalid chain code', async () => {
+      await expect(
+        bip32Derive(
+          `44'`,
+          Buffer.alloc(32, 1),
+          undefined,
+          Buffer.alloc(31).fill(1),
+        ),
+      ).rejects.toThrow('Invalid chain code: Must be 32 bytes long.');
+    });
   });
 
   // The outputs of this function are tested in key derivation above

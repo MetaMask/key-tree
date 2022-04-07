@@ -64,8 +64,14 @@ export async function deriveChildKey(
     throw new Error('Invalid parameters: Must specify a chain code.');
   }
 
-  if (parentKey?.length !== BUFFER_KEY_LENGTH) {
+  if (parentKey && parentKey.length !== BUFFER_KEY_LENGTH) {
     throw new Error('Invalid parent key: Must be 32 bytes long.');
+  }
+
+  if (parentPublicKey && parentPublicKey.length !== curve.publicKeyLength) {
+    throw new Error(
+      `Invalid parent public key: Must be ${curve.publicKeyLength} bytes long.`,
+    );
   }
 
   if (chainCode.length !== BUFFER_KEY_LENGTH) {
@@ -87,14 +93,14 @@ export async function deriveChildKey(
   }
 
   const secretExtension = await deriveSecretExtension({
-    parentPrivateKey: parentKey,
+    parentPrivateKey: parentKey as Buffer,
     childIndex,
     isHardened,
     curve,
   });
 
   const { privateKey, extraEntropy } = generateKey({
-    parentPrivateKey: parentKey,
+    parentPrivateKey: parentKey as Buffer,
     parentExtraEntropy: chainCode,
     secretExtension,
     curve,

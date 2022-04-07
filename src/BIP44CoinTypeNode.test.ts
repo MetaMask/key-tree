@@ -71,7 +71,7 @@ describe('BIP44CoinTypeNode', () => {
       const arbitraryCoinType = 78;
       const inputs = [
         {
-          privateKey: 'foo',
+          privateKey: '0xf00',
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
           depth: 2,
@@ -83,13 +83,13 @@ describe('BIP44CoinTypeNode', () => {
           depth: 2,
         },
         {
-          privateKey: Buffer.allocUnsafe(63).fill(1).toString('base64'),
+          privateKey: Buffer.allocUnsafe(63).fill(1).toString('hex'),
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
           depth: 2,
         },
         {
-          privateKey: Buffer.alloc(64).toString('base64'),
+          privateKey: Buffer.alloc(64).toString('hex'),
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
           depth: 2,

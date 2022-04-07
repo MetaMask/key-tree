@@ -89,6 +89,18 @@ describe('SLIP10Node', () => {
         );
       }
     });
+
+    it('throws if the private key is invalid', async () => {
+      await expect(
+        SLIP10Node.fromExtendedKey({
+          // @ts-expect-error Invalid private key type.
+          privateKey: 'foo',
+          chainCode: Buffer.alloc(32, 1),
+          depth: 0,
+          curve: 'secp256k1',
+        }),
+      ).rejects.toThrow('Invalid key: Expected a Buffer, but received: "foo".');
+    });
   });
 
   describe('fromDerivationPath', () => {
@@ -216,6 +228,18 @@ describe('SLIP10Node', () => {
         privateKey: targetNode.privateKey,
         chainCode: targetNode.chainCode,
       });
+    });
+
+    // TODO: Public key derivation
+    it('throws when trying to derive a node without a private key', async () => {
+      const node = await SLIP10Node.fromDerivationPath({
+        derivationPath: [defaultBip39NodeToken, BIP44PurposeNodeToken],
+        curve: 'secp256k1',
+      });
+
+      await expect(node.neuter().derive([`bip32:0'`])).rejects.toThrow(
+        'Unable to derive child key: No private key.',
+      );
     });
 
     it('throws if the child derivation path is zero', async () => {

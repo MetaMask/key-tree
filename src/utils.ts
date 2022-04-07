@@ -1,16 +1,11 @@
 import { bytesToHex } from '@noble/hashes/utils';
 import {
-  BASE_64_KEY_LENGTH,
-  BASE_64_REGEX,
-  BASE_64_ZERO,
   BIP32Node,
   BIP44PurposeNodeToken,
-  BUFFER_EXTENDED_KEY_LENGTH,
   ChangeHDPathString,
   CoinTypeHDPathString,
   CoinTypeToAddressTuple,
   HardenedBIP32Node,
-  HEXADECIMAL_KEY_LENGTH,
   UnhardenedBIP32Node,
 } from './constants';
 
@@ -203,11 +198,11 @@ export function hexStringToBuffer(hexString: string | Buffer): Buffer {
     return hexString;
   }
 
-  if (typeof hexString === 'string') {
-    return Buffer.from(stripHexPrefix(hexString), 'hex');
+  if (typeof hexString !== 'string' || !isValidHexString(hexString)) {
+    throw new Error(`Invalid hex string: "${hexString}".`);
   }
 
-  throw new Error(`Invalid hex string: "${hexString}".`);
+  return Buffer.from(stripHexPrefix(hexString), 'hex');
 }
 
 /**
@@ -242,7 +237,7 @@ export function bufferToBase64String(input: Buffer): string {
  */
 export function isValidBufferKey(
   buffer: Buffer,
-  expectedLength: number = BUFFER_EXTENDED_KEY_LENGTH,
+  expectedLength: number,
 ): boolean {
   if (buffer.length !== expectedLength) {
     return false;
@@ -254,61 +249,6 @@ export function isValidBufferKey(
     }
   }
   return false;
-}
-
-/**
- * @param input - The string to test.
- * @returns Whether the given string is a valid Base64 string.
- */
-function isValidBase64String(input: string) {
-  return BASE_64_REGEX.test(input);
-}
-
-/**
- * Tests whether the specified hexadecimal string is a valid BIP-32 key.
- * A valid hexadecimal string key is 128 characters long (excluding any `0x`
- * prefix) and has at least one non-zero byte.
- *
- * @param stringKey - The hexadecimal string to test.
- * @returns Whether the string represents a valid BIP-32 key.
- */
-export function isValidHexStringKey(stringKey: string): boolean {
-  if (!isValidHexString(stringKey)) {
-    return false;
-  }
-
-  const stripped = stripHexPrefix(stringKey);
-  if (stripped.length !== HEXADECIMAL_KEY_LENGTH) {
-    return false;
-  }
-
-  if (/^0+$/iu.test(stripped)) {
-    return false;
-  }
-  return true;
-}
-
-/**
- * Tests whether the specified Base64 string is a valid BIP-32 key.
- * A valid Base64 string key is 88 characters long and has at least one non-zero
- * byte.
- *
- * @param stringKey - The Base64 string to test.
- * @returns Whether the string represents a valid BIP-32 key.
- */
-export function isValidBase64StringKey(stringKey: string): boolean {
-  if (!isValidBase64String(stringKey)) {
-    return false;
-  }
-
-  if (stringKey.length !== BASE_64_KEY_LENGTH) {
-    return false;
-  }
-
-  if (stringKey === BASE_64_ZERO) {
-    return false;
-  }
-  return true;
 }
 
 /**

@@ -13,6 +13,7 @@ export type Curve = {
   name: SupportedCurve;
   secret: Uint8Array;
   deriveUnhardenedKeys: boolean;
+  publicKeyLength: number;
   curve: {
     n: bigint;
   };
