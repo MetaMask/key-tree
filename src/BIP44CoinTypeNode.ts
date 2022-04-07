@@ -67,59 +67,77 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    *
    * `0 / 1 / 2 / 3 / 4 / 5`
    *
-   * @param nodeOrPathTuple - The {@link BIP44Node} or derivation path for the
-   * key of this `coin_type` node.
+   * @param json - The {@link JsonBIP44Node} for the key of this node.
    * @param coin_type - The coin_type index of this node. Must be a non-negative
    * integer.
    */
-  static async create(
-    nodeOrPathTuple: CoinTypeHDPathTuple | BIP44Node | JsonBIP44Node,
-    coin_type?: number,
-  ): Promise<BIP44CoinTypeNode> {
-    if (Array.isArray(nodeOrPathTuple)) {
-      if (coin_type !== undefined) {
-        throw new Error(
-          'Invalid parameters: May not specify both coin type and a derivation path. The coin type will be computed from the derivation path.',
-        );
-      }
-
-      validateCoinTypeNodeDepth(nodeOrPathTuple.length - 1);
-
-      const node = await BIP44Node.fromDerivationPath({
-        derivationPath: nodeOrPathTuple,
-      });
-
-      // Split the bip32 string token and extract the coin_type index
-      const coinType = Number.parseInt(
-        nodeOrPathTuple[BIP_44_COIN_TYPE_DEPTH].split(':')[1].replace(`'`, ''),
-        10,
-      );
-
-      return new BIP44CoinTypeNode(node, coinType);
-    }
-
-    validateCoinTypeNodeDepth(nodeOrPathTuple.depth);
-
-    if (
-      typeof coin_type !== 'number' ||
-      !Number.isInteger(coin_type) ||
-      coin_type < 0
-    ) {
-      throw new Error(
-        'Invalid coin type: The specified coin type must be a non-negative integer number.',
-      );
-    }
-
-    if (nodeOrPathTuple instanceof BIP44Node) {
-      return new BIP44CoinTypeNode(nodeOrPathTuple, coin_type);
-    }
+  static async fromJSON(json: JsonBIP44Node, coin_type: number) {
+    validateCoinType(coin_type);
+    validateCoinTypeNodeDepth(json.depth);
 
     const node = await BIP44Node.fromExtendedKey({
-      depth: nodeOrPathTuple.depth,
-      chainCode: hexStringToBuffer(nodeOrPathTuple.chainCode),
-      privateKey: nullableHexStringToBuffer(nodeOrPathTuple.privateKey),
-      publicKey: hexStringToBuffer(nodeOrPathTuple.publicKey),
+      depth: json.depth,
+      chainCode: hexStringToBuffer(json.chainCode),
+      privateKey: nullableHexStringToBuffer(json.privateKey),
+      publicKey: hexStringToBuffer(json.publicKey),
     });
+
+    return new BIP44CoinTypeNode(node, coin_type);
+  }
+
+  /**
+   * Constructs a BIP-44 `coin_type` node. `coin_type` is the index
+   * specifying the protocol for which deeper keys are intended. For the
+   * authoritative list of coin types, please see
+   * [SLIP-44](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
+   *
+   * Recall that a BIP-44 HD tree path consists of the following nodes:
+   *
+   * `m / 44' / coin_type' / account' / change / address_index`
+   *
+   * With the following depths:
+   *
+   * `0 / 1 / 2 / 3 / 4 / 5`
+   *
+   * @param derivationPath - The derivation path for the key of this node.
+   */
+  static async fromDerivationPath(derivationPath: CoinTypeHDPathTuple) {
+    validateCoinTypeNodeDepth(derivationPath.length - 1);
+
+    const node = await BIP44Node.fromDerivationPath({
+      derivationPath,
+    });
+
+    // Split the bip32 string token and extract the coin_type index
+    const coinType = Number.parseInt(
+      derivationPath[BIP_44_COIN_TYPE_DEPTH].split(':')[1].replace(`'`, ''),
+      10,
+    );
+
+    return new BIP44CoinTypeNode(node, coinType);
+  }
+
+  /**
+   * Constructs a BIP-44 `coin_type` node. `coin_type` is the index
+   * specifying the protocol for which deeper keys are intended. For the
+   * authoritative list of coin types, please see
+   * [SLIP-44](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
+   *
+   * Recall that a BIP-44 HD tree path consists of the following nodes:
+   *
+   * `m / 44' / coin_type' / account' / change / address_index`
+   *
+   * With the following depths:
+   *
+   * `0 / 1 / 2 / 3 / 4 / 5`
+   *
+   * @param node - The {@link BIP44Node} for the key of this node.
+   * @param coin_type - The coin_type index of this node. Must be a non-negative
+   * integer.
+   */
+  static async fromNode(node: BIP44Node, coin_type: number) {
+    validateCoinType(coin_type);
+    validateCoinTypeNodeDepth(node.depth);
 
     return new BIP44CoinTypeNode(node, coin_type);
   }
@@ -230,6 +248,24 @@ function validateCoinTypeNodeDepth(depth: number) {
   if (depth !== BIP_44_COIN_TYPE_DEPTH) {
     throw new Error(
       `Invalid depth: Coin type nodes must be of depth ${BIP_44_COIN_TYPE_DEPTH}. Received: "${depth}"`,
+    );
+  }
+}
+
+/**
+ * Validates that the coin type is a non-negative integer number. An error is
+ * thrown if validation fails.
+ *
+ * @param coin_type - The coin type to validate.
+ */
+function validateCoinType(coin_type: unknown): asserts coin_type is number {
+  if (
+    typeof coin_type !== 'number' ||
+    !Number.isInteger(coin_type) ||
+    coin_type < 0
+  ) {
+    throw new Error(
+      'Invalid coin type: The specified coin type must be a non-negative integer number.',
     );
   }
 }
