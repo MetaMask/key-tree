@@ -43,6 +43,23 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBuffer).toHaveLength(65);
     });
 
+    it('initializes a new ed25519 node from a private key', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      const node = await SLIP10Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 0,
+        curve: 'ed25519',
+      });
+
+      expect(node.depth).toBe(0);
+      expect(node.privateKeyBuffer).toHaveLength(32);
+      expect(node.publicKeyBuffer).toHaveLength(33);
+    });
+
     it('initializes a new node from a public key', async () => {
       const [privateKey, , chainCode] = await deriveChildKey(
         fixtures.local.mnemonic,
@@ -65,6 +82,30 @@ describe('SLIP10Node', () => {
       expect(node.depth).toBe(0);
       expect(node.privateKeyBuffer).toBeUndefined();
       expect(node.publicKeyBuffer).toHaveLength(65);
+    });
+
+    it('initializes a new ed25519 node from a public key', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      const privateNode = await SLIP10Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 0,
+        curve: 'ed25519',
+      });
+
+      const node = await SLIP10Node.fromExtendedKey({
+        publicKey: privateNode.publicKeyBuffer,
+        chainCode: privateNode.chainCodeBuffer,
+        depth: 0,
+        curve: 'ed25519',
+      });
+
+      expect(node.depth).toBe(0);
+      expect(node.privateKeyBuffer).toBeUndefined();
+      expect(node.publicKeyBuffer).toHaveLength(33);
     });
 
     it('initializes a new node from a hexadecimal public key and chain code', async () => {
