@@ -136,6 +136,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    * integer.
    */
   static async fromNode(node: BIP44Node, coin_type: number) {
+    if (!(node instanceof BIP44Node)) {
+      throw new Error('Invalid node: Expected an instance of BIP44Node.');
+    }
+
     validateCoinType(coin_type);
     validateCoinTypeNodeDepth(node.depth);
 

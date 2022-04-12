@@ -165,6 +165,13 @@ describe('BIP44CoinTypeNode', () => {
         chainCode: node.chainCode,
       });
     });
+
+    it('throws if the node is not a BIP44Node', async () => {
+      // @ts-expect-error Invalid node type.
+      await expect(BIP44CoinTypeNode.fromNode({}, 0)).rejects.toThrow(
+        'Invalid node: Expected an instance of BIP44Node.',
+      );
+    });
   });
 
   describe('fromDerivationPath', () => {
