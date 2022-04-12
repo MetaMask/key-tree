@@ -252,3 +252,43 @@ export function isValidBufferKey(
 export function bytesToNumber(bytes: Uint8Array): bigint {
   return BigInt(`0x${bytesToHex(bytes)}`);
 }
+
+/**
+ * Get a Buffer from a hexadecimal string or Buffer. Validates that the
+ * length of the Buffer matches the specified length, and that the buffer
+ * is not empty.
+ *
+ * @param value - The value to convert to a Buffer.
+ * @param length - The length to validate the Buffer against.
+ */
+export function getBuffer(value: unknown, length: number): Buffer {
+  if (value instanceof Buffer) {
+    validateBuffer(value, length);
+
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    if (!isValidHexString(value)) {
+      throw new Error(
+        `Invalid value: Must be a valid hex string of length: ${length * 2}.`,
+      );
+    }
+
+    const buffer = hexStringToBuffer(value);
+    validateBuffer(buffer, length);
+
+    return buffer;
+  }
+
+  throw new Error(`Invalid value: Expected a Buffer or hexadecimal string.`);
+}
+
+function validateBuffer(
+  buffer: Buffer,
+  length: number,
+): asserts buffer is Buffer {
+  if (!isValidBufferKey(buffer, length)) {
+    throw new Error(`Invalid value: Must be a non-zero ${length}-byte buffer.`);
+  }
+}

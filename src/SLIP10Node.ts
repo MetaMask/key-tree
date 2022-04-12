@@ -4,9 +4,9 @@ import {
   SLIP10PathTuple,
 } from './constants';
 import { Curve, curves, SupportedCurve } from './curves';
-import { hexStringToBuffer, isValidBufferKey, isValidHexString } from './utils';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
+import { getBuffer } from './utils';
 
 /**
  * A wrapper for SLIP-10 Hierarchical Deterministic (HD) tree nodes, i.e.
@@ -361,40 +361,6 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
     throw new Error(
       `Invalid HD tree path depth: The depth must be a positive integer. Received: "${depth}".`,
     );
-  }
-}
-
-export function getBuffer(value: unknown, length: number): Buffer {
-  if (value instanceof Buffer) {
-    validateBuffer(value, length);
-
-    return value;
-  }
-
-  if (typeof value === 'string') {
-    if (!isValidHexString(value)) {
-      throw new Error(
-        `Invalid hex string: Must be a valid hex string of length: ${
-          length * 2
-        }.`,
-      );
-    }
-
-    const buffer = hexStringToBuffer(value);
-    validateBuffer(buffer, length);
-
-    return buffer;
-  }
-
-  throw new Error(`Invalid key: Expected a Buffer or hexadecimal string.`);
-}
-
-function validateBuffer(
-  buffer: Buffer,
-  length: number,
-): asserts buffer is Buffer {
-  if (!isValidBufferKey(buffer, length)) {
-    throw new Error(`Invalid key: Must be a non-zero ${length}-byte key.`);
   }
 }
 
