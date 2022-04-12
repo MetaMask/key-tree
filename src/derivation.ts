@@ -9,20 +9,15 @@ import { Deriver, derivers } from './derivers';
 import { Curve } from './curves';
 
 /**
- * ethereum default seed path: "m/44'/60'/0'/0/{account_index}"
- * multipath: "bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:{account_index}"
+ * Ethereum default seed path: "m/44'/60'/0'/0/{account_index}"
+ * Multipath: "bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:{account_index}"
  *
  * m: { privateKey, chainCode } = sha512Hmac("Bitcoin seed", masterSeed)
- * 44': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00,
- * parentKey.privateKey, index + HARDENED_OFFSET])
- * 60': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00,
- * parentKey.privateKey, index + HARDENED_OFFSET])
- * 0': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00,
- * parentKey.privateKey, index + HARDENED_OFFSET])
- * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode,
- * [parentKey.publicKey, index])
- * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode,
- * [parentKey.publicKey, index])
+ * 44': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00, parentKey.privateKey, index + HARDENED_OFFSET])
+ * 60': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00, parentKey.privateKey, index + HARDENED_OFFSET])
+ * 0': { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [0x00, parentKey.privateKey, index + HARDENED_OFFSET])
+ * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
+ * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
  */
 
 /**
@@ -46,7 +41,6 @@ import { Curve } from './curves';
  * @param parentChainCode - The chain code of the given path segment, if any.
  * @param depth - The depth of the segment.
  * @param curve - The curve to use.
- * @param isPublic - Whether the key is public or private.
  * @returns The derived key.
  */
 export async function deriveKeyFromPath(

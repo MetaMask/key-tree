@@ -5,6 +5,17 @@ import { BIP_32_HARDENED_OFFSET, BUFFER_KEY_LENGTH } from '../constants';
 import { bytesToNumber, hexStringToBuffer, isValidBufferKey } from '../utils';
 import { Curve, mod, secp256k1 } from '../curves';
 
+/**
+ * Converts a BIP-32 private key to an Ethereum address.
+ *
+ * **WARNING:** Only validates that the key is non-zero and of the correct
+ * length. It is the consumer's responsibility to ensure that the specified
+ * key is a valid BIP-44 Ethereum `address_index` key.
+ *
+ * @param key - The `address_index` private key buffer to convert to an Ethereum
+ * address.
+ * @returns The Ethereum address corresponding to the given key.
+ */
 export function privateKeyToEthAddress(key: Buffer) {
   if (!Buffer.isBuffer(key) || !isValidBufferKey(key, BUFFER_KEY_LENGTH)) {
     throw new Error('Invalid key: The key must be a 32-byte, non-zero Buffer.');
@@ -37,11 +48,16 @@ export function publicKeyToEthAddress(key: Buffer) {
 }
 
 /**
- * @param pathPart
- * @param parentKey
- * @param parentPublicKey
- * @param chainCode
- * @param curve
+ * Derive a BIP-32 child key with a given path from a parent key.
+ *
+ * @param pathPart - The derivation path part to derive.
+ * @param parentKey - The parent private key to derive from.
+ * @param parentPublicKey - The parent public key to derive from, if no
+ * private key is provided.
+ * @param chainCode - The chain code to use for derivation.
+ * @param curve - The curve to use for derivation.
+ * @returns A tuple containing the derived private key, public key and chain
+ * code.
  */
 export async function deriveChildKey(
   pathPart: string,
