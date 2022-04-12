@@ -1,11 +1,156 @@
 import {
+  getBIP32NodeToken,
+  getBIP44ChangePathString,
+  getBIP44CoinTypePathString,
+  getBIP44CoinTypeToAddressPathTuple,
+  getHardenedBIP32NodeToken,
+  getUnhardenedBIP32NodeToken,
+  isValidBufferKey,
+  nullableHexStringToBuffer,
   getBuffer,
   getFingerprint,
   hexStringToBuffer,
-  isValidBufferKey,
-  nullableHexStringToBuffer,
 } from './utils';
+
 import { BIP44Node } from './BIP44Node';
+
+describe('getBIP44CoinTypePathString', () => {
+  it('returns a BIP-44 coin type path string', () => {
+    expect(getBIP44CoinTypePathString(0)).toBe(`m / bip32:44' / bip32:0'`);
+    expect(getBIP44CoinTypePathString(1)).toBe(`m / bip32:44' / bip32:1'`);
+    expect(getBIP44CoinTypePathString(1000)).toBe(
+      `m / bip32:44' / bip32:1000'`,
+    );
+  });
+
+  it('validates the index', () => {
+    expect(() => getBIP44CoinTypePathString(-1)).toThrow(
+      'Invalid BIP-32 index: Must be a non-negative integer.',
+    );
+  });
+});
+
+describe('getBIP44ChangePathString', () => {
+  const coinTypePath = getBIP44CoinTypePathString(1);
+
+  it('returns a BIP-44 change path string (default values)', () => {
+    expect(getBIP44ChangePathString(coinTypePath, {})).toBe(
+      `${coinTypePath} / bip32:0' / bip32:0`,
+    );
+  });
+
+  it('returns a BIP-44 change path string (custom change)', () => {
+    expect(getBIP44ChangePathString(coinTypePath, { change: 1 })).toBe(
+      `${coinTypePath} / bip32:0' / bip32:1`,
+    );
+  });
+
+  it('returns a BIP-44 change path string (custom account)', () => {
+    expect(getBIP44ChangePathString(coinTypePath, { account: 1 })).toBe(
+      `${coinTypePath} / bip32:1' / bip32:0`,
+    );
+  });
+
+  it('returns a BIP-44 change path string (custom change, custom account)', () => {
+    expect(
+      getBIP44ChangePathString(coinTypePath, { account: 2, change: 3 }),
+    ).toBe(`${coinTypePath} / bip32:2' / bip32:3`);
+  });
+
+  it('validates the index', () => {
+    expect(() =>
+      getBIP44ChangePathString(coinTypePath, { account: -1 }),
+    ).toThrow('Invalid BIP-32 index: Must be a non-negative integer.');
+  });
+});
+
+describe('getBIP44CoinTypeToAddressPathTuple', () => {
+  it('returns a BIP-44 coin type as address path tuple (default values)', () => {
+    expect(
+      getBIP44CoinTypeToAddressPathTuple({ address_index: 0 }),
+    ).toStrictEqual([`bip32:0'`, `bip32:0`, `bip32:0`]);
+  });
+
+  it('returns a BIP-44 coin type as address path tuple (custom address_index)', () => {
+    expect(
+      getBIP44CoinTypeToAddressPathTuple({ address_index: 1 }),
+    ).toStrictEqual([`bip32:0'`, `bip32:0`, `bip32:1`]);
+  });
+
+  it('returns a BIP-44 coin type as address path tuple (custom change, hardened address_index)', () => {
+    expect(
+      getBIP44CoinTypeToAddressPathTuple({
+        change: 1,
+        address_index: { index: 2, hardened: true },
+      }),
+    ).toStrictEqual([`bip32:0'`, `bip32:1`, `bip32:2'`]);
+  });
+
+  it('returns a BIP-44 coin type as address path tuple (custom account, hardened change and address_index)', () => {
+    expect(
+      getBIP44CoinTypeToAddressPathTuple({
+        account: 1,
+        change: { index: 2, hardened: true },
+        address_index: { index: 3, hardened: true },
+      }),
+    ).toStrictEqual([`bip32:1'`, `bip32:2'`, `bip32:3'`]);
+  });
+
+  it('validates the index', () => {
+    expect(() =>
+      getBIP44CoinTypeToAddressPathTuple({ address_index: -1 }),
+    ).toThrow('Invalid BIP-32 index: Must be a non-negative integer.');
+  });
+});
+
+describe('getHardenedBIP32NodeToken', () => {
+  it('returns a hardened BIP-32 node token', () => {
+    expect(getHardenedBIP32NodeToken(0)).toBe(`bip32:0'`);
+    expect(getHardenedBIP32NodeToken(1)).toBe(`bip32:1'`);
+    expect(getHardenedBIP32NodeToken(1000)).toBe(`bip32:1000'`);
+  });
+
+  it('validates the index', () => {
+    expect(() => getHardenedBIP32NodeToken(-1)).toThrow(
+      'Invalid BIP-32 index: Must be a non-negative integer.',
+    );
+  });
+});
+
+describe('getUnhardenedBIP32NodeToken', () => {
+  it('returns an unhardened BIP-32 node token', () => {
+    expect(getUnhardenedBIP32NodeToken(0)).toBe(`bip32:0`);
+    expect(getUnhardenedBIP32NodeToken(1)).toBe(`bip32:1`);
+    expect(getUnhardenedBIP32NodeToken(1000)).toBe(`bip32:1000`);
+  });
+
+  it('validates the index', () => {
+    expect(() => getUnhardenedBIP32NodeToken(-1)).toThrow(
+      'Invalid BIP-32 index: Must be a non-negative integer.',
+    );
+  });
+});
+
+describe('getBIP32NodeToken', () => {
+  it('returns a BIP-32 node token (normal index)', () => {
+    expect(getBIP32NodeToken(1)).toBe(`bip32:1`);
+  });
+
+  it('returns a BIP-32 node token (hardened index)', () => {
+    expect(getBIP32NodeToken({ index: 1, hardened: true })).toBe(`bip32:1'`);
+  });
+
+  it('validates the index', () => {
+    expect(() => getBIP32NodeToken(-1)).toThrow(
+      'Invalid BIP-32 index: Must be a non-negative integer.',
+    );
+
+    // @ts-expect-error Invalid type.
+    expect(() => getBIP32NodeToken({})).toThrow(
+      'Invalid BIP-32 index: Must be an object containing the index and whether it is hardened.',
+    );
+  });
+});
 
 describe('nullableHexStringToBuffer', () => {
   it('returns a buffer for a hexadecimal string', () => {
