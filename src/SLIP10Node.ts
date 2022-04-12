@@ -1,4 +1,8 @@
-import { RootedSLIP10PathTuple, SLIP10PathTuple } from './constants';
+import {
+  BUFFER_KEY_LENGTH,
+  RootedSLIP10PathTuple,
+  SLIP10PathTuple,
+} from './constants';
 import { Curve, curves, SupportedCurve } from './curves';
 import { isValidBufferKey } from './utils';
 import { deriveKeyFromPath } from './derivation';
@@ -100,13 +104,13 @@ export class SLIP10Node implements SLIP10NodeInterface {
     chainCode,
     curve,
   }: SLIP10ExtendedKeyOptions) {
-    validateBuffer(chainCode, 32);
+    validateBuffer(chainCode, BUFFER_KEY_LENGTH);
 
     validateCurve(curve);
     validateBIP32Depth(depth);
 
     if (privateKey) {
-      validateBuffer(privateKey, 32);
+      validateBuffer(privateKey, BUFFER_KEY_LENGTH);
 
       return new SLIP10Node({
         depth,
@@ -118,7 +122,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
     }
 
     if (publicKey) {
-      validateBuffer(publicKey, 65);
+      validateBuffer(publicKey, getCurveByName(curve).publicKeyLength);
 
       return new SLIP10Node({
         depth,

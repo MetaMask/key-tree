@@ -6,7 +6,7 @@ import { bytesToNumber, hexStringToBuffer, isValidBufferKey } from '../utils';
 import { Curve, mod, secp256k1 } from '../curves';
 
 export function privateKeyToEthAddress(key: Buffer) {
-  if (!Buffer.isBuffer(key) || !isValidBufferKey(key, 32)) {
+  if (!Buffer.isBuffer(key) || !isValidBufferKey(key, BUFFER_KEY_LENGTH)) {
     throw new Error('Invalid key: The key must be a 32-byte, non-zero Buffer.');
   }
 
@@ -26,7 +26,10 @@ export function privateKeyToEthAddress(key: Buffer) {
  * @returns The Ethereum address corresponding to the given key.
  */
 export function publicKeyToEthAddress(key: Buffer) {
-  if (!Buffer.isBuffer(key) || !isValidBufferKey(key, 65)) {
+  if (
+    !Buffer.isBuffer(key) ||
+    !isValidBufferKey(key, secp256k1.publicKeyLength)
+  ) {
     throw new Error('Invalid key: The key must be a 65-byte, non-zero Buffer.');
   }
 

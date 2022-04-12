@@ -2,16 +2,7 @@ export const BUFFER_EXTENDED_KEY_LENGTH = 64;
 
 export const BUFFER_KEY_LENGTH = 32;
 
-export const BASE_64_KEY_LENGTH = 88;
-
-export const BASE_64_ZERO =
-  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
-
 export const HEXADECIMAL_KEY_LENGTH = 64;
-
-// Source: https://stackoverflow.com/a/475217
-export const BASE_64_REGEX =
-  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/u;
 
 export const MIN_BIP_44_DEPTH = 0;
 export const MAX_BIP_44_DEPTH = 5;
