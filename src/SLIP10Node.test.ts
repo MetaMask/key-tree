@@ -1,6 +1,6 @@
 import fixtures from '../test/fixtures';
 import { ed25519, secp256k1 } from './curves';
-import { SLIP10Node } from './SLIP10Node';
+import { getBuffer, SLIP10Node } from './SLIP10Node';
 import { BIP44PurposeNodeToken } from './constants';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { hexStringToBuffer } from './utils';
@@ -17,6 +17,23 @@ describe('SLIP10Node', () => {
       const node = await SLIP10Node.fromExtendedKey({
         privateKey,
         chainCode,
+        depth: 0,
+        curve: 'secp256k1',
+      });
+
+      expect(node.depth).toBe(0);
+      expect(node.privateKeyBuffer).toHaveLength(32);
+      expect(node.publicKeyBuffer).toHaveLength(65);
+    });
+
+    it('initializes a new node from a hexadecimal private key and chain code', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      const node = await SLIP10Node.fromExtendedKey({
+        privateKey: privateKey.toString('hex'),
+        chainCode: chainCode.toString('hex'),
         depth: 0,
         curve: 'secp256k1',
       });
@@ -48,6 +65,64 @@ describe('SLIP10Node', () => {
       expect(node.depth).toBe(0);
       expect(node.privateKeyBuffer).toBeUndefined();
       expect(node.publicKeyBuffer).toHaveLength(65);
+    });
+
+    it('initializes a new node from a hexadecimal public key and chain code', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      const privateNode = await SLIP10Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 0,
+        curve: 'secp256k1',
+      });
+
+      const node = await SLIP10Node.fromExtendedKey({
+        publicKey: privateNode.publicKey,
+        chainCode: privateNode.chainCode,
+        depth: 0,
+        curve: 'secp256k1',
+      });
+
+      expect(node.depth).toBe(0);
+      expect(node.privateKeyBuffer).toBeUndefined();
+      expect(node.publicKeyBuffer).toHaveLength(65);
+    });
+
+    it('initializes a new node from JSON', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      const node = await SLIP10Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 0,
+        curve: 'secp256k1',
+      });
+
+      expect(await SLIP10Node.fromJSON(node.toJSON())).toStrictEqual(node);
+    });
+
+    it('initializes a new node from JSON with a public key', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      const node = await SLIP10Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 0,
+        curve: 'secp256k1',
+      });
+
+      const neuteredNode = node.neuter();
+
+      expect(await SLIP10Node.fromJSON(neuteredNode.toJSON())).toStrictEqual(
+        neuteredNode,
+      );
     });
 
     it('throws if no public or private key is specified', async () => {
@@ -93,13 +168,28 @@ describe('SLIP10Node', () => {
     it('throws if the private key is invalid', async () => {
       await expect(
         SLIP10Node.fromExtendedKey({
-          // @ts-expect-error Invalid private key type.
           privateKey: 'foo',
           chainCode: Buffer.alloc(32, 1),
           depth: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow('Invalid key: Expected a Buffer, but received: "foo".');
+      ).rejects.toThrow(
+        'Invalid hex string: Must be a valid hex string of length: 64.',
+      );
+    });
+
+    it('throws if the private key is not a Buffer or hexadecimal string', async () => {
+      await expect(
+        SLIP10Node.fromExtendedKey({
+          // @ts-expect-error Invalid private key type.
+          privateKey: 123,
+          chainCode: Buffer.alloc(32, 1),
+          depth: 0,
+          curve: 'secp256k1',
+        }),
+      ).rejects.toThrow(
+        'Invalid key: Expected a Buffer or hexadecimal string.',
+      );
     });
   });
 
@@ -429,5 +519,27 @@ describe('SLIP10Node', () => {
         chainCode: node.chainCode,
       });
     });
+  });
+});
+
+describe('getBuffer', () => {
+  it('returns a buffer for a hexadecimal string', () => {
+    expect(getBuffer('0x1234', 2)).toStrictEqual(hexStringToBuffer('1234'));
+    expect(getBuffer('1234', 2)).toStrictEqual(hexStringToBuffer('1234'));
+  });
+
+  it('returns the same buffer if a buffer is passed', () => {
+    const buffer = hexStringToBuffer('1234');
+    expect(getBuffer(buffer, 2)).toBe(buffer);
+  });
+
+  it('throws if the length is invalid', () => {
+    expect(() => getBuffer('1234', 1)).toThrow(
+      'Invalid key: Must be a non-zero 1-byte key.',
+    );
+
+    expect(() => getBuffer(hexStringToBuffer('1234'), 1)).toThrow(
+      'Invalid key: Must be a non-zero 1-byte key.',
+    );
   });
 });

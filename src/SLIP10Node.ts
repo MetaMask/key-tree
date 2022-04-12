@@ -4,7 +4,7 @@ import {
   SLIP10PathTuple,
 } from './constants';
 import { Curve, curves, SupportedCurve } from './curves';
-import { isValidBufferKey } from './utils';
+import { hexStringToBuffer, isValidBufferKey, isValidHexString } from './utils';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
 
@@ -70,9 +70,9 @@ type SLIP10NodeConstructorOptions = {
 
 type SLIP10ExtendedKeyOptions = {
   readonly depth: number;
-  readonly chainCode: Buffer;
-  readonly privateKey?: Buffer;
-  readonly publicKey?: Buffer;
+  readonly chainCode: string | Buffer;
+  readonly privateKey?: string | Buffer;
+  readonly publicKey?: string | Buffer;
   readonly curve: SupportedCurve;
 };
 
@@ -82,6 +82,16 @@ type SLIP10DerivationPathOptions = {
 };
 
 export class SLIP10Node implements SLIP10NodeInterface {
+  /**
+   * Wrapper of the {@link fromExtendedKey} function. Refer to that function
+   * for documentation.
+   *
+   * @param json - The JSON representation of a SLIP-10 node.
+   */
+  static async fromJSON(json: JsonSLIP10Node): Promise<SLIP10Node> {
+    return SLIP10Node.fromExtendedKey(json);
+  }
+
   /**
    * Create a new SLIP-10 node from a key and chain code. You must specify
    * either a private key or a public key. When specifying a private key,
@@ -104,30 +114,33 @@ export class SLIP10Node implements SLIP10NodeInterface {
     chainCode,
     curve,
   }: SLIP10ExtendedKeyOptions) {
-    validateBuffer(chainCode, BUFFER_KEY_LENGTH);
+    const chainCodeBuffer = getBuffer(chainCode, BUFFER_KEY_LENGTH);
 
     validateCurve(curve);
     validateBIP32Depth(depth);
 
     if (privateKey) {
-      validateBuffer(privateKey, BUFFER_KEY_LENGTH);
+      const privateKeyBuffer = getBuffer(privateKey, BUFFER_KEY_LENGTH);
 
       return new SLIP10Node({
         depth,
-        chainCode,
-        privateKey,
+        chainCode: chainCodeBuffer,
+        privateKey: privateKeyBuffer,
         publicKey: await getCurveByName(curve).getPublicKey(privateKey),
         curve,
       });
     }
 
     if (publicKey) {
-      validateBuffer(publicKey, getCurveByName(curve).publicKeyLength);
+      const publicKeyBuffer = getBuffer(
+        publicKey,
+        getCurveByName(curve).publicKeyLength,
+      );
 
       return new SLIP10Node({
         depth,
-        chainCode,
-        publicKey,
+        chainCode: chainCodeBuffer,
+        publicKey: publicKeyBuffer,
         curve,
       });
     }
@@ -285,7 +298,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       curve: this.curve,
       privateKey: this.privateKey,
       publicKey: this.publicKey,
-      chainCode: this.chainCodeBuffer.toString('hex'),
+      chainCode: this.chainCode,
     };
   }
 }
@@ -351,16 +364,35 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
   }
 }
 
-export function validateBuffer(
-  buffer: unknown,
-  length: number,
-): asserts buffer is Buffer {
-  if (!Buffer.isBuffer(buffer)) {
-    throw new Error(
-      `Invalid key: Expected a Buffer, but received: "${buffer}".`,
-    );
+export function getBuffer(value: unknown, length: number): Buffer {
+  if (value instanceof Buffer) {
+    validateBuffer(value, length);
+
+    return value;
   }
 
+  if (typeof value === 'string') {
+    if (!isValidHexString(value)) {
+      throw new Error(
+        `Invalid hex string: Must be a valid hex string of length: ${
+          length * 2
+        }.`,
+      );
+    }
+
+    const buffer = hexStringToBuffer(value);
+    validateBuffer(buffer, length);
+
+    return buffer;
+  }
+
+  throw new Error(`Invalid key: Expected a Buffer or hexadecimal string.`);
+}
+
+function validateBuffer(
+  buffer: Buffer,
+  length: number,
+): asserts buffer is Buffer {
   if (!isValidBufferKey(buffer, length)) {
     throw new Error(`Invalid key: Must be a non-zero ${length}-byte key.`);
   }

@@ -14,9 +14,9 @@ import { SLIP10Node, validateBIP32Depth } from './SLIP10Node';
 
 type BIP44ExtendedKeyOptions = {
   readonly depth: number;
-  readonly chainCode: Buffer;
-  readonly privateKey?: Buffer;
-  readonly publicKey?: Buffer;
+  readonly chainCode: Buffer | string;
+  readonly privateKey?: Buffer | string;
+  readonly publicKey?: Buffer | string;
 };
 
 type BIP44DerivationPathOptions = {
@@ -75,6 +75,16 @@ export type BIP44NodeInterface = JsonBIP44Node & {
  * {@link BIP44Node.toJSON} to get a JSON-compatible representation.
  */
 export class BIP44Node implements BIP44NodeInterface {
+  /**
+   * Wrapper of the {@link fromExtendedKey} function. Refer to that function
+   * for documentation.
+   *
+   * @param json - The JSON representation of a SLIP-10 node.
+   */
+  static async fromJSON(json: JsonBIP44Node): Promise<BIP44Node> {
+    return BIP44Node.fromExtendedKey(json);
+  }
+
   /**
    * Create a new BIP-44 node from a key and chain code. You must specify
    * either a private key or a public key. When specifying a private key,

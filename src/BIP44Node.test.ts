@@ -7,6 +7,42 @@ const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('BIP44Node', () => {
   describe('fromExtendedKey', () => {
+    it('initializes a new node from a private key', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      // Ethereum coin type node
+      const node = await BIP44Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 2,
+      });
+
+      expect(node.depth).toStrictEqual(2);
+      expect(node.toJSON()).toStrictEqual({
+        depth: 2,
+        privateKey: node.privateKey,
+        publicKey: node.publicKey,
+        chainCode: node.chainCode,
+      });
+    });
+
+    it('initializes a new node from JSON', async () => {
+      const [privateKey, , chainCode] = await deriveChildKey(
+        fixtures.local.mnemonic,
+      );
+
+      // Ethereum coin type node
+      const node = await BIP44Node.fromExtendedKey({
+        privateKey,
+        chainCode,
+        depth: 2,
+      });
+
+      expect(await BIP44Node.fromJSON(node.toJSON())).toStrictEqual(node);
+    });
+
     it('throws if the depth is invalid', async () => {
       const [privateKey, , chainCode] = await deriveChildKey(
         fixtures.local.mnemonic,
