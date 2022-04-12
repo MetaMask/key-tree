@@ -1,9 +1,9 @@
 import fixtures from '../test/fixtures';
 import { ed25519, secp256k1 } from './curves';
-import { getBuffer, SLIP10Node } from './SLIP10Node';
+import { SLIP10Node } from './SLIP10Node';
 import { BIP44PurposeNodeToken } from './constants';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
-import { hexStringToBuffer } from './utils';
+import { getBuffer, hexStringToBuffer } from './utils';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
@@ -215,7 +215,7 @@ describe('SLIP10Node', () => {
           curve: 'secp256k1',
         }),
       ).rejects.toThrow(
-        'Invalid hex string: Must be a valid hex string of length: 64.',
+        'Invalid value: Must be a valid hex string of length: 64.',
       );
     });
 
@@ -229,7 +229,7 @@ describe('SLIP10Node', () => {
           curve: 'secp256k1',
         }),
       ).rejects.toThrow(
-        'Invalid key: Expected a Buffer or hexadecimal string.',
+        'Invalid value: Expected a Buffer or hexadecimal string.',
       );
     });
   });
@@ -560,27 +560,5 @@ describe('SLIP10Node', () => {
         chainCode: node.chainCode,
       });
     });
-  });
-});
-
-describe('getBuffer', () => {
-  it('returns a buffer for a hexadecimal string', () => {
-    expect(getBuffer('0x1234', 2)).toStrictEqual(hexStringToBuffer('1234'));
-    expect(getBuffer('1234', 2)).toStrictEqual(hexStringToBuffer('1234'));
-  });
-
-  it('returns the same buffer if a buffer is passed', () => {
-    const buffer = hexStringToBuffer('1234');
-    expect(getBuffer(buffer, 2)).toBe(buffer);
-  });
-
-  it('throws if the length is invalid', () => {
-    expect(() => getBuffer('1234', 1)).toThrow(
-      'Invalid key: Must be a non-zero 1-byte key.',
-    );
-
-    expect(() => getBuffer(hexStringToBuffer('1234'), 1)).toThrow(
-      'Invalid key: Must be a non-zero 1-byte key.',
-    );
   });
 });
