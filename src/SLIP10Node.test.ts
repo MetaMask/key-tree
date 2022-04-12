@@ -3,7 +3,7 @@ import { ed25519, secp256k1 } from './curves';
 import { SLIP10Node } from './SLIP10Node';
 import { BIP44PurposeNodeToken } from './constants';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
-import { getBuffer, hexStringToBuffer } from './utils';
+import { hexStringToBuffer } from './utils';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
