@@ -207,6 +207,36 @@ describe('BIP44Node', () => {
       });
     });
 
+    it('derives a public child node', async () => {
+      const coinTypeNode = `bip32:40'`;
+      const targetNode = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          coinTypeNode,
+          `bip32:0'`,
+          `bip32:0`,
+        ],
+      });
+
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          coinTypeNode,
+          `bip32:0'`,
+        ],
+      });
+
+      const childNode = await node.neuter().derive([`bip32:0`]);
+
+      expect(childNode.privateKey).toBeUndefined();
+      expect(childNode).toMatchObject({
+        depth: targetNode.depth,
+        publicKey: targetNode.publicKey,
+      });
+    });
+
     it('throws if the parent node is already a leaf node', async () => {
       const node = await BIP44Node.fromDerivationPath({
         derivationPath: [

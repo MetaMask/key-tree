@@ -376,9 +376,11 @@ describe('SLIP10Node', () => {
 
       const childNode = await node.derive(['bip32:0']);
 
-      expect(childNode.publicKey).toBe(targetNode.publicKey);
-      expect(childNode.chainCode).toBe(targetNode.chainCode);
       expect(childNode.privateKey).toBeUndefined();
+      expect(childNode).toMatchObject({
+        depth: targetNode.depth,
+        publicKey: targetNode.publicKey,
+      });
     });
 
     it('throws when trying to derive a hardened node without a private key', async () => {
