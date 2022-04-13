@@ -1,4 +1,4 @@
-import { getPublicKey as getEd25519PublicKey, Point } from '@noble/ed25519';
+import { getPublicKey as getEd25519PublicKey } from '@noble/ed25519';
 
 export { CURVE as curve } from '@noble/ed25519';
 

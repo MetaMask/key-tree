@@ -1,7 +1,7 @@
 import fixtures from '../test/fixtures';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { hexStringToBuffer } from './utils';
-import { BIP44Node, BIP44PurposeNodeToken, SLIP10Node } from '.';
+import { BIP44Node, BIP44PurposeNodeToken } from '.';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
