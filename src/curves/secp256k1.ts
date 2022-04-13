@@ -25,6 +25,10 @@ export const getPublicKey = (
 
 export const publicAdd = (publicKey: Buffer, tweak: Buffer): Buffer => {
   const point = Point.fromHex(publicKey);
+
+  // The returned child key Ki is point(parse256(IL)) + Kpar.
+  // This multiplies the tweak with the base point of the curve (Gx, Gy).
+  // https://github.com/bitcoin/bips/blob/274fa400d630ba757bec0c03b35ebe2345197108/bip-0032.mediawiki#public-parent-key--public-child-key
   const newPoint = point.add(Point.fromPrivateKey(tweak));
 
   newPoint.assertValidity();
