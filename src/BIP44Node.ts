@@ -193,6 +193,20 @@ export class BIP44Node implements BIP44NodeInterface {
   }
 
   /**
+   * Returns a neutered version of this node, i.e. a node without a private key.
+   */
+  public neuter(): BIP44Node {
+    const node = new SLIP10Node({
+      depth: this.depth,
+      chainCode: this.chainCodeBuffer,
+      publicKey: this.publicKeyBuffer,
+      curve: this.#node.curve,
+    });
+
+    return new BIP44Node(node);
+  }
+
+  /**
    * Derives a child of the key contains be this node and returns a new
    * {@link BIP44Node} containing the child key.
    *

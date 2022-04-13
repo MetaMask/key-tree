@@ -5,7 +5,7 @@ import {
   MIN_BIP_44_DEPTH,
   SLIP10Path,
 } from './constants';
-import { Deriver, derivers } from './derivers';
+import { DerivedKeys, Deriver, derivers } from './derivers';
 import { Curve } from './curves';
 
 /**
@@ -19,6 +19,15 @@ import { Curve } from './curves';
  * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
  * 0: { privateKey, chainCode } = parentKey.privateKey + sha512Hmac(parentKey.chainCode, [parentKey.publicKey, index])
  */
+
+type DeriveKeyFromPathArgs = {
+  path: SLIP10Path;
+  privateKey?: Buffer;
+  publicKey?: Buffer;
+  chainCode?: Buffer;
+  depth?: number;
+  curve?: Curve;
+};
 
 /**
  * Takes a full or partial HD path string and returns the key corresponding to
@@ -43,42 +52,45 @@ import { Curve } from './curves';
  * @param curve - The curve to use.
  * @returns The derived key.
  */
-export async function deriveKeyFromPath(
-  pathSegment: SLIP10Path,
-  parentKey?: Buffer,
-  parentPublicKey?: Buffer,
-  parentChainCode?: Buffer,
-  depth?: number,
-  curve?: Curve,
-): Promise<[privateKey: Buffer, publicKey: Buffer, chainCode: Buffer]> {
-  if (parentKey && !Buffer.isBuffer(parentKey)) {
+export async function deriveKeyFromPath({
+  path,
+  privateKey,
+  publicKey,
+  chainCode,
+  depth,
+  curve,
+}: DeriveKeyFromPathArgs): Promise<DerivedKeys> {
+  if (privateKey && !Buffer.isBuffer(privateKey)) {
     throw new Error('Parent key must be a Buffer if specified.');
   }
 
-  validatePathSegment(pathSegment, Boolean(parentKey), depth);
+  validatePathSegment(path, Boolean(privateKey) || Boolean(publicKey), depth);
 
   // derive through each part of path
   // `pathSegment` needs to be cast to `string[]` because `HDPathTuple.reduce()` doesn't work
-  return await (pathSegment as readonly string[]).reduce<
-    Promise<[Buffer, Buffer, Buffer]>
-  >(async (promise, node) => {
-    const [privateKey, publicKey, chainCode] = await promise;
+  return await (path as readonly string[]).reduce<Promise<DerivedKeys>>(
+    async (promise, node) => {
+      const derivedKeys = await promise;
 
-    const [pathType, pathValue] = node.split(':');
-    /* istanbul ignore if: should be impossible */
-    if (!hasDeriver(pathType)) {
-      throw new Error(`Unknown derivation type: "${pathType}"`);
-    }
+      const [pathType, pathPart] = node.split(':');
+      /* istanbul ignore if: should be impossible */
+      if (!hasDeriver(pathType)) {
+        throw new Error(`Unknown derivation type: "${pathType}"`);
+      }
 
-    const deriver = derivers[pathType] as Deriver;
-    return await deriver.deriveChildKey(
-      pathValue,
+      const deriver = derivers[pathType] as Deriver;
+      return await deriver.deriveChildKey({
+        path: pathPart,
+        curve,
+        ...derivedKeys,
+      });
+    },
+    Promise.resolve({
       privateKey,
-      publicKey,
-      chainCode,
-      curve,
-    );
-  }, Promise.resolve([parentKey as Buffer, parentPublicKey as Buffer, parentChainCode as Buffer]));
+      publicKey: publicKey as Buffer,
+      chainCode: chainCode as Buffer,
+    }),
+  );
 }
 
 /**
@@ -94,27 +106,27 @@ function hasDeriver(pathType: string): pathType is keyof typeof derivers {
  * - A lone BIP-39 path node
  * - A multipath
  *
- * @param pathSegment - The path segment string to validate.
+ * @param path - The path segment string to validate.
  * @param hasKey
  * @param depth
  */
 export function validatePathSegment(
-  pathSegment: SLIP10Path,
+  path: SLIP10Path,
   hasKey: boolean,
   depth?: number,
 ) {
-  if ((pathSegment as any).length === 0) {
+  if ((path as any).length === 0) {
     throw new Error(`Invalid HD path segment: The segment must not be empty.`);
   }
 
-  if (pathSegment.length - 1 > MAX_BIP_44_DEPTH) {
+  if (path.length - 1 > MAX_BIP_44_DEPTH) {
     throw new Error(
       `Invalid HD path segment: The segment cannot exceed a 0-indexed depth of 5.`,
     );
   }
 
   let startsWithBip39 = false;
-  pathSegment.forEach((node, index) => {
+  path.forEach((node, index) => {
     if (index === 0) {
       startsWithBip39 = BIP_39_PATH_REGEX.test(node);
       if (!startsWithBip39 && !BIP_32_PATH_REGEX.test(node)) {
@@ -125,12 +137,9 @@ export function validatePathSegment(
     }
   });
 
-  if (
-    depth === MIN_BIP_44_DEPTH &&
-    (!startsWithBip39 || pathSegment.length !== 1)
-  ) {
+  if (depth === MIN_BIP_44_DEPTH && (!startsWithBip39 || path.length !== 1)) {
     throw new Error(
-      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_BIP_44_DEPTH}. Received: "${pathSegment}".`,
+      `Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of ${MIN_BIP_44_DEPTH}. Received: "${path}".`,
     );
   }
 

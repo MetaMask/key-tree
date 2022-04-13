@@ -1,4 +1,4 @@
-import { getPublicKey as getEd25519PublicKey } from '@noble/ed25519';
+import { getPublicKey as getEd25519PublicKey, Point } from '@noble/ed25519';
 
 export { CURVE as curve } from '@noble/ed25519';
 
@@ -23,4 +23,13 @@ export const getPublicKey = async (
 ): Promise<Buffer> => {
   const publicKey = await getEd25519PublicKey(privateKey);
   return Buffer.concat([Buffer.alloc(1, 0), publicKey]);
+};
+
+export const publicAdd = (_publicKey: Buffer, _tweak: Buffer) => {
+  throw new Error('Ed25519 does not support public key derivation.');
+};
+
+export const compressPublicKey = (publicKey: Buffer): Buffer => {
+  // Ed25519 public keys don't have a compressed form.
+  return publicKey;
 };

@@ -1,16 +1,16 @@
 import fixtures from '../test/fixtures';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { hexStringToBuffer } from './utils';
-import { BIP44Node, BIP44PurposeNodeToken } from '.';
+import { BIP44Node, BIP44PurposeNodeToken, SLIP10Node } from '.';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
 describe('BIP44Node', () => {
   describe('fromExtendedKey', () => {
     it('initializes a new node from a private key', async () => {
-      const [privateKey, , chainCode] = await deriveChildKey(
-        fixtures.local.mnemonic,
-      );
+      const { privateKey, chainCode } = await deriveChildKey({
+        path: fixtures.local.mnemonic,
+      });
 
       // Ethereum coin type node
       const node = await BIP44Node.fromExtendedKey({
@@ -29,9 +29,9 @@ describe('BIP44Node', () => {
     });
 
     it('initializes a new node from JSON', async () => {
-      const [privateKey, , chainCode] = await deriveChildKey(
-        fixtures.local.mnemonic,
-      );
+      const { privateKey, chainCode } = await deriveChildKey({
+        path: fixtures.local.mnemonic,
+      });
 
       // Ethereum coin type node
       const node = await BIP44Node.fromExtendedKey({
@@ -44,9 +44,9 @@ describe('BIP44Node', () => {
     });
 
     it('throws if the depth is invalid', async () => {
-      const [privateKey, , chainCode] = await deriveChildKey(
-        fixtures.local.mnemonic,
-      );
+      const { privateKey, chainCode } = await deriveChildKey({
+        path: fixtures.local.mnemonic,
+      });
 
       await expect(
         BIP44Node.fromExtendedKey({
@@ -312,7 +312,7 @@ describe('BIP44Node', () => {
     it.each(sampleAddressIndices)(
       'returns the public key for an secp256k1 node',
       async ({ index, publicKey }) => {
-        const [privateKey, , chainCode] = await createBip39KeyFromSeed(
+        const { privateKey, chainCode } = await createBip39KeyFromSeed(
           hexStringToBuffer(hexSeed),
         );
 
@@ -339,7 +339,7 @@ describe('BIP44Node', () => {
     it.each(sampleAddressIndices)(
       'returns the address for an secp256k1 node',
       async ({ index, address }) => {
-        const [privateKey, , chainCode] = await createBip39KeyFromSeed(
+        const { privateKey, chainCode } = await createBip39KeyFromSeed(
           hexStringToBuffer(hexSeed),
         );
 
@@ -357,6 +357,25 @@ describe('BIP44Node', () => {
         expect(childNode.address).toBe(address);
       },
     );
+  });
+
+  describe('neuter', () => {
+    it('returns a BIP-44 node without a private key', async () => {
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:0'`,
+          `bip32:0'`,
+        ],
+      });
+
+      const neuterNode = node.neuter();
+
+      expect(neuterNode.publicKey).toBe(node.publicKey);
+      expect(neuterNode.privateKey).toBeUndefined();
+      expect(neuterNode.privateKeyBuffer).toBeUndefined();
+    });
   });
 
   describe('toJSON', () => {
