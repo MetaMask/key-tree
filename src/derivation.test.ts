@@ -173,7 +173,7 @@ describe('derivation', () => {
           path: [`bip32:1'`],
           privateKey: (privateKey as Buffer).toString('base64') as any,
         }),
-      ).rejects.toThrow('Parent key must be a Buffer if specified.');
+      ).rejects.toThrow('Private key must be a Buffer if specified.');
     });
   });
 

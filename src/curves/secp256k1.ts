@@ -3,7 +3,6 @@ import {
   getPublicKey as getSecp256k1PublicKey,
   Point,
 } from '@noble/secp256k1';
-import { bytesToNumber } from '../utils';
 
 export { CURVE as curve } from '@noble/secp256k1';
 export const { isValidPrivateKey } = utils;
@@ -24,16 +23,13 @@ export const getPublicKey = (
   compressed?: boolean,
 ): Buffer => Buffer.from(getSecp256k1PublicKey(privateKey, compressed));
 
-export const publicAdd = (publicKey: Buffer, tweak: Buffer): Uint8Array => {
+export const publicAdd = (publicKey: Buffer, tweak: Buffer): Buffer => {
   const point = Point.fromHex(publicKey);
-  const newPoint = point.add(
-    // Multiplies `Point(Gx, Gy)` with the tweak
-    Point.BASE.multiply(bytesToNumber(tweak)),
-  );
+  const newPoint = point.add(Point.fromPrivateKey(tweak));
 
   newPoint.assertValidity();
 
-  return newPoint.toRawBytes(false);
+  return Buffer.from(newPoint.toRawBytes(false));
 };
 
 export const compressPublicKey = (publicKey: Uint8Array): Buffer => {

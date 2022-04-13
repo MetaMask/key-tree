@@ -25,7 +25,7 @@ export const getPublicKey = async (
   return Buffer.concat([Buffer.alloc(1, 0), publicKey]);
 };
 
-export const publicAdd = (_publicKey: Buffer, _tweak: Buffer) => {
+export const publicAdd = (_publicKey: Buffer, _tweak: Buffer): Buffer => {
   throw new Error('Ed25519 does not support public key derivation.');
 };
 

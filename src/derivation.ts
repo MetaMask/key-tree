@@ -41,13 +41,13 @@ type DeriveKeyFromPathArgs = {
  * WARNING: It is the consumer's responsibility to ensure that the path is valid
  * relative to its parent key.
  *
- * @param pathSegment - A full or partial HD path, e.g.:
+ * @param path - A full or partial HD path, e.g.:
  * bip39:SEED_PHRASE/bip32:44'/bip32:60'/bip32:0'/bip32:0/bip32:0
  *
  * BIP-39 seed phrases must be lowercase, space-delimited, and 12-24 words long.
- * @param parentKey - The parent key of the given path segment, if any.
- * @param parentPublicKey - The parent public key of the given path segment, if any.
- * @param parentChainCode - The chain code of the given path segment, if any.
+ * @param privateKey - The parent key of the given path segment, if any.
+ * @param publicKey - The parent public key of the given path segment, if any.
+ * @param chainCode - The chain code of the given path segment, if any.
  * @param depth - The depth of the segment.
  * @param curve - The curve to use.
  * @returns The derived key.
@@ -61,7 +61,7 @@ export async function deriveKeyFromPath({
   curve,
 }: DeriveKeyFromPathArgs): Promise<DerivedKeys> {
   if (privateKey && !Buffer.isBuffer(privateKey)) {
-    throw new Error('Parent key must be a Buffer if specified.');
+    throw new Error('Private key must be a Buffer if specified.');
   }
 
   validatePathSegment(path, Boolean(privateKey) || Boolean(publicKey), depth);

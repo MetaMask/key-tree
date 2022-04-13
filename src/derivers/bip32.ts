@@ -76,7 +76,7 @@ export async function deriveChildKey({
 
   if (isHardened && !privateKey) {
     throw new Error(
-      'Invalid path: Cannot derive hardened child keys without a private key.',
+      'Invalid parameters: Cannot derive hardened child keys without a private key.',
     );
   }
 

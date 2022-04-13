@@ -390,7 +390,7 @@ describe('SLIP10Node', () => {
       });
 
       await expect(node.neuter().derive([`bip32:0'`])).rejects.toThrow(
-        'Invalid path: Cannot derive hardened child keys without a private key.',
+        'Invalid parameters: Cannot derive hardened child keys without a private key.',
       );
     });
 
