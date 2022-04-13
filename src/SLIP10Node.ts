@@ -245,7 +245,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       );
     }
 
-    return publicKeyToEthAddress(this.publicKeyBuffer).toString('hex');
+    return `0x${publicKeyToEthAddress(this.publicKeyBuffer).toString('hex')}`;
   }
 
   /**

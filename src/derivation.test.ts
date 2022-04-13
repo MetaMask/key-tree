@@ -46,7 +46,9 @@ describe('derivation', () => {
       // validate addresses
       keys.forEach(({ privateKey }, index) => {
         const address = privateKeyToEthAddress(privateKey as Buffer);
-        expect(address.toString('hex')).toStrictEqual(expectedAddresses[index]);
+        expect(`0x${address.toString('hex')}`).toStrictEqual(
+          expectedAddresses[index],
+        );
       });
     });
 
@@ -70,7 +72,9 @@ describe('derivation', () => {
       // validate addresses
       keys.forEach(({ privateKey: childPrivateKey }, index) => {
         const address = privateKeyToEthAddress(childPrivateKey as Buffer);
-        expect(address.toString('hex')).toStrictEqual(expectedAddresses[index]);
+        expect(`0x${address.toString('hex')}`).toStrictEqual(
+          expectedAddresses[index],
+        );
       });
     });
 
@@ -210,7 +214,9 @@ describe('derivation', () => {
       // validate addresses
       keys.forEach(({ privateKey }, index) => {
         const address = privateKeyToEthAddress(privateKey as Buffer);
-        expect(address.toString('hex')).toStrictEqual(expectedAddresses[index]);
+        expect(`0x${address.toString('hex')}`).toStrictEqual(
+          expectedAddresses[index],
+        );
       });
     });
 

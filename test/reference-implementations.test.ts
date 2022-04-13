@@ -57,7 +57,7 @@ describe('reference implementation tests', () => {
           });
 
           expect(
-            publicKeyToEthAddress(publicKey).toString('hex'),
+            `0x${publicKeyToEthAddress(publicKey).toString('hex')}`,
           ).toStrictEqual(expectedAddress);
         }
       });
@@ -80,18 +80,40 @@ describe('reference implementation tests', () => {
         });
 
         const numberOfAccounts = 5;
-        const ourAccounts = [];
         for (let i = 0; i < numberOfAccounts; i++) {
-          ourAccounts.push(
-            await node
-              .derive(getBIP44CoinTypeToAddressPathTuple({ address_index: i }))
-              .then((childNode) => childNode.address),
-          );
-        }
+          const path = getBIP44CoinTypeToAddressPathTuple({ address_index: i });
+          const address = await node
+            .derive(path)
+            .then((childNode) => childNode.address);
 
-        expect(addresses).toStrictEqual(
-          ourAccounts.map((account) => `0x${account}`),
-        );
+          expect(address).toBe(addresses[i]);
+        }
+      });
+
+      it('derives the same keys as the reference implementation using public key derivation', async () => {
+        // Ethereum coin type node
+        const node = await BIP44Node.fromDerivationPath({
+          derivationPath: [
+            mnemonicBip39Node,
+            BIP44PurposeNodeToken,
+            `bip32:60'`,
+          ],
+        });
+
+        const numberOfAccounts = 5;
+        for (let i = 0; i < numberOfAccounts; i++) {
+          const [account, change, index] = getBIP44CoinTypeToAddressPathTuple({
+            address_index: i,
+          });
+          const parentNode = await node.derive([account, change]);
+
+          const address = await parentNode
+            .neuter()
+            .derive([index])
+            .then((childNode) => childNode.address);
+
+          expect(address).toBe(addresses[i]);
+        }
       });
     });
 
@@ -148,6 +170,28 @@ describe('reference implementation tests', () => {
           expect(ourAddress).toStrictEqual(theirAddress);
         }
       });
+
+      it('derives the same keys as the reference implementation using public key derivation', async () => {
+        const derivedKeys = await createBip39KeyFromSeed(seed);
+
+        const parentNode = await BIP44Node.fromExtendedKey({
+          depth: 0,
+          ...derivedKeys,
+        });
+        const node = await parentNode.derive(path.ours.tuple);
+
+        expect(node.privateKey).toStrictEqual(privateKey);
+        expect(node.address).toStrictEqual(address);
+
+        for (const { index, address: theirAddress } of sampleAddressIndices) {
+          const ourAddress = await node
+            .neuter()
+            .derive([`bip32:${index}`])
+            .then((childNode) => childNode.address);
+
+          expect(ourAddress).toStrictEqual(theirAddress);
+        }
+      });
     });
 
     describe('deriveKeyFromPath', () => {
@@ -160,7 +204,7 @@ describe('reference implementation tests', () => {
 
         expect(parentKey).toStrictEqual(hexStringToBuffer(privateKey));
         expect(
-          privateKeyToEthAddress(parentKey as Buffer).toString('hex'),
+          `0x${privateKeyToEthAddress(parentKey as Buffer).toString('hex')}`,
         ).toStrictEqual(address);
 
         for (const { index, address: theirAddress } of sampleAddressIndices) {
@@ -170,7 +214,9 @@ describe('reference implementation tests', () => {
             chainCode,
           });
 
-          const ourAddress = publicKeyToEthAddress(publicKey).toString('hex');
+          const ourAddress = `0x${publicKeyToEthAddress(publicKey).toString(
+            'hex',
+          )}`;
           expect(ourAddress).toStrictEqual(theirAddress);
         }
       });
