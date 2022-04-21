@@ -7,7 +7,9 @@ import { Curve, curves, SupportedCurve } from './curves';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
 import { getBuffer, getFingerprint } from './utils';
-import { DerivedKeys } from './derivers';
+import { BIP44Node } from './BIP44Node';
+import { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
+import { deriveChildKey } from './derivers/bip39';
 
 /**
  * A wrapper for SLIP-10 Hierarchical Deterministic (HD) tree nodes, i.e.
@@ -191,9 +193,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
    *
    * `0 / 1 / 2 / 3 / 4 / 5`
    *
-   * @param derivationPath The rooted HD tree path that will be used
+   * @param derivationPath - The rooted HD tree path that will be used
    * to derive the key of this node.
-   * @param curve The curve used by the node.
+   * @param curve - The curve used by the node.
    */
   static async fromDerivationPath({
     derivationPath,
@@ -201,29 +203,21 @@ export class SLIP10Node implements SLIP10NodeInterface {
   }: SLIP10DerivationPathOptions) {
     validateCurve(curve);
 
-    if (derivationPath) {
-      const { privateKey, chainCode } = await createKeyFromPath({
-        derivationPath,
-        curve,
-      });
-
-      const publicKey = await getCurveByName(curve).getPublicKey(
-        privateKey as Buffer,
-      );
-
-      return new SLIP10Node({
-        depth: derivationPath.length - 1,
-        // TODO: Get parent fingerprint and index from the derivation path.
-        parentFingerprint: 0,
-        index: 0,
-        chainCode,
-        privateKey,
-        publicKey,
-        curve,
-      });
+    if (!derivationPath) {
+      throw new Error('Invalid options: Must provide a derivation path.');
     }
 
-    throw new Error('Invalid options: Must provide a derivation path.');
+    if (derivationPath.length === 0) {
+      throw new Error(
+        'Invalid derivation path: May not specify an empty derivation path.',
+      );
+    }
+
+    return await deriveKeyFromPath({
+      path: derivationPath,
+      depth: derivationPath.length - 1,
+      curve,
+    });
   }
 
   public readonly curve: SupportedCurve;
@@ -272,6 +266,10 @@ export class SLIP10Node implements SLIP10NodeInterface {
     return this.publicKeyBuffer.toString('hex');
   }
 
+  public get compressedPublicKeyBuffer(): Buffer {
+    return getCurveByName(this.curve).compressPublicKey(this.publicKeyBuffer);
+  }
+
   public get address(): string {
     if (this.curve !== 'secp256k1') {
       throw new Error(
@@ -315,21 +313,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * @returns The {@link SLIP10Node} corresponding to the derived child key.
    */
   public async derive(path: SLIP10PathTuple): Promise<SLIP10Node> {
-    const childNode = await deriveChildNode({
-      privateKey: this.privateKeyBuffer,
-      publicKey: this.publicKeyBuffer,
-      chainCode: this.chainCodeBuffer,
-      depth: this.depth,
+    return await deriveChildNode({
       path,
-      curve: getCurveByName(this.curve),
-    });
-
-    return SLIP10Node.fromExtendedKey({
-      ...childNode,
-      // TODO: Get index and fingerprint from `deriveChildNode`.
-      parentFingerprint: this.fingerprint,
-      index: this.index,
-      curve: this.curve,
+      node: this,
     });
   }
 
@@ -345,29 +331,6 @@ export class SLIP10Node implements SLIP10NodeInterface {
       chainCode: this.chainCode,
     };
   }
-}
-
-async function createKeyFromPath({
-  derivationPath,
-  curve: curveName,
-}: SLIP10DerivationPathOptions) {
-  if (derivationPath.length === 0) {
-    throw new Error(
-      'Invalid derivation path: May not specify an empty derivation path.',
-    );
-  }
-
-  validateCurve(curveName);
-  const curve = getCurveByName(curveName);
-
-  const _depth = derivationPath.length - 1;
-  validateBIP32Depth(_depth);
-
-  return await deriveKeyFromPath({
-    path: derivationPath,
-    depth: _depth,
-    curve,
-  });
 }
 
 /**
@@ -425,37 +388,22 @@ export function validateParentFingerprint(
   }
 }
 
-export type ChildNode = DerivedKeys & {
-  depth: number;
-};
-
 type DeriveChildNodeArgs = {
-  privateKey?: Buffer;
-  publicKey: Buffer;
-  chainCode: Buffer;
-  depth: number;
   path: SLIP10PathTuple;
-  curve: Curve;
+  node: SLIP10Node | BIP44Node | BIP44CoinTypeNode;
 };
 
 /**
  * Derives a child key from the given parent key.
- * @param privateKey - The parent key to derive from.
- * @param publicKey - The parent public key to derive from.
- * @param chainCode - The chain code of the parent node.
- * @param depth - The depth of the parent key.
- * @param pathToChild - The path to the child node / key.
- * @param curve - The curve to use.
+ *
+ * @param node - The node to derive from.
+ * @param path - The path to the child node / key.
  * @returns The derived key and depth.
  */
 export async function deriveChildNode({
-  privateKey,
-  publicKey,
-  chainCode,
-  depth,
   path,
-  curve,
-}: DeriveChildNodeArgs): Promise<ChildNode> {
+  node,
+}: DeriveChildNodeArgs): Promise<SLIP10Node> {
   if (path.length === 0) {
     throw new Error(
       'Invalid HD tree derivation path: Deriving a path of length 0 is not defined.',
@@ -464,22 +412,14 @@ export async function deriveChildNode({
 
   // Note that we do not subtract 1 from the length of the path to the child,
   // unlike when we calculate the depth of a rooted path.
-  const newDepth = depth + path.length;
+  const newDepth = node.depth + path.length;
   validateBIP32Depth(newDepth);
 
-  const derivedKeys = await deriveKeyFromPath({
+  return await deriveKeyFromPath({
     path,
-    privateKey,
-    publicKey,
-    chainCode,
+    node,
     depth: newDepth,
-    curve,
   });
-
-  return {
-    ...derivedKeys,
-    depth: newDepth,
-  };
 }
 
 /**
@@ -487,6 +427,6 @@ export async function deriveChildNode({
  *
  * @param curveName - The name of the curve to get.
  */
-function getCurveByName(curveName: SupportedCurve): Curve {
+export function getCurveByName(curveName: SupportedCurve): Curve {
   return curves[curveName];
 }

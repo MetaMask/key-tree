@@ -17,8 +17,8 @@ import {
   hexStringToBuffer,
   nullableHexStringToBuffer,
 } from './utils';
-import { secp256k1 } from './curves';
-import { ChildNode, deriveChildNode } from './SLIP10Node';
+import { deriveChildNode, SLIP10Node } from './SLIP10Node';
+import { SupportedCurve } from './curves';
 
 export type CoinTypeHDPathTuple = [
   BIP39Node,
@@ -202,6 +202,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     return this.#node.index;
   }
 
+  public get curve(): SupportedCurve {
+    return this.#node.curve;
+  }
+
   /**
    * Derives a BIP-44 `address_index` key corresponding to the path of this
    * node and the specified `account`, `change`, and `address_index` values.
@@ -226,17 +230,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     account = 0,
     change = 0,
     address_index,
-  }: CoinTypeToAddressIndices): Promise<ChildNode> {
-    const childKey = await this.#node.derive(
+  }: CoinTypeToAddressIndices): Promise<BIP44Node> {
+    return await this.#node.derive(
       getBIP44CoinTypeToAddressPathTuple({ account, change, address_index }),
     );
-
-    return {
-      privateKey: childKey.privateKeyBuffer,
-      publicKey: childKey.publicKeyBuffer,
-      chainCode: childKey.chainCodeBuffer,
-      depth: childKey.depth,
-    };
   }
 
   toJSON(): JsonBIP44CoinTypeNode {
@@ -301,33 +298,28 @@ export async function deriveBIP44AddressKey(
   // TODO: Support xpubs and xprvs as part of a separate PR.
   parentKeyOrNode: BIP44CoinTypeNode | JsonBIP44CoinTypeNode,
   { account = 0, change = 0, address_index }: CoinTypeToAddressIndices,
-): Promise<ChildNode> {
+): Promise<SLIP10Node> {
   validateCoinTypeNodeDepth(parentKeyOrNode.depth);
 
-  const options = {
-    depth: BIP_44_COIN_TYPE_DEPTH,
-    path: getBIP44CoinTypeToAddressPathTuple({
-      account,
-      change,
-      address_index,
-    }),
-    curve: secp256k1,
-  };
+  const path = getBIP44CoinTypeToAddressPathTuple({
+    account,
+    change,
+    address_index,
+  });
 
   if (parentKeyOrNode instanceof BIP44CoinTypeNode) {
     return await deriveChildNode({
-      privateKey: parentKeyOrNode.privateKeyBuffer,
-      publicKey: parentKeyOrNode.publicKeyBuffer,
-      chainCode: parentKeyOrNode.chainCodeBuffer,
-      ...options,
+      path,
+      node: parentKeyOrNode,
     });
   }
 
   return await deriveChildNode({
-    privateKey: nullableHexStringToBuffer(parentKeyOrNode.privateKey),
-    publicKey: hexStringToBuffer(parentKeyOrNode.publicKey),
-    chainCode: hexStringToBuffer(parentKeyOrNode.chainCode),
-    ...options,
+    path,
+    node: await BIP44CoinTypeNode.fromJSON(
+      parentKeyOrNode,
+      parentKeyOrNode.coin_type,
+    ),
   });
 }
 
@@ -338,7 +330,7 @@ type BIP44AddressKeyDeriver = {
    * @returns The key corresponding to the path of this deriver and the
    * specified `address_index` value.
    */
-  (address_index: number, isHardened?: boolean): Promise<ChildNode>;
+  (address_index: number, isHardened?: boolean): Promise<SLIP10Node>;
 
   /**
    * A human-readable representation of the derivation path of this deriver
@@ -380,7 +372,7 @@ type BIP44AddressKeyDeriver = {
  * @returns The deriver function for the derivation path specified by the
  * `coin_type` node, `account`, and `change` indices.
  */
-export function getBIP44AddressKeyDeriver(
+export async function getBIP44AddressKeyDeriver(
   node: BIP44CoinTypeNode | JsonBIP44CoinTypeNode,
   accountAndChangeIndices?: Omit<CoinTypeToAddressIndices, 'address_index'>,
 ) {
@@ -388,20 +380,10 @@ export function getBIP44AddressKeyDeriver(
 
   validateCoinTypeNodeDepth(node.depth);
 
-  const parentKeyBuffer =
+  const actualNode =
     node instanceof BIP44CoinTypeNode
-      ? node.privateKeyBuffer
-      : nullableHexStringToBuffer(node.privateKey);
-
-  const parentPublicKeyBuffer =
-    node instanceof BIP44CoinTypeNode
-      ? node.publicKeyBuffer
-      : hexStringToBuffer(node.publicKey);
-
-  const parentChainCodeBuffer =
-    node instanceof BIP44CoinTypeNode
-      ? node.chainCodeBuffer
-      : hexStringToBuffer(node.chainCode);
+      ? node
+      : await BIP44CoinTypeNode.fromJSON(node, node.coin_type);
 
   const accountNode = getHardenedBIP32NodeToken(account);
   const changeNode = getBIP32NodeToken(change);
@@ -409,12 +391,8 @@ export function getBIP44AddressKeyDeriver(
   const bip44AddressKeyDeriver: BIP44AddressKeyDeriver = async (
     address_index: number,
     isHardened = false,
-  ): Promise<ChildNode> => {
+  ): Promise<SLIP10Node> => {
     return await deriveChildNode({
-      privateKey: parentKeyBuffer,
-      publicKey: parentPublicKeyBuffer,
-      chainCode: parentChainCodeBuffer,
-      depth: BIP_44_COIN_TYPE_DEPTH,
       path: [
         accountNode,
         changeNode,
@@ -422,7 +400,7 @@ export function getBIP44AddressKeyDeriver(
           ? getHardenedBIP32NodeToken(address_index)
           : getUnhardenedBIP32NodeToken(address_index),
       ],
-      curve: secp256k1,
+      node: actualNode,
     });
   };
 

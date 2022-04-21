@@ -36,9 +36,9 @@ describe('BIP44CoinTypeNode', () => {
 
       expect(node.toJSON()).toStrictEqual({
         coin_type: coinType,
-        depth: 2,
-        parentFingerprint: 0,
-        index: 0,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -160,9 +160,9 @@ describe('BIP44CoinTypeNode', () => {
 
       expect(node.toJSON()).toStrictEqual({
         coin_type: coinType,
-        depth: 2,
-        parentFingerprint: 0,
-        index: 0,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -196,9 +196,9 @@ describe('BIP44CoinTypeNode', () => {
 
       expect(node.toJSON()).toStrictEqual({
         coin_type: coinType,
-        depth: 2,
-        parentFingerprint: 0,
-        index: 0,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -251,8 +251,8 @@ describe('BIP44CoinTypeNode', () => {
         address_index: 0,
       });
 
-      expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-      expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+      expect(childNode.privateKey).toStrictEqual(node.privateKey);
+      expect(childNode.chainCode).toStrictEqual(node.chainCode);
     });
 
     it('derives an address_index key (default inputs, different address_index)', async () => {
@@ -270,8 +270,8 @@ describe('BIP44CoinTypeNode', () => {
         address_index: 99,
       });
 
-      expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-      expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+      expect(childNode.privateKey).toStrictEqual(node.privateKey);
+      expect(childNode.chainCode).toStrictEqual(node.chainCode);
     });
 
     it('derives an address_index key (non-default account value)', async () => {
@@ -290,8 +290,8 @@ describe('BIP44CoinTypeNode', () => {
         address_index: 0,
       });
 
-      expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-      expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+      expect(childNode.privateKey).toStrictEqual(node.privateKey);
+      expect(childNode.chainCode).toStrictEqual(node.chainCode);
     });
 
     it('derives an address_index key (non-default change value)', async () => {
@@ -310,8 +310,8 @@ describe('BIP44CoinTypeNode', () => {
         address_index: 0,
       });
 
-      expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-      expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+      expect(childNode.privateKey).toStrictEqual(node.privateKey);
+      expect(childNode.chainCode).toStrictEqual(node.chainCode);
     });
 
     it('derives an address_index key (non-default account and change values)', async () => {
@@ -331,8 +331,8 @@ describe('BIP44CoinTypeNode', () => {
         address_index: 0,
       });
 
-      expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-      expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+      expect(childNode.privateKey).toStrictEqual(node.privateKey);
+      expect(childNode.chainCode).toStrictEqual(node.chainCode);
     });
   });
 
@@ -387,9 +387,9 @@ describe('BIP44CoinTypeNode', () => {
       const nodeJson = node.toJSON();
       expect(nodeJson).toStrictEqual({
         coin_type: coinType,
-        depth: 2,
-        parentFingerprint: 0,
-        index: 0,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -398,9 +398,9 @@ describe('BIP44CoinTypeNode', () => {
 
       expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
         coin_type: coinType,
-        depth: 2,
-        parentFingerprint: 0,
-        index: 0,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -434,8 +434,8 @@ describe('deriveBIP44AddressKey', () => {
       address_index: 0,
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives an address_index key (default inputs, different address_index)', async () => {
@@ -461,8 +461,8 @@ describe('deriveBIP44AddressKey', () => {
       address_index: 3333,
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives an address_index key (default inputs, object address_index)', async () => {
@@ -491,8 +491,8 @@ describe('deriveBIP44AddressKey', () => {
       },
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives an address_index key (default inputs, hardened address_index)', async () => {
@@ -521,8 +521,8 @@ describe('deriveBIP44AddressKey', () => {
       },
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives a BIP-44 address key (non-default account value)', async () => {
@@ -549,8 +549,8 @@ describe('deriveBIP44AddressKey', () => {
       address_index: 0,
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives a BIP-44 address key (non-default change value)', async () => {
@@ -577,8 +577,8 @@ describe('deriveBIP44AddressKey', () => {
       address_index: 0,
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives a BIP-44 address key (non-default account and change values)', async () => {
@@ -606,8 +606,8 @@ describe('deriveBIP44AddressKey', () => {
       address_index: 0,
     });
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('derives a BIP-44 address key (JSON node)', async () => {
@@ -634,8 +634,8 @@ describe('deriveBIP44AddressKey', () => {
       address_index: 0,
     });
 
-    expect(childNode.privateKey).toStrictEqual(expectedNode.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(expectedNode.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(expectedNode.privateKey);
+    expect(childNode.chainCode).toStrictEqual(expectedNode.chainCode);
   });
 
   it('throws if a node value is invalid', async () => {
@@ -704,7 +704,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -721,8 +721,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function and derives a hardened index (default inputs)', async () => {
@@ -734,7 +734,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -751,8 +751,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0, true);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function and derives a hardened index (default inputs, different address_index)', async () => {
@@ -764,7 +764,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -781,8 +781,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(9873, true);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (different coin_type)', async () => {
@@ -794,7 +794,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -811,8 +811,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (default inputs, different address_index)', async () => {
@@ -824,7 +824,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -841,8 +841,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(9873);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (non-default account value)', async () => {
@@ -854,7 +854,9 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:46' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode, { account: 46 });
+    const deriver = await getBIP44AddressKeyDeriver(parentNode, {
+      account: 46,
+    });
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -871,8 +873,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (non-default change value)', async () => {
@@ -884,7 +886,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:2`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode, { change: 2 });
+    const deriver = await getBIP44AddressKeyDeriver(parentNode, { change: 2 });
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -901,8 +903,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (object change value)', async () => {
@@ -914,7 +916,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:2`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode, {
+    const deriver = await getBIP44AddressKeyDeriver(parentNode, {
       change: {
         index: 2,
         hardened: false,
@@ -936,8 +938,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (hardened change value)', async () => {
@@ -949,7 +951,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:2'`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode, {
+    const deriver = await getBIP44AddressKeyDeriver(parentNode, {
       change: {
         index: 2,
         hardened: true,
@@ -971,8 +973,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (non-default account and change values)', async () => {
@@ -984,7 +986,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     ]);
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:46' / bip32:2`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode, {
+    const deriver = await getBIP44AddressKeyDeriver(parentNode, {
       account: 46,
       change: 2,
     });
@@ -1004,8 +1006,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(node.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(node.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(node.privateKey);
+    expect(childNode.chainCode).toStrictEqual(node.chainCode);
   });
 
   it('returns the expected BIP-44 address key deriver function (JSON node)', async () => {
@@ -1018,7 +1020,7 @@ describe('getBIP44AddressKeyDeriver', () => {
     const parentNode = node.toJSON();
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 
@@ -1035,8 +1037,8 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const childNode = await deriver(0);
 
-    expect(childNode.privateKey).toStrictEqual(expectedNode.privateKeyBuffer);
-    expect(childNode.chainCode).toStrictEqual(expectedNode.chainCodeBuffer);
+    expect(childNode.privateKey).toStrictEqual(expectedNode.privateKey);
+    expect(childNode.chainCode).toStrictEqual(expectedNode.chainCode);
   });
 
   it('throws if a node value is invalid', async () => {
@@ -1047,17 +1049,21 @@ describe('getBIP44AddressKeyDeriver', () => {
       `bip32:${coinType}'`,
     ]);
 
-    [
+    const inputs = [
       { account: -1 },
       { change: 1.1 },
       { account: NaN },
       { account: null },
       { account: {} },
-    ].forEach((invalidInput) => {
-      expect(() =>
+    ];
+
+    for (const invalidInput of inputs) {
+      await expect(
         getBIP44AddressKeyDeriver(parentNode, invalidInput as any),
-      ).toThrow(`Invalid BIP-32 index: Must be a non-negative integer.`);
-    });
+      ).rejects.toThrow(
+        `Invalid BIP-32 index: Must be a non-negative integer.`,
+      );
+    }
   });
 
   it('deriver throws if address_index value is invalid', async () => {
@@ -1070,7 +1076,7 @@ describe('getBIP44AddressKeyDeriver', () => {
 
     const expectedPath = `m / bip32:44' / bip32:${coinType}' / bip32:0' / bip32:0`;
 
-    const deriver = getBIP44AddressKeyDeriver(parentNode);
+    const deriver = await getBIP44AddressKeyDeriver(parentNode);
     expect(deriver.coin_type).toStrictEqual(coinType);
     expect(deriver.path).toStrictEqual(expectedPath);
 

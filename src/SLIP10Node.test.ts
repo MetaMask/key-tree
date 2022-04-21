@@ -34,8 +34,8 @@ describe('SLIP10Node', () => {
       });
 
       const node = await SLIP10Node.fromExtendedKey({
-        privateKey: privateKey.toString('hex'),
-        chainCode: chainCode.toString('hex'),
+        privateKey,
+        chainCode,
         depth: 0,
         parentFingerprint: 0,
         index: 0,
@@ -67,22 +67,13 @@ describe('SLIP10Node', () => {
     });
 
     it('initializes a new node from a public key', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+      const { publicKeyBuffer, chainCodeBuffer } = await deriveChildKey({
         path: fixtures.local.mnemonic,
       });
 
-      const privateNode = await SLIP10Node.fromExtendedKey({
-        privateKey,
-        chainCode,
-        depth: 0,
-        parentFingerprint: 0,
-        index: 0,
-        curve: 'secp256k1',
-      });
-
       const node = await SLIP10Node.fromExtendedKey({
-        publicKey: privateNode.publicKeyBuffer,
-        chainCode: privateNode.chainCodeBuffer,
+        publicKey: publicKeyBuffer,
+        chainCode: chainCodeBuffer,
         depth: 0,
         parentFingerprint: 0,
         index: 0,
@@ -95,22 +86,14 @@ describe('SLIP10Node', () => {
     });
 
     it('initializes a new ed25519 node from a public key', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+      const { publicKeyBuffer, chainCodeBuffer } = await deriveChildKey({
         path: fixtures.local.mnemonic,
-      });
-
-      const privateNode = await SLIP10Node.fromExtendedKey({
-        privateKey,
-        chainCode,
-        depth: 0,
-        parentFingerprint: 0,
-        index: 0,
-        curve: 'ed25519',
+        curve: ed25519,
       });
 
       const node = await SLIP10Node.fromExtendedKey({
-        publicKey: privateNode.publicKeyBuffer,
-        chainCode: privateNode.chainCodeBuffer,
+        publicKey: publicKeyBuffer,
+        chainCode: chainCodeBuffer,
         depth: 0,
         parentFingerprint: 0,
         index: 0,
@@ -123,22 +106,13 @@ describe('SLIP10Node', () => {
     });
 
     it('initializes a new node from a hexadecimal public key and chain code', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+      const { publicKey, chainCode } = await deriveChildKey({
         path: fixtures.local.mnemonic,
       });
 
-      const privateNode = await SLIP10Node.fromExtendedKey({
-        privateKey,
-        chainCode,
-        depth: 0,
-        parentFingerprint: 0,
-        index: 0,
-        curve: 'secp256k1',
-      });
-
       const node = await SLIP10Node.fromExtendedKey({
-        publicKey: privateNode.publicKey,
-        chainCode: privateNode.chainCode,
+        publicKey,
+        chainCode,
         depth: 0,
         parentFingerprint: 0,
         index: 0,
@@ -151,17 +125,8 @@ describe('SLIP10Node', () => {
     });
 
     it('initializes a new node from JSON', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+      const node = await deriveChildKey({
         path: fixtures.local.mnemonic,
-      });
-
-      const node = await SLIP10Node.fromExtendedKey({
-        privateKey,
-        chainCode,
-        depth: 0,
-        parentFingerprint: 0,
-        index: 0,
-        curve: 'secp256k1',
       });
 
       expect(await SLIP10Node.fromJSON(node.toJSON())).toStrictEqual(node);

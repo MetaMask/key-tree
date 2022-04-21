@@ -17,6 +17,7 @@ import {
   PRIVATE_KEY_VERSION,
   PUBLIC_KEY_VERSION,
 } from './extended-keys';
+import { SupportedCurve } from './curves';
 
 type BIP44ExtendedKeyOptions = {
   readonly depth: number;
@@ -240,6 +241,10 @@ export class BIP44Node implements BIP44NodeInterface {
     return this.#node.publicKey;
   }
 
+  public get compressedPublicKeyBuffer(): Buffer {
+    return this.#node.compressedPublicKeyBuffer;
+  }
+
   public get chainCode(): string {
     return this.#node.chainCode;
   }
@@ -250,6 +255,10 @@ export class BIP44Node implements BIP44NodeInterface {
 
   public get parentFingerprint(): number {
     return this.#node.parentFingerprint;
+  }
+
+  public get fingerprint(): number {
+    return this.#node.fingerprint;
   }
 
   public get index(): number {
@@ -277,6 +286,10 @@ export class BIP44Node implements BIP44NodeInterface {
       version: PUBLIC_KEY_VERSION,
       publicKey: this.publicKeyBuffer,
     });
+  }
+
+  public get curve(): SupportedCurve {
+    return this.#node.curve;
   }
 
   constructor(node: SLIP10Node) {
