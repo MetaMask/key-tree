@@ -11,9 +11,17 @@ import {
 } from './constants';
 import { isHardened } from './utils';
 import { SLIP10Node, validateBIP32Depth } from './SLIP10Node';
+import {
+  decodeExtendedKey,
+  encodeExtendedKey,
+  PRIVATE_KEY_VERSION,
+  PUBLIC_KEY_VERSION,
+} from './extended-keys';
 
 type BIP44ExtendedKeyOptions = {
   readonly depth: number;
+  readonly parentFingerprint: number;
+  readonly index: number;
   readonly chainCode: Buffer | string;
   readonly privateKey?: Buffer | string;
   readonly publicKey?: Buffer | string;
@@ -41,6 +49,16 @@ export type JsonBIP44Node = {
    * `0 / 1 / 2 / 3 / 4 / 5`
    */
   readonly depth: BIP44Depth;
+
+  /**
+   * The fingerprint of the parent key, or 0 if this is a master node.
+   */
+  readonly parentFingerprint: number;
+
+  /**
+   * The index of the node, or 0 if this is a master node.
+   */
+  readonly index: number;
 
   /**
    * The hexadecimal string representation of the private key for this node.
@@ -93,18 +111,60 @@ export class BIP44Node implements BIP44NodeInterface {
    * All parameters are stringently validated, and an error is thrown if
    * validation fails.
    *
-   * @param depth The depth of the node.
-   * @param privateKey The private key for the node.
-   * @param publicKey The public key for the node. If a private key is
+   * @param options - An object containing the extended key, or an extended
+   * public (xpub) or private (xprv) key.
+   * @param options.depth The depth of the node.
+   * @param options.privateKey The private key for the node.
+   * @param options.publicKey The public key for the node. If a private key is
    * specified, this parameter is ignored.
-   * @param chainCode The chain code for the node.
+   * @param options.chainCode The chain code for the node.
    */
-  static async fromExtendedKey({
-    privateKey,
-    publicKey,
-    chainCode,
-    depth,
-  }: BIP44ExtendedKeyOptions): Promise<BIP44Node> {
+  static async fromExtendedKey(
+    options: BIP44ExtendedKeyOptions | string,
+  ): Promise<BIP44Node> {
+    if (typeof options === 'string') {
+      const extendedKey = decodeExtendedKey(options);
+
+      const { chainCode, depth, parentFingerprint, index } = extendedKey;
+
+      if (extendedKey.version === PUBLIC_KEY_VERSION) {
+        const { publicKey } = extendedKey;
+
+        return BIP44Node.fromExtendedKey({
+          depth,
+          parentFingerprint,
+          index,
+          publicKey,
+          chainCode,
+        });
+      }
+
+      if (extendedKey.version === PRIVATE_KEY_VERSION) {
+        const { privateKey } = extendedKey;
+
+        return BIP44Node.fromExtendedKey({
+          depth,
+          parentFingerprint,
+          index,
+          privateKey,
+          chainCode,
+        });
+      }
+
+      throw new Error(
+        'Invalid extended key: Expected public or private key version.',
+      );
+    }
+
+    const {
+      privateKey,
+      publicKey,
+      chainCode,
+      depth,
+      parentFingerprint,
+      index,
+    } = options;
+
     validateBIP44Depth(depth);
 
     const node = await SLIP10Node.fromExtendedKey({
@@ -112,6 +172,8 @@ export class BIP44Node implements BIP44NodeInterface {
       publicKey,
       chainCode,
       depth,
+      parentFingerprint,
+      index,
       curve: 'secp256k1',
     });
 
@@ -186,6 +248,37 @@ export class BIP44Node implements BIP44NodeInterface {
     return this.#node.address;
   }
 
+  public get parentFingerprint(): number {
+    return this.#node.parentFingerprint;
+  }
+
+  public get index(): number {
+    return this.#node.index;
+  }
+
+  public get extendedKey(): string {
+    const data = {
+      depth: this.depth,
+      parentFingerprint: this.parentFingerprint,
+      index: this.index,
+      chainCode: this.chainCodeBuffer,
+    };
+
+    if (this.privateKeyBuffer) {
+      return encodeExtendedKey({
+        ...data,
+        version: PRIVATE_KEY_VERSION,
+        privateKey: this.privateKeyBuffer,
+      });
+    }
+
+    return encodeExtendedKey({
+      ...data,
+      version: PUBLIC_KEY_VERSION,
+      publicKey: this.publicKeyBuffer,
+    });
+  }
+
   constructor(node: SLIP10Node) {
     this.#node = node;
 
@@ -240,6 +333,8 @@ export class BIP44Node implements BIP44NodeInterface {
   public toJSON(): JsonBIP44Node {
     return {
       depth: this.depth,
+      parentFingerprint: this.parentFingerprint,
+      index: this.index,
       privateKey: this.privateKey,
       publicKey: this.publicKey,
       chainCode: this.chainCode,
@@ -254,7 +349,9 @@ export class BIP44Node implements BIP44NodeInterface {
  *
  * @param depth - The depth to validate.
  */
-function validateBIP44Depth(depth: unknown): asserts depth is BIP44Depth {
+export function validateBIP44Depth(
+  depth: unknown,
+): asserts depth is BIP44Depth {
   validateBIP32Depth(depth);
 
   if (depth < MIN_BIP_44_DEPTH || depth > MAX_BIP_44_DEPTH) {

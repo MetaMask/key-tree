@@ -6,7 +6,7 @@ import {
 import { Curve, curves, SupportedCurve } from './curves';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
-import { getBuffer } from './utils';
+import { getBuffer, getFingerprint } from './utils';
 import { DerivedKeys } from './derivers';
 
 /**
@@ -19,6 +19,16 @@ export type JsonSLIP10Node = {
    * The 0-indexed path depth of this node.
    */
   readonly depth: number;
+
+  /**
+   * The fingerprint of the parent key, or 0 if this is a master node.
+   */
+  readonly parentFingerprint: number;
+
+  /**
+   * The index of the node, or 0 if this is a master node.
+   */
+  readonly index: number;
 
   /**
    * The (optional) private key of this node.
@@ -63,6 +73,8 @@ export type SLIP10NodeInterface = JsonSLIP10Node & {
 
 type SLIP10NodeConstructorOptions = {
   readonly depth: number;
+  readonly parentFingerprint: number;
+  readonly index: number;
   readonly chainCode: Buffer;
   readonly privateKey?: Buffer;
   readonly publicKey: Buffer;
@@ -71,6 +83,8 @@ type SLIP10NodeConstructorOptions = {
 
 type SLIP10ExtendedKeyOptions = {
   readonly depth: number;
+  readonly parentFingerprint: number;
+  readonly index: number;
   readonly chainCode: string | Buffer;
   readonly privateKey?: string | Buffer;
   readonly publicKey?: string | Buffer;
@@ -101,15 +115,20 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * All parameters are stringently validated, and an error is thrown if
    * validation fails.
    *
-   * @param depth The depth of the node.
-   * @param privateKey The private key for the node.
-   * @param publicKey The public key for the node. If a private key is
+   * @param depth - The depth of the node.
+   * @param parentFingerprint - The fingerprint of the parent key, or 0 if
+   * the node is a master node.
+   * @param index - The index of the node, or 0 if the node is a master node.
+   * @param privateKey - The private key for the node.
+   * @param publicKey - The public key for the node. If a private key is
    * specified, this parameter is ignored.
-   * @param chainCode The chain code for the node.
-   * @param curve The curve used by the node.
+   * @param chainCode - The chain code for the node.
+   * @param curve - The curve used by the node.
    */
   static async fromExtendedKey({
     depth,
+    parentFingerprint,
+    index,
     privateKey,
     publicKey,
     chainCode,
@@ -125,6 +144,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
       return new SLIP10Node({
         depth,
+        parentFingerprint,
+        index,
         chainCode: chainCodeBuffer,
         privateKey: privateKeyBuffer,
         publicKey: await getCurveByName(curve).getPublicKey(privateKey),
@@ -140,6 +161,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
       return new SLIP10Node({
         depth,
+        parentFingerprint,
+        index,
         chainCode: chainCodeBuffer,
         publicKey: publicKeyBuffer,
         curve,
@@ -190,6 +213,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
       return new SLIP10Node({
         depth: derivationPath.length - 1,
+        // TODO: Get parent fingerprint and index from the derivation path.
+        parentFingerprint: 0,
+        index: 0,
         chainCode,
         privateKey,
         publicKey,
@@ -204,6 +230,10 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   public readonly depth: number;
 
+  public readonly parentFingerprint: number;
+
+  public readonly index: number;
+
   public readonly chainCodeBuffer: Buffer;
 
   public readonly privateKeyBuffer?: Buffer;
@@ -212,12 +242,16 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   constructor({
     depth,
+    parentFingerprint,
+    index,
     chainCode,
     privateKey,
     publicKey,
     curve,
   }: SLIP10NodeConstructorOptions) {
     this.depth = depth;
+    this.parentFingerprint = parentFingerprint;
+    this.index = index;
     this.chainCodeBuffer = chainCode;
     this.privateKeyBuffer = privateKey;
     this.publicKeyBuffer = publicKey;
@@ -248,12 +282,22 @@ export class SLIP10Node implements SLIP10NodeInterface {
     return `0x${publicKeyToEthAddress(this.publicKeyBuffer).toString('hex')}`;
   }
 
+  public get fingerprint(): number {
+    const compressedPublicKey = getCurveByName(this.curve).compressPublicKey(
+      this.publicKeyBuffer,
+    );
+
+    return getFingerprint(compressedPublicKey);
+  }
+
   /**
    * Returns a neutered version of this node, i.e. a node without a private key.
    */
   public neuter(): SLIP10Node {
     return new SLIP10Node({
       depth: this.depth,
+      parentFingerprint: this.parentFingerprint,
+      index: this.index,
       chainCode: this.chainCodeBuffer,
       publicKey: this.publicKeyBuffer,
       curve: this.curve,
@@ -282,6 +326,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
     return SLIP10Node.fromExtendedKey({
       ...childNode,
+      // TODO: Get index and fingerprint from `deriveChildNode`.
+      parentFingerprint: this.fingerprint,
+      index: this.index,
       curve: this.curve,
     });
   }
@@ -290,6 +337,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
   public toJSON(): JsonSLIP10Node {
     return {
       depth: this.depth,
+      parentFingerprint: this.parentFingerprint,
+      index: this.index,
       curve: this.curve,
       privateKey: this.privateKey,
       publicKey: this.publicKey,
@@ -352,6 +401,26 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
   if (typeof depth !== 'number' || !Number.isInteger(depth) || depth < 0) {
     throw new Error(
       `Invalid HD tree path depth: The depth must be a positive integer. Received: "${depth}".`,
+    );
+  }
+}
+
+/**
+ * Validates a BIP-32 parent fingerprint. Effectively, asserts that the fingerprint is an
+ * integer `number`. Throws an error if validation fails.
+ *
+ * @param parentFingerprint - The parent fingerprint to validate.
+ */
+export function validateParentFingerprint(
+  parentFingerprint: unknown,
+): asserts parentFingerprint is number {
+  if (
+    typeof parentFingerprint !== 'number' ||
+    !Number.isInteger(parentFingerprint) ||
+    parentFingerprint < 0
+  ) {
+    throw new Error(
+      `Invalid parent fingerprint: The fingerprint must be a positive integer. Received: "${parentFingerprint}".`,
     );
   }
 }

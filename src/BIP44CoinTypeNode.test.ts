@@ -37,6 +37,8 @@ describe('BIP44CoinTypeNode', () => {
       expect(node.toJSON()).toStrictEqual({
         coin_type: coinType,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -159,6 +161,8 @@ describe('BIP44CoinTypeNode', () => {
       expect(node.toJSON()).toStrictEqual({
         coin_type: coinType,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -193,6 +197,8 @@ describe('BIP44CoinTypeNode', () => {
       expect(node.toJSON()).toStrictEqual({
         coin_type: coinType,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -382,6 +388,8 @@ describe('BIP44CoinTypeNode', () => {
       expect(nodeJson).toStrictEqual({
         coin_type: coinType,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -391,6 +399,8 @@ describe('BIP44CoinTypeNode', () => {
       expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
         coin_type: coinType,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
         path: pathString,
         privateKey: node.privateKey,
         publicKey: node.publicKey,

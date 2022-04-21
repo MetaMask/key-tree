@@ -40,3 +40,8 @@ export const compressPublicKey = (publicKey: Uint8Array): Buffer => {
   const point = Point.fromHex(publicKey);
   return Buffer.from(point.toRawBytes(true));
 };
+
+export const decompressPublicKey = (publicKey: Uint8Array): Buffer => {
+  const point = Point.fromHex(publicKey);
+  return Buffer.from(point.toRawBytes(false));
+};

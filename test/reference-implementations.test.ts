@@ -155,6 +155,8 @@ describe('reference implementation tests', () => {
 
         const parentNode = await BIP44Node.fromExtendedKey({
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
           ...derivedKeys,
         });
         const node = await parentNode.derive(path.ours.tuple);
@@ -176,6 +178,8 @@ describe('reference implementation tests', () => {
 
         const parentNode = await BIP44Node.fromExtendedKey({
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
           ...derivedKeys,
         });
         const node = await parentNode.derive(path.ours.tuple);
@@ -305,6 +309,8 @@ describe('reference implementation tests', () => {
 
           const parentNode = await SLIP10Node.fromExtendedKey({
             depth: 0,
+            parentFingerprint: 0,
+            index: 0,
             curve: 'ed25519',
             ...derivedKeys,
           });

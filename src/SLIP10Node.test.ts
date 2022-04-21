@@ -18,6 +18,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -35,6 +37,8 @@ describe('SLIP10Node', () => {
         privateKey: privateKey.toString('hex'),
         chainCode: chainCode.toString('hex'),
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -52,6 +56,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'ed25519',
       });
 
@@ -69,6 +75,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -76,6 +84,8 @@ describe('SLIP10Node', () => {
         publicKey: privateNode.publicKeyBuffer,
         chainCode: privateNode.chainCodeBuffer,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -93,6 +103,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'ed25519',
       });
 
@@ -100,6 +112,8 @@ describe('SLIP10Node', () => {
         publicKey: privateNode.publicKeyBuffer,
         chainCode: privateNode.chainCodeBuffer,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'ed25519',
       });
 
@@ -117,6 +131,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -124,6 +140,8 @@ describe('SLIP10Node', () => {
         publicKey: privateNode.publicKey,
         chainCode: privateNode.chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -141,6 +159,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -156,6 +176,8 @@ describe('SLIP10Node', () => {
         privateKey,
         chainCode,
         depth: 0,
+        parentFingerprint: 0,
+        index: 0,
         curve: 'secp256k1',
       });
 
@@ -171,6 +193,8 @@ describe('SLIP10Node', () => {
         SLIP10Node.fromExtendedKey({
           chainCode: Buffer.alloc(32, 1),
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
           curve: 'secp256k1',
         }),
       ).rejects.toThrow(
@@ -196,6 +220,8 @@ describe('SLIP10Node', () => {
         await expect(
           SLIP10Node.fromExtendedKey({
             depth: input as any,
+            parentFingerprint: 0,
+            index: 0,
             publicKey: Buffer.alloc(65, 1),
             chainCode: Buffer.alloc(32, 1),
             curve: 'secp256k1',
@@ -212,6 +238,8 @@ describe('SLIP10Node', () => {
           privateKey: 'foo',
           chainCode: Buffer.alloc(32, 1),
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
           curve: 'secp256k1',
         }),
       ).rejects.toThrow(
@@ -248,7 +276,9 @@ describe('SLIP10Node', () => {
 
       expect(node.depth).toStrictEqual(2);
       expect(node.toJSON()).toStrictEqual({
-        depth: 2,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         curve: 'secp256k1',
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -447,6 +477,8 @@ describe('SLIP10Node', () => {
             chainCode,
             curve: 'ed25519',
             depth: 0,
+            parentFingerprint: 0,
+            index: 0,
           });
 
           if (path.ours.tuple.length === 0) {
@@ -473,6 +505,8 @@ describe('SLIP10Node', () => {
             chainCode,
             curve: 'secp256k1',
             depth: 0,
+            parentFingerprint: 0,
+            index: 0,
           });
 
           if (path.ours.tuple.length === 0) {
@@ -503,6 +537,8 @@ describe('SLIP10Node', () => {
           chainCode,
           curve: 'secp256k1',
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
         });
 
         const childNode = await node.derive([
@@ -566,6 +602,8 @@ describe('SLIP10Node', () => {
       const nodeJson = node.toJSON();
       expect(nodeJson).toStrictEqual({
         depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         curve: 'secp256k1',
         privateKey: node.privateKey,
         publicKey: node.publicKey,
@@ -574,6 +612,8 @@ describe('SLIP10Node', () => {
 
       expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
         depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         curve: 'secp256k1',
         privateKey: node.privateKey,
         publicKey: node.publicKey,

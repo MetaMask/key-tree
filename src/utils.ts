@@ -1,4 +1,7 @@
 import { bytesToHex } from '@noble/hashes/utils';
+import { base58check as scureBase58check } from '@scure/base';
+import { sha256 } from '@noble/hashes/sha256';
+import { ripemd160 } from '@noble/hashes/ripemd160';
 import {
   BIP32Node,
   BIP44PurposeNodeToken,
@@ -292,3 +295,36 @@ function validateBuffer(
     throw new Error(`Invalid value: Must be a non-zero ${length}-byte buffer.`);
   }
 }
+
+export const decodeBase58check = (value: string): Buffer => {
+  const base58Check = scureBase58check(sha256);
+
+  try {
+    return Buffer.from(base58Check.decode(value));
+  } catch {
+    throw new Error(
+      `Invalid value: Value is not base58-encoded, or the checksum is invalid.`,
+    );
+  }
+};
+
+export const encodeBase58check = (value: Buffer): string => {
+  const base58Check = scureBase58check(sha256);
+
+  return base58Check.encode(value);
+};
+
+/**
+ * Get the fingerprint of a compressed public key as number.
+ *
+ * @param publicKey - The compressed public key to get the fingerprint for.
+ */
+export const getFingerprint = (publicKey: Buffer): number => {
+  if (!isValidBufferKey(publicKey, 33)) {
+    throw new Error(
+      `Invalid public key: The key must be a 33-byte, non-zero Buffer.`,
+    );
+  }
+
+  return Buffer.from(ripemd160(publicKey)).readUInt32BE(0);
+};

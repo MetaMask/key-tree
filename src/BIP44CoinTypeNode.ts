@@ -77,6 +77,8 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 
     const node = await BIP44Node.fromExtendedKey({
       depth: json.depth,
+      index: json.index,
+      parentFingerprint: json.parentFingerprint,
       chainCode: hexStringToBuffer(json.chainCode),
       privateKey: nullableHexStringToBuffer(json.privateKey),
       publicKey: hexStringToBuffer(json.publicKey),
@@ -190,6 +192,14 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 
   public get address(): string {
     return this.#node.address;
+  }
+
+  public get parentFingerprint(): number {
+    return this.#node.parentFingerprint;
+  }
+
+  public get index(): number {
+    return this.#node.index;
   }
 
   /**

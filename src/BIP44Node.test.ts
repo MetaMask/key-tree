@@ -17,11 +17,15 @@ describe('BIP44Node', () => {
         privateKey,
         chainCode,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
       });
 
       expect(node.depth).toStrictEqual(2);
       expect(node.toJSON()).toStrictEqual({
-        depth: 2,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
         chainCode: node.chainCode,
@@ -38,10 +42,34 @@ describe('BIP44Node', () => {
         privateKey,
         chainCode,
         depth: 2,
+        parentFingerprint: 0,
+        index: 0,
       });
 
       expect(await BIP44Node.fromJSON(node.toJSON())).toStrictEqual(node);
     });
+
+    it.each(fixtures.bip32)(
+      'initializes a node from an extended public key',
+      async ({ keys }) => {
+        for (const key of keys) {
+          const node = await BIP44Node.fromExtendedKey(key.extPubKey);
+          expect(node.privateKey).toBeUndefined();
+          expect(node.publicKey).toBe(key.publicKey);
+        }
+      },
+    );
+
+    it.each(fixtures.bip32)(
+      'initializes a node from an extended private key',
+      async ({ keys }) => {
+        for (const key of keys) {
+          const node = await BIP44Node.fromExtendedKey(key.extPrivKey);
+          expect(node.privateKey).toBe(key.privateKey);
+          expect(node.publicKey).toBe(key.publicKey);
+        }
+      },
+    );
 
     it('throws if the depth is invalid', async () => {
       const { privateKey, chainCode } = await deriveChildKey({
@@ -53,6 +81,8 @@ describe('BIP44Node', () => {
           depth: 6,
           privateKey,
           chainCode,
+          parentFingerprint: 0,
+          index: 0,
         }),
       ).rejects.toThrow(
         `Invalid HD tree path depth: The depth must be a positive integer N such that 0 <= N <= 5. Received: "6"`,
@@ -73,7 +103,9 @@ describe('BIP44Node', () => {
 
       expect(node.depth).toStrictEqual(2);
       expect(node.toJSON()).toStrictEqual({
-        depth: 2,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
         chainCode: node.chainCode,
@@ -350,6 +382,8 @@ describe('BIP44Node', () => {
           privateKey,
           chainCode,
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
         });
 
         const childNode = await node.derive([
@@ -377,6 +411,8 @@ describe('BIP44Node', () => {
           privateKey,
           chainCode,
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
         });
 
         const childNode = await node.derive([
@@ -423,6 +459,8 @@ describe('BIP44Node', () => {
       const nodeJson = node.toJSON();
       expect(nodeJson).toStrictEqual({
         depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
         chainCode: node.chainCode,
@@ -430,6 +468,8 @@ describe('BIP44Node', () => {
 
       expect(JSON.parse(JSON.stringify(nodeJson))).toStrictEqual({
         depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
         privateKey: node.privateKey,
         publicKey: node.publicKey,
         chainCode: node.chainCode,
