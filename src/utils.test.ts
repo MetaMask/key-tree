@@ -5,7 +5,6 @@ import {
   isValidBufferKey,
   nullableHexStringToBuffer,
 } from './utils';
-import { SLIP10Node } from './SLIP10Node';
 import { BIP44Node } from './BIP44Node';
 
 describe('nullableHexStringToBuffer', () => {
