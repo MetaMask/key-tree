@@ -70,30 +70,37 @@ describe('BIP44CoinTypeNode', () => {
 
     it('throws if node has invalid key', async () => {
       const arbitraryCoinType = 78;
+
+      const options = {
+        depth: 2,
+        index: 0,
+        parentFingerprint: 0,
+      };
+
       const inputs = [
         {
           privateKey: '0xf00',
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
-          depth: 2,
+          ...options,
         },
         {
           privateKey: Buffer.allocUnsafe(64).fill(1).toString('hex'),
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
-          depth: 2,
+          ...options,
         },
         {
           privateKey: Buffer.allocUnsafe(63).fill(1).toString('hex'),
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
-          depth: 2,
+          ...options,
         },
         {
           privateKey: Buffer.alloc(64).toString('hex'),
           publicKey: Buffer.alloc(65, 1),
           chainCode: Buffer.alloc(32, 1),
-          depth: 2,
+          ...options,
         },
       ];
 
@@ -350,6 +357,25 @@ describe('BIP44CoinTypeNode', () => {
       const parentNode = await BIP44CoinTypeNode.fromNode(node, coinType);
 
       expect(parentNode.publicKey).toBe(node.publicKey);
+    });
+  });
+
+  describe('compressedPublicKeyBuffer', () => {
+    it('returns the compressed public key for a node', async () => {
+      const coinType = 60;
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:${coinType}'`,
+        ],
+      });
+
+      const parentNode = await BIP44CoinTypeNode.fromNode(node, coinType);
+
+      expect(parentNode.compressedPublicKeyBuffer).toStrictEqual(
+        node.compressedPublicKeyBuffer,
+      );
     });
   });
 

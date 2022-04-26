@@ -6,10 +6,10 @@ import {
   SLIP10Path,
 } from './constants';
 import { Deriver, derivers } from './derivers';
-import { getCurveByName, SLIP10Node } from './SLIP10Node';
+import { SLIP10Node } from './SLIP10Node';
 import { BIP44Node } from './BIP44Node';
 import { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
-import { SupportedCurve } from './curves';
+import { getCurveByName, SupportedCurve } from './curves';
 
 /**
  * Ethereum default seed path: "m/44'/60'/0'/0/{account_index}"

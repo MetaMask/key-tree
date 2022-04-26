@@ -4,6 +4,7 @@ import { SLIP10Node } from './SLIP10Node';
 import { BIP44PurposeNodeToken } from './constants';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { hexStringToBuffer } from './utils';
+import { compressPublicKey } from './curves/secp256k1';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 
@@ -197,6 +198,36 @@ describe('SLIP10Node', () => {
       }
     });
 
+    it('throws if the parent fingerprint is invalid', async () => {
+      const inputs = [
+        -1,
+        0.1,
+        -0.1,
+        NaN,
+        Infinity,
+        '0',
+        'zero',
+        {},
+        null,
+        undefined,
+      ];
+
+      for (const input of inputs) {
+        await expect(
+          SLIP10Node.fromExtendedKey({
+            depth: 0,
+            parentFingerprint: input as any,
+            index: 0,
+            publicKey: Buffer.alloc(65, 1),
+            chainCode: Buffer.alloc(32, 1),
+            curve: 'secp256k1',
+          }),
+        ).rejects.toThrow(
+          `Invalid parent fingerprint: The fingerprint must be a positive integer. Received: "${input}"`,
+        );
+      }
+    });
+
     it('throws if the private key is invalid', async () => {
       await expect(
         SLIP10Node.fromExtendedKey({
@@ -219,6 +250,8 @@ describe('SLIP10Node', () => {
           privateKey: 123,
           chainCode: Buffer.alloc(32, 1),
           depth: 0,
+          parentFingerprint: 0,
+          index: 0,
           curve: 'secp256k1',
         }),
       ).rejects.toThrow(
@@ -485,6 +518,24 @@ describe('SLIP10Node', () => {
     );
   });
 
+  describe('compressedPublicKeyBuffer', () => {
+    it('returns the public key in compressed form', async () => {
+      const node = await SLIP10Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:0'`,
+          `bip32:0'`,
+        ],
+        curve: 'secp256k1',
+      });
+
+      expect(node.compressedPublicKeyBuffer).toStrictEqual(
+        compressPublicKey(node.publicKeyBuffer),
+      );
+    });
+  });
+
   describe('address', () => {
     const { hexSeed, path, sampleAddressIndices } =
       fixtures['ethereumjs-wallet'];
@@ -528,6 +579,21 @@ describe('SLIP10Node', () => {
       expect(() => node.address).toThrow(
         'Unable to get address for this node: Only secp256k1 is supported.',
       );
+    });
+  });
+
+  describe('fingerprint', () => {
+    it('returns the fingerprint for a public key', async () => {
+      const node = await SLIP10Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
+        curve: 'secp256k1',
+      });
+
+      expect(node.fingerprint).toBe(1498926763);
     });
   });
 

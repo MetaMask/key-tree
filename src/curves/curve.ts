@@ -27,5 +27,14 @@ export type Curve = {
   decompressPublicKey: (publicKey: Buffer) => Buffer;
 };
 
+/**
+ * Get a curve by name.
+ *
+ * @param curveName - The name of the curve to get.
+ */
+export function getCurveByName(curveName: SupportedCurve): Curve {
+  return curves[curveName];
+}
+
 // As long as both parameters are specified, this function is the same for all curves.
 export const { mod } = utils;

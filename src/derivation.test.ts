@@ -183,6 +183,14 @@ describe('derivation', () => {
         /Invalid derivation parameters: Must specify parent key if the first node of the path segment is not a BIP-39 node\./u,
       );
     });
+
+    it('throws when no curve or node is specified', async () => {
+      await expect(
+        deriveKeyFromPath({ path: [bip39MnemonicToMultipath(mnemonic)] }),
+      ).rejects.toThrow(
+        'Invalid arguments: Must specify either a parent node or curve.',
+      );
+    });
   });
 
   describe('bip32Derive', () => {
@@ -247,6 +255,30 @@ describe('derivation', () => {
           'Invalid BIP-32 index: The index must be a non-negative decimal integer less than 2147483648.',
         );
       }
+    });
+
+    it('throws when no node is specified', async () => {
+      await expect(
+        bip32Derive({
+          path: '0',
+        }),
+      ).rejects.toThrow(
+        'Invalid parameters: Must specify a node to derive from.',
+      );
+    });
+
+    it('throws when trying to derive from a public key node', async () => {
+      const node = await bip39Derive({ path: mnemonic });
+      const publicNode = node.neuter();
+
+      await expect(
+        bip32Derive({
+          path: `0'`,
+          node: publicNode,
+        }),
+      ).rejects.toThrow(
+        'Invalid parameters: Cannot derive hardened child keys without a private key.',
+      );
     });
   });
 

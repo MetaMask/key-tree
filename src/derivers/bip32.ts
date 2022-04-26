@@ -2,8 +2,13 @@ import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
 import { BIP_32_HARDENED_OFFSET, BUFFER_KEY_LENGTH } from '../constants';
-import { bytesToNumber, hexStringToBuffer, isValidBufferKey } from '../utils';
-import { Curve, mod, secp256k1 } from '../curves';
+import {
+  bytesToNumber,
+  getFingerprint,
+  hexStringToBuffer,
+  isValidBufferKey,
+} from '../utils';
+import { Curve, getCurveByName, mod, secp256k1 } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { DeriveChildKeyArgs, DerivedKeys } from '.';
 
@@ -74,7 +79,7 @@ export async function deriveChildKey({
     throw new Error('Invalid parameters: Must specify a node to derive from.');
   }
 
-  if (isHardened && !node?.privateKey) {
+  if (isHardened && !node.privateKey) {
     throw new Error(
       'Invalid parameters: Cannot derive hardened child keys without a private key.',
     );
@@ -137,7 +142,7 @@ export async function deriveChildKey({
     chainCode,
     depth: node.depth + 1,
     parentFingerprint: node.fingerprint,
-    index: childIndex + (isHardened ? BIP_32_HARDENED_OFFSET : 0),
+    index: childIndex,
     curve: curve.name,
   });
 }

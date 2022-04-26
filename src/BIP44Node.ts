@@ -128,18 +128,6 @@ export class BIP44Node implements BIP44NodeInterface {
 
       const { chainCode, depth, parentFingerprint, index } = extendedKey;
 
-      if (extendedKey.version === PUBLIC_KEY_VERSION) {
-        const { publicKey } = extendedKey;
-
-        return BIP44Node.fromExtendedKey({
-          depth,
-          parentFingerprint,
-          index,
-          publicKey,
-          chainCode,
-        });
-      }
-
       if (extendedKey.version === PRIVATE_KEY_VERSION) {
         const { privateKey } = extendedKey;
 
@@ -152,9 +140,15 @@ export class BIP44Node implements BIP44NodeInterface {
         });
       }
 
-      throw new Error(
-        'Invalid extended key: Expected public or private key version.',
-      );
+      const { publicKey } = extendedKey;
+
+      return BIP44Node.fromExtendedKey({
+        depth,
+        parentFingerprint,
+        index,
+        publicKey,
+        chainCode,
+      });
     }
 
     const {

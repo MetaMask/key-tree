@@ -3,13 +3,12 @@ import {
   RootedSLIP10PathTuple,
   SLIP10PathTuple,
 } from './constants';
-import { Curve, curves, SupportedCurve } from './curves';
+import { curves, getCurveByName, SupportedCurve } from './curves';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
-import { getBuffer, getFingerprint } from './utils';
+import { getBuffer, getFingerprint, isValidInteger } from './utils';
 import { BIP44Node } from './BIP44Node';
 import { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
-import { deriveChildKey } from './derivers/bip39';
 
 /**
  * A wrapper for SLIP-10 Hierarchical Deterministic (HD) tree nodes, i.e.
@@ -140,6 +139,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
     validateCurve(curve);
     validateBIP32Depth(depth);
+    validateParentFingerprint(parentFingerprint);
 
     if (privateKey) {
       const privateKeyBuffer = getBuffer(privateKey, BUFFER_KEY_LENGTH);
@@ -281,11 +281,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
   }
 
   public get fingerprint(): number {
-    const compressedPublicKey = getCurveByName(this.curve).compressPublicKey(
-      this.publicKeyBuffer,
-    );
-
-    return getFingerprint(compressedPublicKey);
+    return getFingerprint(this.compressedPublicKeyBuffer);
   }
 
   /**
@@ -361,7 +357,7 @@ function validateCurve(
  * @param depth - The depth to validate.
  */
 export function validateBIP32Depth(depth: unknown): asserts depth is number {
-  if (typeof depth !== 'number' || !Number.isInteger(depth) || depth < 0) {
+  if (!isValidInteger(depth)) {
     throw new Error(
       `Invalid HD tree path depth: The depth must be a positive integer. Received: "${depth}".`,
     );
@@ -377,11 +373,7 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
 export function validateParentFingerprint(
   parentFingerprint: unknown,
 ): asserts parentFingerprint is number {
-  if (
-    typeof parentFingerprint !== 'number' ||
-    !Number.isInteger(parentFingerprint) ||
-    parentFingerprint < 0
-  ) {
+  if (!isValidInteger(parentFingerprint)) {
     throw new Error(
       `Invalid parent fingerprint: The fingerprint must be a positive integer. Received: "${parentFingerprint}".`,
     );
@@ -420,13 +412,4 @@ export async function deriveChildNode({
     node,
     depth: newDepth,
   });
-}
-
-/**
- * Get a curve by name.
- *
- * @param curveName - The name of the curve to get.
- */
-export function getCurveByName(curveName: SupportedCurve): Curve {
-  return curves[curveName];
 }

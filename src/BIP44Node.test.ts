@@ -1,6 +1,12 @@
 import fixtures from '../test/fixtures';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { hexStringToBuffer } from './utils';
+import { compressPublicKey } from './curves/secp256k1';
+import {
+  encodeExtendedKey,
+  PRIVATE_KEY_VERSION,
+  PUBLIC_KEY_VERSION,
+} from './extended-keys';
 import { BIP44Node, BIP44PurposeNodeToken } from '.';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
@@ -421,6 +427,71 @@ describe('BIP44Node', () => {
         expect(childNode.address).toBe(address);
       },
     );
+  });
+
+  describe('compressedPublicKeyBuffer', () => {
+    it('returns the public key in compressed form', async () => {
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:0'`,
+          `bip32:0'`,
+        ],
+      });
+
+      expect(node.compressedPublicKeyBuffer).toStrictEqual(
+        compressPublicKey(node.publicKeyBuffer),
+      );
+    });
+  });
+
+  describe('extendedKey', () => {
+    it('returns the extended private key for nodes with a private key', async () => {
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:0'`,
+          `bip32:0'`,
+        ],
+      });
+
+      const extendedKey = encodeExtendedKey({
+        version: PRIVATE_KEY_VERSION,
+        privateKey: node.privateKeyBuffer as Buffer,
+        chainCode: node.chainCodeBuffer,
+        depth: node.depth,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
+      });
+
+      expect(node.extendedKey).toStrictEqual(extendedKey);
+    });
+
+    it('returns the extended public key for nodes with a public key', async () => {
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:0'`,
+          `bip32:0'`,
+        ],
+      });
+
+      const neuteredNode = node.neuter();
+
+      const extendedKey = encodeExtendedKey({
+        version: PUBLIC_KEY_VERSION,
+        publicKey: neuteredNode.publicKeyBuffer,
+        chainCode: neuteredNode.chainCodeBuffer,
+        depth: neuteredNode.depth,
+        parentFingerprint: neuteredNode.parentFingerprint,
+        index: neuteredNode.index,
+      });
+
+      expect(neuteredNode.extendedKey).toStrictEqual(extendedKey);
+    });
   });
 
   describe('neuter', () => {

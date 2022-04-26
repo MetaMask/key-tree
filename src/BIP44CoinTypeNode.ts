@@ -186,6 +186,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     return this.#node.publicKey;
   }
 
+  public get compressedPublicKeyBuffer(): Buffer {
+    return this.#node.compressedPublicKeyBuffer;
+  }
+
   public get chainCode(): string {
     return this.#node.chainCode;
   }
@@ -196,6 +200,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
 
   public get parentFingerprint(): number {
     return this.#node.parentFingerprint;
+  }
+
+  public get fingerprint(): number {
+    return this.#node.fingerprint;
   }
 
   public get index(): number {

@@ -247,6 +247,16 @@ export function isValidBufferKey(
 }
 
 /**
+ * Tests whether the specified number is a valid integer equal to or greater than 0.
+ *
+ * @param value - The number to test.
+ * @returns Whether the number is a valid integer.
+ */
+export function isValidInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+}
+
+/**
  * Get a BigInt from a byte array.
  *
  * @param bytes - The byte array to get the BigInt for.
