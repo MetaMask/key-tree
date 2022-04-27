@@ -6,6 +6,7 @@ import {
 import { validateBIP44Depth } from './BIP44Node';
 import { compressPublicKey, decompressPublicKey } from './curves/secp256k1';
 
+// https://github.com/bitcoin/bips/blob/274fa400d630ba757bec0c03b35ebe2345197108/bip-0032.mediawiki#Serialization_format
 export const PUBLIC_KEY_VERSION = 0x0488b21e;
 export const PRIVATE_KEY_VERSION = 0x0488ade4;
 
