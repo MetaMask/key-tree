@@ -52,7 +52,7 @@ export function publicKeyToEthAddress(key: Buffer) {
 /**
  * Derive a BIP-32 child key with a given path from a parent key.
  *
- * @param pathPart - The derivation path part to derive.
+ * @param path - The derivation path part to derive.
  * @param node - The node to derive from.
  * @param curve - The curve to use for derivation.
  * @returns A tuple containing the derived private key, public key and chain

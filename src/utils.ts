@@ -161,7 +161,7 @@ export function validateBIP32Index(addressIndex: number) {
  * @returns Whether the index is a non-negative integer number.
  */
 export function isValidBIP32Index(index: number): boolean {
-  return Number.isInteger(index) && index >= 0;
+  return isValidInteger(index);
 }
 
 /**

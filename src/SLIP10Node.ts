@@ -6,7 +6,12 @@ import {
 import { curves, getCurveByName, SupportedCurve } from './curves';
 import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
-import { getBuffer, getFingerprint, isValidInteger } from './utils';
+import {
+  getBuffer,
+  getFingerprint,
+  isValidInteger,
+  validateBIP32Index,
+} from './utils';
 import { BIP44Node } from './BIP44Node';
 import { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
 
@@ -139,6 +144,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
     validateCurve(curve);
     validateBIP32Depth(depth);
+    validateBIP32Index(index);
     validateParentFingerprint(parentFingerprint);
 
     if (privateKey) {
