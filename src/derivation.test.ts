@@ -191,6 +191,18 @@ describe('derivation', () => {
         'Invalid arguments: Must specify either a parent node or curve.',
       );
     });
+
+    it('throws when an invalid node is provided', async () => {
+      await expect(
+        deriveKeyFromPath({
+          // @ts-expect-error Invalid node type.
+          node: {},
+          path: [bip39MnemonicToMultipath(mnemonic)],
+        }),
+      ).rejects.toThrow(
+        'Invalid arguments: Node must be a SLIP-10 node or a BIP-44 node when provided.',
+      );
+    });
   });
 
   describe('bip32Derive', () => {

@@ -69,6 +69,17 @@ export async function deriveKeyFromPath(
   const node = 'node' in args ? args.node : undefined;
   const curve = 'curve' in args ? args.curve : node?.curve;
 
+  if (
+    node &&
+    !(node instanceof SLIP10Node) &&
+    !(node instanceof BIP44Node) &&
+    !(node instanceof BIP44CoinTypeNode)
+  ) {
+    throw new Error(
+      'Invalid arguments: Node must be a SLIP-10 node or a BIP-44 node when provided.',
+    );
+  }
+
   if (!curve) {
     throw new Error(
       'Invalid arguments: Must specify either a parent node or curve.',
