@@ -66,8 +66,8 @@ import { getBIP44AddressKeyDeriver } from '@metamask/key-tree';
 //     publicKey, // A hexadecimal string of the public key
 //     chainCode, // A hexadecimal string of the chain code
 //     depth, // The number 2, which is the depth of coin_type nodes
-//     parentFingerprint, // The fingerprint of the parent node
-//     index, // The index of the node
+//     parentFingerprint, // The fingerprint of the parent node as number
+//     index, // The index of the node as number
 //     coin_type, // In this case, the number 60
 //     path, // For visualization only. In this case: m / 44' / 60'
 //   }
