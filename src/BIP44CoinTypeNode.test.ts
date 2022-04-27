@@ -1,9 +1,5 @@
 import fixtures from '../test/fixtures';
-import {
-  encodeExtendedKey,
-  PRIVATE_KEY_VERSION,
-  PUBLIC_KEY_VERSION,
-} from './extended-keys';
+import { encodeExtendedKey, PRIVATE_KEY_VERSION } from './extended-keys';
 import {
   BIP_44_COIN_TYPE_DEPTH,
   BIP44Node,
