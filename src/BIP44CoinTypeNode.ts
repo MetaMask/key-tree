@@ -18,7 +18,7 @@ import {
   hexStringToBuffer,
   nullableHexStringToBuffer,
 } from './utils';
-import { deriveChildNode, SLIP10Node } from './SLIP10Node';
+import { deriveChildNode } from './SLIP10Node';
 import { SupportedCurve } from './curves';
 
 export type CoinTypeHDPathTuple = [
