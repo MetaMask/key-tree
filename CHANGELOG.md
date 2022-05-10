@@ -24,11 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `@noble/*` libraries ([#38](https://github.com/MetaMask/key-tree/pull/38))
 - Extract build-only TypeScript configuration ([#48](https://github.com/MetaMask/key-tree/pull/48))
 - Forbid TypeScript interfaces ([#33](https://github.com/MetaMask/key-tree/pull/33))
+- Bump minimist from 1.2.5 to 1.2.6 ([#52](https://github.com/MetaMask/key-tree/pull/52))
 
 ### Fixed
 - Remove obsolete Jest snapshots ([#41](https://github.com/MetaMask/key-tree/pull/41))
 - Replace node symbol with private field ([#42](https://github.com/MetaMask/key-tree/pull/42))
-- Bump minimist from 1.2.5 to 1.2.6 ([#52](https://github.com/MetaMask/key-tree/pull/52))
 
 ## [3.0.1]
 ### Changed
