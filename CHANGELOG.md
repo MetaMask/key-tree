@@ -7,24 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [4.0.0]
-### Uncategorized
-- Update documentation ([#60](https://github.com/MetaMask/key-tree/pull/60))
+### Added
+- **BREAKING:** Add extended public (`xpub`) and private (`xprv`) keys ([#58](https://github.com/MetaMask/key-tree/pull/58))
 - Add extended key to BIP-44 coin type node ([#59](https://github.com/MetaMask/key-tree/pull/59))
-- Add extended public (`xpub`) and private (`xprv`) keys ([#58](https://github.com/MetaMask/key-tree/pull/58))
-- Add support for public key derivation ([#56](https://github.com/MetaMask/key-tree/pull/56))
-- Refactor and separate keys and chain code into separate fields ([#54](https://github.com/MetaMask/key-tree/pull/54))
+- **BREAKING:** Add support for public key derivation ([#56](https://github.com/MetaMask/key-tree/pull/56))
+- **BREAKING:** Add support for other curves and implement ed25519 ([#43](https://github.com/MetaMask/key-tree/pull/43))
+- Add documentation for the new SLIP-10 class ([#49](https://github.com/MetaMask/key-tree/pull/49))
+- Add convenience methods to get public keys and addresses ([#50](https://github.com/MetaMask/key-tree/pull/50))
+
+### Changed
+- Update documentation to match latest implementation ([#60](https://github.com/MetaMask/key-tree/pull/60))
+- **BREAKING:** Separate private keys and chain code into separate fields ([#54](https://github.com/MetaMask/key-tree/pull/54))
 - Use curve name to identify curves ([#53](https://github.com/MetaMask/key-tree/pull/53))
-- Bump minimist from 1.2.5 to 1.2.6 ([#52](https://github.com/MetaMask/key-tree/pull/52))
-- Add basic SLIP-10 documentation ([#49](https://github.com/MetaMask/key-tree/pull/49))
-- Add convenience methods for public keys and addresses ([#50](https://github.com/MetaMask/key-tree/pull/50))
-- Add support for other curves and implement ed25519 ([#43](https://github.com/MetaMask/key-tree/pull/43))
-- Extract build-only TypeScript configuration ([#48](https://github.com/MetaMask/key-tree/pull/48))
-- Replace node symbol with private field ([#42](https://github.com/MetaMask/key-tree/pull/42))
-- Allow deriving hardened `change` and `address_index` ([#37](https://github.com/MetaMask/key-tree/pull/37))
-- Remove obsolete Jest snapshots ([#41](https://github.com/MetaMask/key-tree/pull/41))
+- Allow deriving hardened `change` and `address_index` using `BIP44CoinTypeNode` ([#37](https://github.com/MetaMask/key-tree/pull/37))
 - Use hardcoded fixtures instead of calling implementations ([#40](https://github.com/MetaMask/key-tree/pull/40))
 - Use `@noble/*` libraries ([#38](https://github.com/MetaMask/key-tree/pull/38))
+- Extract build-only TypeScript configuration ([#48](https://github.com/MetaMask/key-tree/pull/48))
 - Forbid TypeScript interfaces ([#33](https://github.com/MetaMask/key-tree/pull/33))
+
+### Fixed
+- Remove obsolete Jest snapshots ([#41](https://github.com/MetaMask/key-tree/pull/41))
+- Replace node symbol with private field ([#42](https://github.com/MetaMask/key-tree/pull/42))
+- Bump minimist from 1.2.5 to 1.2.6 ([#52](https://github.com/MetaMask/key-tree/pull/52))
 
 ## [3.0.1]
 ### Changed
