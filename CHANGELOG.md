@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **BREAKING:** Change key representation format ([#58](https://github.com/MetaMask/key-tree/pull/58), [#54](https://github.com/MetaMask/key-tree/pull/54))
-  - Replace Base64 representation string keys with hexadecimal.
+  - Encode string keys in hexadecimal instead of Base64.
   - Always return a `SLIP10Node` (or child class) object from derivation functions.
 - **BREAKING:** Separate private keys and chain code into separate fields ([#54](https://github.com/MetaMask/key-tree/pull/54))
 - **BREAKING:** Use named arguments instead of positional arguments in various functions ([#56](https://github.com/MetaMask/key-tree/pull/56))
