@@ -8,23 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.0]
 ### Added
-- **BREAKING:** Add extended public (`xpub`) and private (`xprv`) keys ([#58](https://github.com/MetaMask/key-tree/pull/58))
+- **NOTE:** This version is a significant rewrite of this package, and virtually all existing usage will break upon migrating from a previous major version.
+  All pre-existing functionality is supported through different means, and various new features have been added.
+- Add extended public (`xpub`) and private (`xprv`) keys ([#58](https://github.com/MetaMask/key-tree/pull/58))
+- Add support for public key derivation ([#56](https://github.com/MetaMask/key-tree/pull/56))
+- Add support for non-secp256k1 curves via `SLIP10Node` class ([#43](https://github.com/MetaMask/key-tree/pull/43), [#37](https://github.com/MetaMask/key-tree/pull/37), [#53](https://github.com/MetaMask/key-tree/pull/53))
+  - Add support for ed25519 curve.
+  - With this and other changes in this release, this package offers full [SLIP-10](https://github.com/satoshilabs/slips/blob/133ea52a8e43d338b98be208907e144277e44c0e/slip-0010.md) support for all curves except nist256p1.
+  - These changes were made possible using the `@noble/*` suite of cryptography packages.
 - Add extended key to BIP-44 coin type node ([#59](https://github.com/MetaMask/key-tree/pull/59))
-- **BREAKING:** Add support for public key derivation ([#56](https://github.com/MetaMask/key-tree/pull/56))
-- **BREAKING:** Add support for other curves and implement ed25519 ([#43](https://github.com/MetaMask/key-tree/pull/43))
-- Add documentation for the new SLIP-10 class ([#49](https://github.com/MetaMask/key-tree/pull/49))
 - Add convenience methods to get public keys and addresses ([#50](https://github.com/MetaMask/key-tree/pull/50))
+- Enable deriving hardened `change` and `address_index` using `BIP44CoinTypeNode` ([#37](https://github.com/MetaMask/key-tree/pull/37))
 
 ### Changed
-- Update documentation to match latest implementation ([#60](https://github.com/MetaMask/key-tree/pull/60))
+- **BREAKING:** Change key representation format ([#58](https://github.com/MetaMask/key-tree/pull/58), [#54](https://github.com/MetaMask/key-tree/pull/54))
+  - Replace Base64 representation string keys with hexadecimal.
+  - Always return a `SLIP10Node` (or child class) object from derivation functions.
 - **BREAKING:** Separate private keys and chain code into separate fields ([#54](https://github.com/MetaMask/key-tree/pull/54))
-- Use curve name to identify curves ([#53](https://github.com/MetaMask/key-tree/pull/53))
-- Allow deriving hardened `change` and `address_index` using `BIP44CoinTypeNode` ([#37](https://github.com/MetaMask/key-tree/pull/37))
-- Use hardcoded fixtures instead of calling implementations ([#40](https://github.com/MetaMask/key-tree/pull/40))
-- Use `@noble/*` libraries ([#38](https://github.com/MetaMask/key-tree/pull/38))
-- Extract build-only TypeScript configuration ([#48](https://github.com/MetaMask/key-tree/pull/48))
-- Forbid TypeScript interfaces ([#33](https://github.com/MetaMask/key-tree/pull/33))
-- Bump minimist from 1.2.5 to 1.2.6 ([#52](https://github.com/MetaMask/key-tree/pull/52))
+- **BREAKING:** Use named arguments instead of positional arguments in various functions ([#56](https://github.com/MetaMask/key-tree/pull/56))
+- **BREAKING:** Make all derivation functions async ([#43](https://github.com/MetaMask/key-tree/pull/43), [#54](https://github.com/MetaMask/key-tree/pull/54))
+  - All key derivation functions are now async, and node objects are initialized via a static, async `.from(...)` method. This is because some cryptographic dependencies are async.
+- Update documentation to match new implementation ([#60](https://github.com/MetaMask/key-tree/pull/60), [#49](https://github.com/MetaMask/key-tree/pull/49))
 
 ### Fixed
 - Remove obsolete Jest snapshots ([#41](https://github.com/MetaMask/key-tree/pull/41))
