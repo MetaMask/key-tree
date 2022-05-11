@@ -10,9 +10,20 @@ import {
   getBuffer,
   getFingerprint,
   hexStringToBuffer,
+  validateBIP32Index,
+  isValidBIP32Index,
+  isHardened,
+  stripHexPrefix,
+  isValidHexString,
+  bytesToNumber,
+  encodeBase58check,
+  decodeBase58check,
 } from './utils';
 
 import { BIP44Node } from './BIP44Node';
+
+// Inputs used for testing non-negative integers
+const inputs = [-1, 1.1, NaN, {}, null, undefined] as number[];
 
 describe('getBIP44CoinTypePathString', () => {
   it('returns a BIP-44 coin type path string', () => {
@@ -23,8 +34,8 @@ describe('getBIP44CoinTypePathString', () => {
     );
   });
 
-  it('validates the index', () => {
-    expect(() => getBIP44CoinTypePathString(-1)).toThrow(
+  it.each(inputs)('validates the index', (input) => {
+    expect(() => getBIP44CoinTypePathString(input)).toThrow(
       'Invalid BIP-32 index: Must be a non-negative integer.',
     );
   });
@@ -57,9 +68,9 @@ describe('getBIP44ChangePathString', () => {
     ).toBe(`${coinTypePath} / bip32:2' / bip32:3`);
   });
 
-  it('validates the index', () => {
+  it.each([-1, 1.1])('validates the index', (input) => {
     expect(() =>
-      getBIP44ChangePathString(coinTypePath, { account: -1 }),
+      getBIP44ChangePathString(coinTypePath, { account: input }),
     ).toThrow('Invalid BIP-32 index: Must be a non-negative integer.');
   });
 });
@@ -96,9 +107,9 @@ describe('getBIP44CoinTypeToAddressPathTuple', () => {
     ).toStrictEqual([`bip32:1'`, `bip32:2'`, `bip32:3'`]);
   });
 
-  it('validates the index', () => {
+  it.each([-1, 1.1, NaN, {}] as number[])('validates the index', (input) => {
     expect(() =>
-      getBIP44CoinTypeToAddressPathTuple({ address_index: -1 }),
+      getBIP44CoinTypeToAddressPathTuple({ account: input, address_index: 0 }),
     ).toThrow('Invalid BIP-32 index: Must be a non-negative integer.');
   });
 });
@@ -110,8 +121,8 @@ describe('getHardenedBIP32NodeToken', () => {
     expect(getHardenedBIP32NodeToken(1000)).toBe(`bip32:1000'`);
   });
 
-  it('validates the index', () => {
-    expect(() => getHardenedBIP32NodeToken(-1)).toThrow(
+  it.each(inputs)('validates the index', (input) => {
+    expect(() => getHardenedBIP32NodeToken(input)).toThrow(
       'Invalid BIP-32 index: Must be a non-negative integer.',
     );
   });
@@ -124,8 +135,8 @@ describe('getUnhardenedBIP32NodeToken', () => {
     expect(getUnhardenedBIP32NodeToken(1000)).toBe(`bip32:1000`);
   });
 
-  it('validates the index', () => {
-    expect(() => getUnhardenedBIP32NodeToken(-1)).toThrow(
+  it.each(inputs)('validates the index', (input) => {
+    expect(() => getUnhardenedBIP32NodeToken(input)).toThrow(
       'Invalid BIP-32 index: Must be a non-negative integer.',
     );
   });
@@ -140,33 +151,142 @@ describe('getBIP32NodeToken', () => {
     expect(getBIP32NodeToken({ index: 1, hardened: true })).toBe(`bip32:1'`);
   });
 
-  it('validates the index', () => {
-    expect(() => getBIP32NodeToken(-1)).toThrow(
-      'Invalid BIP-32 index: Must be a non-negative integer.',
-    );
-
+  it('throws if the object is missing parameters', () => {
     // @ts-expect-error Invalid type.
     expect(() => getBIP32NodeToken({})).toThrow(
       'Invalid BIP-32 index: Must be an object containing the index and whether it is hardened.',
     );
   });
+
+  it.each([NaN, {}, null, undefined] as number[])(
+    'validates the index',
+    (input) => {
+      expect(() => getBIP32NodeToken({ hardened: true, index: input })).toThrow(
+        'Invalid BIP-32 index: Must be an object containing the index and whether it is hardened.',
+      );
+    },
+  );
 });
 
-describe('nullableHexStringToBuffer', () => {
-  it('returns a buffer for a hexadecimal string', () => {
-    expect(nullableHexStringToBuffer('1234')).toStrictEqual(
+describe('validateBIP32Index', () => {
+  it('does not throw if the index is valid', () => {
+    expect(() => validateBIP32Index(0)).not.toThrow();
+    expect(() => validateBIP32Index(1)).not.toThrow();
+    expect(() => validateBIP32Index(1000)).not.toThrow();
+  });
+
+  it.each(inputs)('throws if the index is invalid', (input) => {
+    expect(() => validateBIP32Index(input)).toThrow(
+      'Invalid BIP-32 index: Must be a non-negative integer.',
+    );
+  });
+});
+
+describe('isValidBIP32Index', () => {
+  it('returns true if the index is valid', () => {
+    expect(isValidBIP32Index(0)).toBe(true);
+    expect(isValidBIP32Index(1)).toBe(true);
+    expect(isValidBIP32Index(1000)).toBe(true);
+  });
+
+  it.each(inputs)('returns false if the index is invalid', (input) => {
+    expect(isValidBIP32Index(input)).toBe(false);
+  });
+});
+
+describe('isHardened', () => {
+  it('returns true if the index is hardened', () => {
+    expect(isHardened(`0'`)).toBe(true);
+    expect(isHardened(`1'`)).toBe(true);
+    expect(isHardened(`1000'`)).toBe(true);
+  });
+
+  it('returns false if the index is not hardened', () => {
+    expect(isHardened(`0`)).toBe(false);
+    expect(isHardened(`1`)).toBe(false);
+    expect(isHardened(`1000`)).toBe(false);
+  });
+});
+
+describe('stripHexPrefix', () => {
+  it('strips the hex prefix from a string', () => {
+    expect(stripHexPrefix('0x123')).toBe('123');
+    expect(stripHexPrefix('0x')).toBe('');
+  });
+
+  it('does not change a string without a prefix', () => {
+    expect(stripHexPrefix('123')).toBe('123');
+    expect(stripHexPrefix('')).toBe('');
+  });
+});
+
+describe('isValidHexString', () => {
+  it('returns true if the string is a valid hex string', () => {
+    expect(isValidHexString('0x123')).toBe(true);
+    expect(isValidHexString('0x0')).toBe(true);
+  });
+
+  it('returns false if the string is not a valid hex string', () => {
+    expect(isValidHexString('')).toBe(false);
+    expect(isValidHexString('0x')).toBe(false);
+    expect(isValidHexString('0x0g')).toBe(false);
+  });
+});
+
+describe('hexStringToBuffer', () => {
+  it('returns the same buffer if a buffer is passed', () => {
+    const buffer = Buffer.from('123', 'hex');
+    expect(hexStringToBuffer(buffer)).toBe(buffer);
+  });
+
+  it('returns a buffer from a hex string', () => {
+    expect(hexStringToBuffer('1234')).toStrictEqual(Buffer.from('1234', 'hex'));
+    expect(hexStringToBuffer('0x1234')).toStrictEqual(
       Buffer.from('1234', 'hex'),
     );
   });
 
-  it('returns a buffer for a 0x-prefixed hexadecimal string', () => {
+  it('throws if the string is not a valid hex string', () => {
+    expect(() => hexStringToBuffer('')).toThrow('Invalid hex string: "".');
+    expect(() => hexStringToBuffer('0x')).toThrow('Invalid hex string: "0x".');
+    expect(() => hexStringToBuffer('0x0g')).toThrow(
+      'Invalid hex string: "0x0g".',
+    );
+  });
+});
+
+describe('nullableHexStringToBuffer', () => {
+  it('returns the same buffer if a buffer is passed', () => {
+    const buffer = Buffer.from('123', 'hex');
+    expect(nullableHexStringToBuffer(buffer)).toBe(buffer);
+  });
+
+  it('returns a buffer for a hexadecimal string', () => {
+    expect(nullableHexStringToBuffer('1234')).toStrictEqual(
+      Buffer.from('1234', 'hex'),
+    );
+
     expect(nullableHexStringToBuffer('0x1234')).toStrictEqual(
       Buffer.from('1234', 'hex'),
     );
   });
 
-  it('returns undefined when passed undefined', () => {
+  it('returns undefined for falsy values', () => {
     expect(nullableHexStringToBuffer(undefined)).toBeUndefined();
+  });
+
+  it('throws if the string is not a valid hex string', () => {
+    expect(() => nullableHexStringToBuffer('')).toThrow(
+      'Invalid hex string: "".',
+    );
+
+    expect(() => nullableHexStringToBuffer('0x')).toThrow(
+      'Invalid hex string: "0x".',
+    );
+
+    expect(() => nullableHexStringToBuffer('0x0g')).toThrow(
+      'Invalid hex string: "0x0g".',
+    );
   });
 });
 
@@ -179,6 +299,28 @@ describe('isValidBufferKey', () => {
   it('checks if the buffer has at least one non-zero byte', () => {
     expect(isValidBufferKey(Buffer.alloc(32).fill(1), 32)).toBe(true);
     expect(isValidBufferKey(Buffer.alloc(32).fill(0), 32)).toBe(false);
+  });
+});
+
+describe('isValidInteger', () => {
+  it('returns true if the value is a positive integer', () => {
+    expect(isValidBIP32Index(0)).toBe(true);
+    expect(isValidBIP32Index(1)).toBe(true);
+    expect(isValidBIP32Index(1000)).toBe(true);
+  });
+
+  it.each(inputs)(
+    'returns false if the value is not a positive integer',
+    (input) => {
+      expect(isValidBIP32Index(input)).toBe(false);
+    },
+  );
+});
+
+describe('bytesToNumber', () => {
+  it('returns a bigint from a buffer', () => {
+    expect(bytesToNumber(Buffer.from('123', 'hex'))).toBe(BigInt(BigInt(18)));
+    expect(bytesToNumber(Buffer.from('456', 'hex'))).toBe(BigInt(BigInt(69)));
   });
 });
 
@@ -200,6 +342,26 @@ describe('getBuffer', () => {
 
     expect(() => getBuffer(hexStringToBuffer('1234'), 1)).toThrow(
       'Invalid value: Must be a non-zero 1-byte buffer.',
+    );
+  });
+});
+
+describe('encodeBase58Check', () => {
+  it('encodes a buffer with Base58check', () => {
+    expect(encodeBase58check(Buffer.from('foo bar'))).toBe('SQHFQMRT97ajZaP');
+  });
+});
+
+describe('decodeBase58Check', () => {
+  it('decodes a Base58check encoded string', () => {
+    expect(decodeBase58check('SQHFQMRT97ajZaP')).toStrictEqual(
+      Buffer.from('foo bar'),
+    );
+  });
+
+  it('throws if the checksum is invalid', () => {
+    expect(() => decodeBase58check('SQHFQMRT97ajZff')).toThrow(
+      'Invalid value: Value is not base58-encoded, or the checksum is invalid.',
     );
   });
 });

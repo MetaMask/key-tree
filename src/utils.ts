@@ -215,7 +215,7 @@ export function hexStringToBuffer(hexString: string | Buffer): Buffer {
 export function nullableHexStringToBuffer(
   hexString?: string | Buffer,
 ): Buffer | undefined {
-  if (hexString) {
+  if (hexString !== undefined) {
     return hexStringToBuffer(hexString);
   }
 
