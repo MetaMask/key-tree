@@ -141,12 +141,6 @@ export function validatePathSegment(
     throw new Error(`Invalid HD path segment: The segment must not be empty.`);
   }
 
-  if (path.length - 1 > MAX_BIP_44_DEPTH) {
-    throw new Error(
-      `Invalid HD path segment: The segment cannot exceed a 0-indexed depth of 5.`,
-    );
-  }
-
   let startsWithBip39 = false;
   path.forEach((node, index) => {
     if (index === 0) {
