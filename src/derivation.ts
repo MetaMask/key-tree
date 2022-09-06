@@ -1,7 +1,6 @@
 import {
   BIP_32_PATH_REGEX,
   BIP_39_PATH_REGEX,
-  MAX_BIP_44_DEPTH,
   MIN_BIP_44_DEPTH,
   SLIP10Path,
 } from './constants';
