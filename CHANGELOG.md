@@ -7,14 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [5.0.0]
-### Uncategorized
+### Added
 - Add convenience field for getting the compressed public key ([#71](https://github.com/MetaMask/key-tree/pull/71))
 - Add master fingerprint field to `SLIP10Node` ([#68](https://github.com/MetaMask/key-tree/pull/68))
+
+### Changed
+- **BREAKING:** Bump minimum Node version to 16 and migrate to Yarn 3 ([#70](https://github.com/MetaMask/key-tree/pull/70))
 - Allow a depth larger than 5 for SLIP-10 nodes ([#69](https://github.com/MetaMask/key-tree/pull/69))
-- BREAKING: Bump minimum Node version to 16 and migrate to Yarn 3 ([#70](https://github.com/MetaMask/key-tree/pull/70))
-- Bump @metamask/auto-changelog from 2.6.0 to 2.6.1 ([#66](https://github.com/MetaMask/key-tree/pull/66))
-- Bump @metamask/auto-changelog from 2.5.0 to 2.6.0 ([#63](https://github.com/MetaMask/key-tree/pull/63))
-- Add tests for util functions ([#55](https://github.com/MetaMask/key-tree/pull/55))
 
 ## [4.0.0]
 ### Added
