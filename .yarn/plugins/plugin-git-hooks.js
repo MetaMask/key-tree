@@ -1,7 +1,14 @@
-const { execSync } = require('child_process');
+const { execute } = require('@yarnpkg/shell');
 
-const afterAllInstalled = (project) => {
-  execSync('yarn simple-git-hooks', { cwd: project.cwd, stdio: 'inherit' });
+const afterAllInstalled = async () => {
+  const exitCode = await execute('yarn simple-git-hooks');
+
+  if (exitCode !== 0) {
+    // We have to use `process.exit` here rather than setting `process.exitCode`
+    // because Yarn will override any exit code set in this hook.
+    // eslint-disable-next-line node/no-process-exit
+    process.exit(exitCode);
+  }
 };
 
 module.exports = {
