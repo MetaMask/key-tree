@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [5.0.1]
-### Uncategorized
+### Fixed
 - Replace postinstall script with Yarn plugin ([#74](https://github.com/MetaMask/key-tree/pull/74))
 
 ## [5.0.0]
