@@ -23,4 +23,4 @@ export {
  * The {@link Buffer} accessible to `@metamask/key-tree`, re-exported in case
  * of module resolution issues.
  */
-export { default as PackageBuffer } from 'buffer';
+export { Buffer as PackageBuffer } from 'buffer';
