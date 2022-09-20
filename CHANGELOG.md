@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [5.0.2]
-### Uncategorized
+### Fixed
 - Export Buffer from `buffer` package explicitly ([#76](https://github.com/MetaMask/key-tree/pull/76))
 - Fix fingerprint derivation ([#78](https://github.com/MetaMask/key-tree/pull/78))
 
