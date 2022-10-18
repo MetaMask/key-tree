@@ -129,7 +129,6 @@ export async function deriveChildKey({
   const publicExtension = await derivePublicExtension({
     parentPublicKey: node.compressedPublicKeyBuffer,
     childIndex,
-    curve,
   });
 
   const { publicKey, chainCode } = generatePublicKey({
@@ -181,13 +180,12 @@ async function deriveSecretExtension({
 
   // Normal child
   const parentPublicKey = await curve.getPublicKey(privateKey, true);
-  return derivePublicExtension({ parentPublicKey, childIndex, curve });
+  return derivePublicExtension({ parentPublicKey, childIndex });
 }
 
 type DerivePublicExtensionArgs = {
   parentPublicKey: Uint8Array;
   childIndex: number;
-  curve: Curve;
 };
 
 async function derivePublicExtension({
