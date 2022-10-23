@@ -68,14 +68,14 @@ export const decodeExtendedKey = (extendedKey: string): ExtendedKey => {
   const parentFingerprint = view.getUint32(5, false);
   const index = view.getUint32(9, false);
 
-  const chainCode = buffer.subarray(13, 45);
+  const chainCode = buffer.slice(13, 45);
   if (!isValidBufferKey(chainCode, 32)) {
     throw new Error(
       `Invalid extended key: Chain code must be a 32-byte non-zero Buffer.`,
     );
   }
 
-  const key = buffer.subarray(45, 78);
+  const key = buffer.slice(45, 78);
   if (!isValidBufferKey(key, 33)) {
     throw new Error(
       `Invalid extended key: Key must be a 33-byte non-zero Buffer.`,
@@ -114,7 +114,7 @@ export const decodeExtendedKey = (extendedKey: string): ExtendedKey => {
       parentFingerprint,
       index,
       chainCode,
-      privateKey: key.subarray(1),
+      privateKey: key.slice(1),
     };
   }
 

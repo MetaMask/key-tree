@@ -36,8 +36,8 @@ export async function createBip39KeyFromSeed(
   curve: Curve = secp256k1,
 ): Promise<SLIP10Node> {
   const key = hmac(sha512, curve.secret, seed);
-  const privateKey = key.subarray(0, 32);
-  const chainCode = key.subarray(32);
+  const privateKey = key.slice(0, 32);
+  const chainCode = key.slice(32);
 
   const masterFingerprint = getFingerprint(
     await curve.getPublicKey(privateKey, true),

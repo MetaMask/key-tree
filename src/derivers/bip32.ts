@@ -252,8 +252,8 @@ async function generateKey({
   curve,
 }: GenerateKeyArgs): Promise<DerivedKeys & { privateKey: Uint8Array }> {
   const entropy = hmac(sha512, chainCode, secretExtension);
-  const keyMaterial = entropy.subarray(0, 32);
-  const childChainCode = entropy.subarray(32);
+  const keyMaterial = entropy.slice(0, 32);
+  const childChainCode = entropy.slice(32);
 
   // If curve is ed25519: The returned child key ki is parse256(IL).
   // https://github.com/satoshilabs/slips/blob/133ea52a8e43d338b98be208907e144277e44c0e/slip-0010.md#private-parent-key--private-child-key
@@ -282,8 +282,8 @@ function generatePublicKey({
   curve,
 }: GeneratePublicKeyArgs): DerivedKeys {
   const entropy = hmac(sha512, chainCode, publicExtension);
-  const keyMaterial = entropy.subarray(0, 32);
-  const childChainCode = entropy.subarray(32);
+  const keyMaterial = entropy.slice(0, 32);
+  const childChainCode = entropy.slice(32);
 
   // This function may fail if the resulting key is invalid.
   const childPublicKey = curve.publicAdd(publicKey, keyMaterial);
