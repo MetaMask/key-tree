@@ -301,8 +301,9 @@ export const getFingerprint = (publicKey: Uint8Array): number => {
   }
 
   const bytes = ripemd160(sha256(publicKey));
+
+  // TODO: Replace with `@metamask/utils`' `createDataView` when it's available.
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 
-  // The equivalent of `Buffer.readUInt32BE(0)`.
   return view.getUint32(0, false);
 };
