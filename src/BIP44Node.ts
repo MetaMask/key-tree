@@ -19,7 +19,7 @@ import {
 } from './extended-keys';
 import { SupportedCurve } from './curves';
 
-type BIP44ExtendedKeyOptions = {
+export type BIP44ExtendedKeyOptions = {
   readonly depth: number;
   readonly parentFingerprint: number;
   readonly index: number;
@@ -28,7 +28,7 @@ type BIP44ExtendedKeyOptions = {
   readonly publicKey?: Uint8Array | string;
 };
 
-type BIP44DerivationPathOptions = {
+export type BIP44DerivationPathOptions = {
   readonly derivationPath: RootedSLIP10PathTuple;
 };
 
