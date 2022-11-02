@@ -404,6 +404,7 @@ function validateBIP44DerivationPath(
   path.forEach((nodeToken, index) => {
     const currentDepth = startingDepth + index;
 
+    // eslint-disable-next-line default-case
     switch (currentDepth) {
       case MIN_BIP_44_DEPTH:
         if (!BIP_39_PATH_REGEX.test(nodeToken)) {
@@ -452,12 +453,6 @@ function validateBIP44DerivationPath(
           );
         }
         break;
-
-      /* istanbul ignore next: should be impossible in our usage */
-      default:
-        throw new Error(
-          `Invalid derivation path: The path exceeds the maximum BIP-44 depth.`,
-        );
     }
   });
 }
