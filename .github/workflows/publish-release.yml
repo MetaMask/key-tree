@@ -12,7 +12,7 @@ jobs:
       IS_RELEASE: ${{ steps.is-release.outputs.IS_RELEASE }}
     runs-on: ubuntu-latest
     steps:
-      - uses: MetaMask/action-is-release@v1.0
+      - uses: MetaMask/action-is-release@v1
         id: is-release
 
   publish-release:
