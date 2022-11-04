@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.0.0]
-### Uncategorized
-- Update repo to latest module template ([#86](https://github.com/MetaMask/key-tree/pull/86))
-- Bump @metamask/utils to 3.3.0 ([#85](https://github.com/MetaMask/key-tree/pull/85))
+### Changed
 - BREAKING: Rename all occurrences of `Buffer` with `Bytes` or `Uint8Array` ([#84](https://github.com/MetaMask/key-tree/pull/84))
-- Swap out Buffer with browser-compatible Uint8Array ([#83](https://github.com/MetaMask/key-tree/pull/83))
+  - All `[...]Buffer` fields have been replaced with `[...]Bytes`, e.g., `BIP44Node.privateKeyBuffer` is now `BIP44Node.privateKeyBytes`.
+  - This change does not affect the string fields, like `BIP44Node.privateKey`.
+- BREAKING: Swap out Buffer with browser-compatible Uint8Array ([#83](https://github.com/MetaMask/key-tree/pull/83))
+  - All functions returning `Buffer`s now return `Uint8Array`s instead.
+- Bump @metamask/utils to 3.3.0 ([#85](https://github.com/MetaMask/key-tree/pull/85))
 
 ## [5.0.2]
 ### Fixed
