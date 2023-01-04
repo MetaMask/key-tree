@@ -1,6 +1,6 @@
+import { mnemonicToSeed } from '@metamask/scure-bip39';
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
-import { mnemonicToSeed } from '@scure/bip39';
 
 import { DeriveChildKeyArgs } from '.';
 import { BIP39Node } from '../constants';

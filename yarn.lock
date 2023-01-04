@@ -865,6 +865,7 @@ __metadata:
     "@metamask/eslint-config-jest": ^11.0.0
     "@metamask/eslint-config-nodejs": ^11.0.1
     "@metamask/eslint-config-typescript": ^11.0.0
+    "@metamask/scure-bip39": ^2.0.4
     "@metamask/utils": ^3.3.0
     "@noble/ed25519": ^1.6.0
     "@noble/hashes": ^1.0.0
@@ -893,6 +894,16 @@ __metadata:
     typescript: ~4.8.4
   languageName: unknown
   linkType: soft
+
+"@metamask/scure-bip39@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@metamask/scure-bip39@npm:2.0.4"
+  dependencies:
+    "@noble/hashes": ~1.1.1
+    "@scure/base": ~1.1.0
+  checksum: 9ab83ddad70a39dc46a869801d33e639006f7f8dc0b050f1e4711af3fae9bfe5f82ab90d890753935413491adb7064860aa40b3dc7ad1d31a8d70b5c1548d359
+  languageName: node
+  linkType: hard
 
 "@metamask/utils@npm:^3.3.0":
   version: 3.4.0
