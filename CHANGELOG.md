@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.1.0]
 ### Changed
-- Update `bip39` implementation from `scure-bip39` to metamask fork version `@metamask/scure-bip39` ([#101](https://github.com/MetaMask/key-tree/pull/101))
+- Update BIP-39 implementation from `@scure/bip39` to MetaMask fork version `@metamask/scure-bip39` ([#101](https://github.com/MetaMask/key-tree/pull/101))
 
 ## [6.0.0]
 ### Changed
