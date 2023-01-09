@@ -7,20 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.1.0]
-### Uncategorized
-- Bump @metamask/utils from 3.4.0 to 3.4.1 ([#104](https://github.com/MetaMask/key-tree/pull/104))
-- Update `bip39` implementation to `@metamask/scure-bip39` ([#101](https://github.com/MetaMask/key-tree/pull/101))
-- Bump json5 from 1.0.1 to 1.0.2 ([#103](https://github.com/MetaMask/key-tree/pull/103))
-- Bump @metamask/utils from 3.3.1 to 3.4.0 ([#102](https://github.com/MetaMask/key-tree/pull/102))
-- Bump @metamask/eslint-config-jest from 11.0.0 to 11.1.0 ([#100](https://github.com/MetaMask/key-tree/pull/100))
-- Bump @metamask/eslint-config-typescript from 11.0.2 to 11.1.0 ([#99](https://github.com/MetaMask/key-tree/pull/99))
-- Bump @metamask/eslint-config-nodejs from 11.0.1 to 11.1.0 ([#97](https://github.com/MetaMask/key-tree/pull/97))
-- Bump @metamask/eslint-config from 11.0.2 to 11.1.0 ([#98](https://github.com/MetaMask/key-tree/pull/98))
-- Bump @metamask/eslint-config from 11.0.1 to 11.0.2 ([#96](https://github.com/MetaMask/key-tree/pull/96))
-- Bump @metamask/eslint-config-typescript from 11.0.0 to 11.0.2 ([#95](https://github.com/MetaMask/key-tree/pull/95))
-- Bump ESLint configs and related dependencies ([#94](https://github.com/MetaMask/key-tree/pull/94))
-- Bump @metamask/utils from 3.3.0 to 3.3.1 ([#88](https://github.com/MetaMask/key-tree/pull/88))
-- Bump @metamask/auto-changelog from 2.6.1 to 3.1.0 ([#90](https://github.com/MetaMask/key-tree/pull/90))
+### Changed
+- Update `bip39` implementation from `scure-bip39` to metamask fork version `@metamask/scure-bip39` ([#101](https://github.com/MetaMask/key-tree/pull/101))
 
 ## [6.0.0]
 ### Changed
