@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.1.0]
 ### Changed
 - Update BIP-39 implementation from `@scure/bip39` to MetaMask fork version `@metamask/scure-bip39` ([#101](https://github.com/MetaMask/key-tree/pull/101))
- - The `@metamask/scure-bip39` fork accepts mnemonics in `Uint8Array` format allowing us to progress to more secure patterns of passing mnemonics around. This change is non-breaking however, as the `mnemonicToSeed` function used in this package still accepts mnemonics in string format as well.
+ - The `@metamask/scure-bip39` fork accepts secret recovery phrases in `Uint8Array` format making it possible to use more secure patterns of passing secret recovery phrases around. This change is non-breaking however, as the `mnemonicToSeed` function used in this package still accepts secret recovery phrases in string format.
 
 ## [6.0.0]
 ### Changed
