@@ -6,12 +6,10 @@ import { ed25519, secp256k1 } from './curves';
 import { compressPublicKey } from './curves/secp256k1';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { SLIP10Node } from './SLIP10Node';
-import { hexStringToBytes, mnemonicPhraseToUint8Array } from './utils';
+import { hexStringToBytes, mnemonicPhraseToBytes } from './utils';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
-const defaultBip39BytesToken = mnemonicPhraseToUint8Array(
-  fixtures.local.mnemonic,
-);
+const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);
 
 describe('SLIP10Node', () => {
   describe('fromExtendedKey', () => {

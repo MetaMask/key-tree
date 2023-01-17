@@ -10,12 +10,10 @@ import {
 } from '.';
 import fixtures from '../test/fixtures';
 import { encodeExtendedKey, PRIVATE_KEY_VERSION } from './extended-keys';
-import { mnemonicPhraseToUint8Array } from './utils';
+import { mnemonicPhraseToBytes } from './utils';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
-const defaultBip39BytesToken = mnemonicPhraseToUint8Array(
-  fixtures.local.mnemonic,
-);
+const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);
 
 describe('BIP44CoinTypeNode', () => {
   describe('fromJSON', () => {

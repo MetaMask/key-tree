@@ -21,7 +21,7 @@ import {
   isHardened,
   encodeBase58check,
   decodeBase58check,
-  mnemonicPhraseToUint8Array,
+  mnemonicPhraseToBytes,
 } from './utils';
 
 // Inputs used for testing non-negative integers
@@ -350,11 +350,11 @@ describe('getFingerprint', () => {
   });
 });
 
-describe('mnemonicPhraseToUint8Array', () => {
+describe('mnemonicPhraseToBytes', () => {
   it.each([fixtures.local.mnemonic, fixtures['eth-hd-keyring'].mnemonic])(
     'converts a mnemonic phrase to a Uint8Array',
     async (mnemonicPhrase) => {
-      const array = mnemonicPhraseToUint8Array(mnemonicPhrase);
+      const array = mnemonicPhraseToBytes(mnemonicPhrase);
       expect(await mnemonicToSeed(array, wordlist)).toStrictEqual(
         await mnemonicToSeed(mnemonicPhrase, wordlist),
       );

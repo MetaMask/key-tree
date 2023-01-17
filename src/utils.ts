@@ -341,7 +341,7 @@ export const getFingerprint = (publicKey: Uint8Array): number => {
  * @param mnemonicPhrase - The secret recovery phrase to convert.
  * @returns The `Uint8Array` corresponding to the secret recovery phrase.
  */
-export function mnemonicPhraseToUint8Array(mnemonicPhrase: string): Uint8Array {
+export function mnemonicPhraseToBytes(mnemonicPhrase: string): Uint8Array {
   const words = mnemonicPhrase.split(' ');
   const indices = words.map((word) => {
     const index = englishWordlist.indexOf(word);

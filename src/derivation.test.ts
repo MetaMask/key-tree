@@ -6,10 +6,7 @@ import { deriveKeyFromPath } from './derivation';
 import { derivers } from './derivers';
 import { privateKeyToEthAddress } from './derivers/bip32';
 import { SLIP10Node } from './SLIP10Node';
-import {
-  getUnhardenedBIP32NodeToken,
-  mnemonicPhraseToUint8Array,
-} from './utils';
+import { getUnhardenedBIP32NodeToken, mnemonicPhraseToBytes } from './utils';
 
 const {
   bip32: { deriveChildKey: bip32Derive },
@@ -67,7 +64,7 @@ describe('derivation', () => {
           ] as const;
 
           const multipath = [
-            mnemonicPhraseToUint8Array(mnemonic),
+            mnemonicPhraseToBytes(mnemonic),
             ...bip32Part,
           ] as HDPathTuple;
 
