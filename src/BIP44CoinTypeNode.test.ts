@@ -10,8 +10,12 @@ import {
 } from '.';
 import fixtures from '../test/fixtures';
 import { encodeExtendedKey, PRIVATE_KEY_VERSION } from './extended-keys';
+import { mnemonicPhraseToUint8Array } from './utils';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
+const defaultBip39BytesToken = mnemonicPhraseToUint8Array(
+  fixtures.local.mnemonic,
+);
 
 describe('BIP44CoinTypeNode', () => {
   describe('fromJSON', () => {
@@ -196,6 +200,34 @@ describe('BIP44CoinTypeNode', () => {
     it('initializes a BIP44CoinTypeNode (derivation path)', async () => {
       const node = await BIP44CoinTypeNode.fromDerivationPath([
         defaultBip39NodeToken,
+        BIP44PurposeNodeToken,
+        `bip32:60'`,
+      ]);
+      const coinType = 60;
+      const pathString = `m / bip32:44' / bip32:${coinType}'`;
+
+      expect(node.coin_type).toStrictEqual(coinType);
+      expect(node.depth).toBe(2);
+      expect(node.privateKeyBytes).toHaveLength(32);
+      expect(node.publicKeyBytes).toHaveLength(65);
+      expect(node.path).toStrictEqual(pathString);
+
+      expect(node.toJSON()).toStrictEqual({
+        coin_type: coinType,
+        depth: node.depth,
+        masterFingerprint: node.masterFingerprint,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
+        path: pathString,
+        privateKey: node.privateKey,
+        publicKey: node.publicKey,
+        chainCode: node.chainCode,
+      });
+    });
+
+    it('initializes a BIP44CoinTypeNode with a Uint8Array', async () => {
+      const node = await BIP44CoinTypeNode.fromDerivationPath([
+        defaultBip39BytesToken,
         BIP44PurposeNodeToken,
         `bip32:60'`,
       ]);

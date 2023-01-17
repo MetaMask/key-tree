@@ -6,7 +6,10 @@ import { deriveKeyFromPath } from './derivation';
 import { derivers } from './derivers';
 import { privateKeyToEthAddress } from './derivers/bip32';
 import { SLIP10Node } from './SLIP10Node';
-import { getUnhardenedBIP32NodeToken } from './utils';
+import {
+  getUnhardenedBIP32NodeToken,
+  mnemonicPhraseToUint8Array,
+} from './utils';
 
 const {
   bip32: { deriveChildKey: bip32Derive },
@@ -43,6 +46,30 @@ describe('derivation', () => {
             `bip32:0`,
             `bip32:${index}`,
           ]);
+
+          return deriveKeyFromPath({ path: multipath, curve: 'secp256k1' });
+        }),
+      );
+
+      // validate addresses
+      keys.forEach(({ privateKeyBytes }, index) => {
+        const address = privateKeyToEthAddress(privateKeyBytes as Uint8Array);
+        expect(bytesToHex(address)).toStrictEqual(expectedAddresses[index]);
+      });
+    });
+
+    it('derives from Uint8Array BIP-39 nodes', async () => {
+      const keys = await Promise.all(
+        expectedAddresses.map(async (_, index) => {
+          const bip32Part = [
+            ...ethereumBip32PathParts,
+            getUnhardenedBIP32NodeToken(index),
+          ] as const;
+
+          const multipath = [
+            mnemonicPhraseToUint8Array(mnemonic),
+            ...bip32Part,
+          ] as HDPathTuple;
 
           return deriveKeyFromPath({ path: multipath, curve: 'secp256k1' });
         }),

@@ -9,9 +9,12 @@ import {
   PRIVATE_KEY_VERSION,
   PUBLIC_KEY_VERSION,
 } from './extended-keys';
-import { hexStringToBytes } from './utils';
+import { hexStringToBytes, mnemonicPhraseToUint8Array } from './utils';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
+const defaultBip39BytesToken = mnemonicPhraseToUint8Array(
+  fixtures.local.mnemonic,
+);
 
 describe('BIP44Node', () => {
   describe('fromExtendedKey', () => {
@@ -105,6 +108,27 @@ describe('BIP44Node', () => {
       const node = await BIP44Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
+      });
+
+      expect(node.depth).toBe(2);
+      expect(node.toJSON()).toStrictEqual({
+        depth: node.depth,
+        masterFingerprint: node.masterFingerprint,
+        parentFingerprint: node.parentFingerprint,
+        index: node.index,
+        privateKey: node.privateKey,
+        publicKey: node.publicKey,
+        chainCode: node.chainCode,
+      });
+    });
+
+    it('initializes a new node from a derivation path with a Uint8Array', async () => {
+      const node = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39BytesToken,
           BIP44PurposeNodeToken,
           `bip32:60'`,
         ],
