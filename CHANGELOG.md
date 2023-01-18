@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.2.0]
-### Uncategorized
-- Update CODEOWNERS ([#108](https://github.com/MetaMask/key-tree/pull/108))
-- Accept BIP-39 mnemonic phrase as Uint8Array ([#107](https://github.com/MetaMask/key-tree/pull/107))
+### Added
+- Accept BIP-39 secret recovery phrase as Uint8Array ([#107](https://github.com/MetaMask/key-tree/pull/107))
+  - Secret recovery phrases are now accepted both as a string in the `bip39:...` format, and as `Uint8Array` in the format used by [`@metamask/scure-bip39`](https://github.com/MetaMask/scure-bip39), in all functions that accept secret recovery phrases.
 
 ## [6.1.0]
 ### Changed
