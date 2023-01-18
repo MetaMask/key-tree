@@ -164,7 +164,7 @@ export function validatePathSegment(
       ) {
         throw getMalformedError();
       }
-    } else if (!(node instanceof Uint8Array) && !BIP_32_PATH_REGEX.test(node)) {
+    } else if (node instanceof Uint8Array || !BIP_32_PATH_REGEX.test(node)) {
       throw getMalformedError();
     }
   });

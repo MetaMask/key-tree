@@ -300,17 +300,16 @@ describe('SLIP10Node', () => {
         curve: 'secp256k1',
       });
 
-      expect(node.depth).toBe(2);
-      expect(node.toJSON()).toStrictEqual({
-        depth: node.depth,
-        masterFingerprint: node.masterFingerprint,
-        parentFingerprint: node.parentFingerprint,
-        index: node.index,
+      const stringNode = await SLIP10Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
         curve: 'secp256k1',
-        privateKey: node.privateKey,
-        publicKey: node.publicKey,
-        chainCode: node.chainCode,
       });
+
+      expect(node.toJSON()).toStrictEqual(stringNode.toJSON());
     });
 
     it('throws if the derivation path is empty', async () => {

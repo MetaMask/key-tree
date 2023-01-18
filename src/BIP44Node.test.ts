@@ -132,16 +132,15 @@ describe('BIP44Node', () => {
         ],
       });
 
-      expect(node.depth).toBe(2);
-      expect(node.toJSON()).toStrictEqual({
-        depth: node.depth,
-        masterFingerprint: node.masterFingerprint,
-        parentFingerprint: node.parentFingerprint,
-        index: node.index,
-        privateKey: node.privateKey,
-        publicKey: node.publicKey,
-        chainCode: node.chainCode,
+      const stringNode = await BIP44Node.fromDerivationPath({
+        derivationPath: [
+          defaultBip39NodeToken,
+          BIP44PurposeNodeToken,
+          `bip32:60'`,
+        ],
       });
+
+      expect(node.toJSON()).toStrictEqual(stringNode.toJSON());
     });
 
     it('throws an error if attempting to modify the fields of a node', async () => {

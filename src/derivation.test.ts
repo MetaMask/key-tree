@@ -2,7 +2,7 @@ import { bytesToHex } from '@metamask/utils';
 
 import fixtures from '../test/fixtures';
 import { HDPathTuple } from './constants';
-import { deriveKeyFromPath } from './derivation';
+import { deriveKeyFromPath, validatePathSegment } from './derivation';
 import { derivers } from './derivers';
 import { privateKeyToEthAddress } from './derivers/bip32';
 import { SLIP10Node } from './SLIP10Node';
@@ -322,5 +322,38 @@ describe('derivation', () => {
         );
       });
     });
+  });
+});
+
+describe('validatePathSegment', () => {
+  it('accepts a Uint8Array or string path for the first segment', () => {
+    expect(() =>
+      validatePathSegment(
+        [mnemonicPhraseToBytes(fixtures.local.mnemonic)],
+        false,
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      validatePathSegment([`bip39:${fixtures.local.mnemonic}`], false),
+    ).not.toThrow();
+  });
+
+  it('does not accept a Uint8Array for BIP-32 segments', () => {
+    expect(() =>
+      validatePathSegment(
+        // @ts-expect-error Invalid type.
+        [`bip39:${fixtures.local.mnemonic}`, new Uint8Array(32)],
+        false,
+      ),
+    ).toThrow('Invalid HD path segment: The path segment is malformed.');
+
+    expect(() =>
+      validatePathSegment(
+        // @ts-expect-error Invalid type.
+        [`bip39:${fixtures.local.mnemonic}`, `bip32:0`, new Uint8Array(32)],
+        false,
+      ),
+    ).toThrow('Invalid HD path segment: The path segment is malformed.');
   });
 });
