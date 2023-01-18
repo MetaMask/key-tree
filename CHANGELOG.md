@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.0]
+### Uncategorized
+- Update CODEOWNERS ([#108](https://github.com/MetaMask/key-tree/pull/108))
+- Accept BIP-39 mnemonic phrase as Uint8Array ([#107](https://github.com/MetaMask/key-tree/pull/107))
+
 ## [6.1.0]
 ### Changed
 - Update BIP-39 implementation from `@scure/bip39` to MetaMask fork version `@metamask/scure-bip39` ([#101](https://github.com/MetaMask/key-tree/pull/101))
@@ -103,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v6.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v6.2.0...HEAD
+[6.2.0]: https://github.com/MetaMask/key-tree/compare/v6.1.0...v6.2.0
 [6.1.0]: https://github.com/MetaMask/key-tree/compare/v6.0.0...v6.1.0
 [6.0.0]: https://github.com/MetaMask/key-tree/compare/v5.0.2...v6.0.0
 [5.0.2]: https://github.com/MetaMask/key-tree/compare/v5.0.1...v5.0.2
