@@ -158,6 +158,8 @@ export function validatePathSegment(
         node instanceof Uint8Array || BIP_39_PATH_REGEX.test(node);
 
       if (
+        // TypeScript is unable to infer that `node` is a string here, so we
+        // need to explicitly check it again.
         !(node instanceof Uint8Array) &&
         !startsWithBip39 &&
         !BIP_32_PATH_REGEX.test(node)
