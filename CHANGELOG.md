@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.2.1]
-### Uncategorized
+### Fixed
 - Add missing curve parameter ([#110](https://github.com/MetaMask/key-tree/pull/110))
+  - This fixes a bug introduced in 6.2.0, when using the ed25519 curve.
 
 ## [6.2.0]
 ### Added
