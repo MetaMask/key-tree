@@ -1,0 +1,394 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>BIP44CoinTypeNode | @metamask/key-tree</title><meta name="description" content="Documentation for @metamask/key-tree"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base="..">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">@metamask/key-tree</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb">
+<li><a href="../modules.html">@metamask/key-tree</a></li>
+<li><a href="BIP44CoinTypeNode.html">BIP44CoinTypeNode</a></li></ul>
+<h1>Class BIP44CoinTypeNode</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>A wrapper object for BIP-44 <code>coin_type</code> keys. <code>coin_type</code> is the index
+specifying the protocol for which deeper keys are intended. For the
+authoritative list of coin types, please see
+<a href="https://github.com/satoshilabs/slips/blob/master/slip-0044.md">SLIP-44</a>.</p>
+<p>Recall that a BIP-44 HD tree path consists of the following nodes:</p>
+<p><code>m / 44&#39; / coin_type&#39; / account&#39; / change / address_index</code></p>
+<p>With the following depths:</p>
+<p><code>0 / 1 / 2 / 3 / 4 / 5</code></p>
+</div></section>
+<section class="tsd-panel tsd-hierarchy">
+<h4>Hierarchy</h4>
+<ul class="tsd-hierarchy">
+<li><span class="target">BIP44CoinTypeNode</span></li></ul></section>
+<section class="tsd-panel">
+<h4>Implements</h4>
+<ul class="tsd-hierarchy">
+<li><a href="../types/BIP44CoinTypeNodeInterface.html" class="tsd-signature-type" data-tsd-kind="Type alias">BIP44CoinTypeNodeInterface</a></li></ul></section><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L57">src/BIP44CoinTypeNode.ts:57</a></li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
+<h5 class="tsd-index-heading uppercase" role="button" aria-expanded="false" tabIndex=0><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 5.50969L8 11.6609L14.5 5.50969L12.5466 3.66086L8 7.96494L3.45341 3.66086L1.5 5.50969Z" fill="var(--color-text)"></path></svg> Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Properties</h3>
+<div class="tsd-index-list"><a href="BIP44CoinTypeNode.html#coin_type" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>coin_<wbr/>type</span></a>
+<a href="BIP44CoinTypeNode.html#path" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>path</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Accessors</h3>
+<div class="tsd-index-list"><a href="BIP44CoinTypeNode.html#address" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-262144-path"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)" id="icon-262144-text"></path></svg><span>address</span></a>
+<a href="BIP44CoinTypeNode.html#chainCode" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>chain<wbr/>Code</span></a>
+<a href="BIP44CoinTypeNode.html#chainCodeBytes" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>chain<wbr/>Code<wbr/>Bytes</span></a>
+<a href="BIP44CoinTypeNode.html#compressedPublicKey" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>compressed<wbr/>Public<wbr/>Key</span></a>
+<a href="BIP44CoinTypeNode.html#compressedPublicKeyBytes" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>compressed<wbr/>Public<wbr/>Key<wbr/>Bytes</span></a>
+<a href="BIP44CoinTypeNode.html#curve" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>curve</span></a>
+<a href="BIP44CoinTypeNode.html#depth" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>depth</span></a>
+<a href="BIP44CoinTypeNode.html#extendedKey" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>extended<wbr/>Key</span></a>
+<a href="BIP44CoinTypeNode.html#fingerprint" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>fingerprint</span></a>
+<a href="BIP44CoinTypeNode.html#index" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>index</span></a>
+<a href="BIP44CoinTypeNode.html#masterFingerprint" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>master<wbr/>Fingerprint</span></a>
+<a href="BIP44CoinTypeNode.html#parentFingerprint" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>parent<wbr/>Fingerprint</span></a>
+<a href="BIP44CoinTypeNode.html#privateKey" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>private<wbr/>Key</span></a>
+<a href="BIP44CoinTypeNode.html#privateKeyBytes" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>private<wbr/>Key<wbr/>Bytes</span></a>
+<a href="BIP44CoinTypeNode.html#publicKey" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>public<wbr/>Key</span></a>
+<a href="BIP44CoinTypeNode.html#publicKeyBytes" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>public<wbr/>Key<wbr/>Bytes</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Methods</h3>
+<div class="tsd-index-list"><a href="BIP44CoinTypeNode.html#deriveBIP44AddressKey" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>deriveBIP44<wbr/>Address<wbr/>Key</span></a>
+<a href="BIP44CoinTypeNode.html#toJSON" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>toJSON</span></a>
+<a href="BIP44CoinTypeNode.html#fromDerivationPath" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>from<wbr/>Derivation<wbr/>Path</span></a>
+<a href="BIP44CoinTypeNode.html#fromJSON" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>fromJSON</span></a>
+<a href="BIP44CoinTypeNode.html#fromNode" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>from<wbr/>Node</span></a>
+</div></section></div></details></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Properties</h2>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="coin_type" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>coin_<wbr/>type</span><a href="#coin_type" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
+<div class="tsd-signature">coin_<wbr/>type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.coin_type</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L158">src/BIP44CoinTypeNode.ts:158</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="path" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>path</span><a href="#path" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">m / bip32:</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">&#39; / bip32:</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">&#39;</span><span class="tsd-signature-symbol">`</span></div><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.path</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L156">src/BIP44CoinTypeNode.ts:156</a></li></ul></aside></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Accessors</h2>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="address" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>address</span><a href="#address" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="address.address-1"><span class="tsd-signature-symbol">get</span> address<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L206">src/BIP44CoinTypeNode.ts:206</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="chainCode" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>chain<wbr/>Code</span><a href="#chainCode" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="chainCode.chainCode-1"><span class="tsd-signature-symbol">get</span> chainCode<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.chainCode</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L202">src/BIP44CoinTypeNode.ts:202</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="chainCodeBytes" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>chain<wbr/>Code<wbr/>Bytes</span><a href="#chainCodeBytes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="chainCodeBytes.chainCodeBytes-1"><span class="tsd-signature-symbol">get</span> chainCodeBytes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L182">src/BIP44CoinTypeNode.ts:182</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="compressedPublicKey" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>compressed<wbr/>Public<wbr/>Key</span><a href="#compressedPublicKey" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="compressedPublicKey.compressedPublicKey-1"><span class="tsd-signature-symbol">get</span> compressedPublicKey<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L194">src/BIP44CoinTypeNode.ts:194</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="compressedPublicKeyBytes" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>compressed<wbr/>Public<wbr/>Key<wbr/>Bytes</span><a href="#compressedPublicKeyBytes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="compressedPublicKeyBytes.compressedPublicKeyBytes-1"><span class="tsd-signature-symbol">get</span> compressedPublicKeyBytes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L198">src/BIP44CoinTypeNode.ts:198</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="curve" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>curve</span><a href="#curve" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="curve.curve-1"><span class="tsd-signature-symbol">get</span> curve<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;ed25519&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;secp256k1&quot;</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">&quot;ed25519&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;secp256k1&quot;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L226">src/BIP44CoinTypeNode.ts:226</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="depth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>depth</span><a href="#depth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="depth.depth-1"><span class="tsd-signature-symbol">get</span> depth<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../types/BIP44Depth.html" class="tsd-signature-type" data-tsd-kind="Type alias">BIP44Depth</a></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <a href="../types/BIP44Depth.html" class="tsd-signature-type" data-tsd-kind="Type alias">BIP44Depth</a></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.depth</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L170">src/BIP44CoinTypeNode.ts:170</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="extendedKey" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>extended<wbr/>Key</span><a href="#extendedKey" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="extendedKey.extendedKey-1"><span class="tsd-signature-symbol">get</span> extendedKey<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L230">src/BIP44CoinTypeNode.ts:230</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="fingerprint" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fingerprint</span><a href="#fingerprint" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="fingerprint.fingerprint-1"><span class="tsd-signature-symbol">get</span> fingerprint<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L218">src/BIP44CoinTypeNode.ts:218</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="index" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>index</span><a href="#index" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="index.index-1"><span class="tsd-signature-symbol">get</span> index<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.index</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L222">src/BIP44CoinTypeNode.ts:222</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="masterFingerprint" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>master<wbr/>Fingerprint</span><a href="#masterFingerprint" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="masterFingerprint.masterFingerprint-1"><span class="tsd-signature-symbol">get</span> masterFingerprint<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.masterFingerprint</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L210">src/BIP44CoinTypeNode.ts:210</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="parentFingerprint" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>parent<wbr/>Fingerprint</span><a href="#parentFingerprint" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="parentFingerprint.parentFingerprint-1"><span class="tsd-signature-symbol">get</span> parentFingerprint<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.parentFingerprint</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L214">src/BIP44CoinTypeNode.ts:214</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="privateKey" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>private<wbr/>Key</span><a href="#privateKey" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="privateKey.privateKey-1"><span class="tsd-signature-symbol">get</span> privateKey<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.privateKey</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L186">src/BIP44CoinTypeNode.ts:186</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="privateKeyBytes" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>private<wbr/>Key<wbr/>Bytes</span><a href="#privateKeyBytes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="privateKeyBytes.privateKeyBytes-1"><span class="tsd-signature-symbol">get</span> privateKeyBytes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L174">src/BIP44CoinTypeNode.ts:174</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="publicKey" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>public<wbr/>Key</span><a href="#publicKey" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="publicKey.publicKey-1"><span class="tsd-signature-symbol">get</span> publicKey<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.publicKey</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L190">src/BIP44CoinTypeNode.ts:190</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="publicKeyBytes" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>public<wbr/>Key<wbr/>Bytes</span><a href="#publicKeyBytes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="publicKeyBytes.publicKeyBytes-1"><span class="tsd-signature-symbol">get</span> publicKeyBytes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L178">src/BIP44CoinTypeNode.ts:178</a></li></ul></aside></li></ul></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Methods</h2>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="deriveBIP44AddressKey" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>deriveBIP44<wbr/>Address<wbr/>Key</span><a href="#deriveBIP44AddressKey" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="deriveBIP44AddressKey.deriveBIP44AddressKey-1">deriveBIP44<wbr/>Address<wbr/>Key<span class="tsd-signature-symbol">(</span>indices<span class="tsd-signature-symbol">: </span><a href="../types/CoinTypeToAddressIndices.html" class="tsd-signature-type" data-tsd-kind="Type alias">CoinTypeToAddressIndices</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44Node.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44Node</a><span class="tsd-signature-symbol">&gt;</span><a href="#deriveBIP44AddressKey.deriveBIP44AddressKey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Derives a BIP-44 <code>address_index</code> key corresponding to the path of this
+node and the specified <code>account</code>, <code>change</code>, and <code>address_index</code> values.
+<code>address_index</code> keys are normally the keys used to generate user account
+addresses.</p>
+<p>Recall that a BIP-44 HD tree path consists of the following nodes:</p>
+<p><code>m / 44&#39; / coin_type&#39; / account&#39; / change / address_index</code></p>
+<p>With the following depths:</p>
+<p><code>0 / 1 / 2 / 3 / 4 / 5</code></p>
+
+<h3>Returns</h3><p>The derived BIP-44 <code>address_index</code> node.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>indices: <a href="../types/CoinTypeToAddressIndices.html" class="tsd-signature-type" data-tsd-kind="Type alias">CoinTypeToAddressIndices</a></h5>
+<div class="tsd-comment tsd-typography"><p>The BIP-44 index values to use in key derivation.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44Node.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44Node</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L254">src/BIP44CoinTypeNode.ts:254</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="toJSON" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>toJSON</span><a href="#toJSON" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="toJSON.toJSON-1">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../types/JsonBIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Type alias">JsonBIP44CoinTypeNode</a><a href="#toJSON.toJSON-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <a href="../types/JsonBIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Type alias">JsonBIP44CoinTypeNode</a></h4><aside class="tsd-sources">
+<p>Implementation of BIP44CoinTypeNodeInterface.toJSON</p>
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L264">src/BIP44CoinTypeNode.ts:264</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="fromDerivationPath" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>from<wbr/>Derivation<wbr/>Path</span><a href="#fromDerivationPath" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="fromDerivationPath.fromDerivationPath-1">from<wbr/>Derivation<wbr/>Path<span class="tsd-signature-symbol">(</span>derivationPath<span class="tsd-signature-symbol">: </span><a href="../types/CoinTypeHDPathTuple.html" class="tsd-signature-type" data-tsd-kind="Type alias">CoinTypeHDPathTuple</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44CoinTypeNode</a><span class="tsd-signature-symbol">&gt;</span><a href="#fromDerivationPath.fromDerivationPath-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Constructs a BIP-44 <code>coin_type</code> node. <code>coin_type</code> is the index
+specifying the protocol for which deeper keys are intended. For the
+authoritative list of coin types, please see
+<a href="https://github.com/satoshilabs/slips/blob/master/slip-0044.md">SLIP-44</a>.</p>
+<p>Recall that a BIP-44 HD tree path consists of the following nodes:</p>
+<p><code>m / 44&#39; / coin_type&#39; / account&#39; / change / address_index</code></p>
+<p>With the following depths:</p>
+<p><code>0 / 1 / 2 / 3 / 4 / 5</code></p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>derivationPath: <a href="../types/CoinTypeHDPathTuple.html" class="tsd-signature-type" data-tsd-kind="Type alias">CoinTypeHDPathTuple</a></h5>
+<div class="tsd-comment tsd-typography"><p>The derivation path for the key of this node.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44CoinTypeNode</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L108">src/BIP44CoinTypeNode.ts:108</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="fromJSON" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>fromJSON</span><a href="#fromJSON" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="fromJSON.fromJSON-1">fromJSON<span class="tsd-signature-symbol">(</span>json<span class="tsd-signature-symbol">: </span><a href="../types/JsonBIP44Node.html" class="tsd-signature-type" data-tsd-kind="Type alias">JsonBIP44Node</a>, coin_type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44CoinTypeNode</a><span class="tsd-signature-symbol">&gt;</span><a href="#fromJSON.fromJSON-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Constructs a BIP-44 <code>coin_type</code> node. <code>coin_type</code> is the index
+specifying the protocol for which deeper keys are intended. For the
+authoritative list of coin types, please see
+<a href="https://github.com/satoshilabs/slips/blob/master/slip-0044.md">SLIP-44</a>.</p>
+<p>Recall that a BIP-44 HD tree path consists of the following nodes:</p>
+<p><code>m / 44&#39; / coin_type&#39; / account&#39; / change / address_index</code></p>
+<p>With the following depths:</p>
+<p><code>0 / 1 / 2 / 3 / 4 / 5</code></p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>json: <a href="../types/JsonBIP44Node.html" class="tsd-signature-type" data-tsd-kind="Type alias">JsonBIP44Node</a></h5>
+<div class="tsd-comment tsd-typography"><p>The <a href="../types/JsonBIP44Node.html">JsonBIP44Node</a> for the key of this node.</p>
+</div></li>
+<li>
+<h5>coin_type: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>The coin_type index of this node. Must be a non-negative
+integer.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44CoinTypeNode</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L76">src/BIP44CoinTypeNode.ts:76</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="fromNode" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>from<wbr/>Node</span><a href="#fromNode" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="fromNode.fromNode-1">from<wbr/>Node<span class="tsd-signature-symbol">(</span>node<span class="tsd-signature-symbol">: </span><a href="BIP44Node.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44Node</a>, coin_type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44CoinTypeNode</a><span class="tsd-signature-symbol">&gt;</span><a href="#fromNode.fromNode-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Constructs a BIP-44 <code>coin_type</code> node. <code>coin_type</code> is the index
+specifying the protocol for which deeper keys are intended. For the
+authoritative list of coin types, please see
+<a href="https://github.com/satoshilabs/slips/blob/master/slip-0044.md">SLIP-44</a>.</p>
+<p>Recall that a BIP-44 HD tree path consists of the following nodes:</p>
+<p><code>m / 44&#39; / coin_type&#39; / account&#39; / change / address_index</code></p>
+<p>With the following depths:</p>
+<p><code>0 / 1 / 2 / 3 / 4 / 5</code></p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>node: <a href="BIP44Node.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44Node</a></h5>
+<div class="tsd-comment tsd-typography"><p>The <a href="BIP44Node.html">BIP44Node</a> for the key of this node.</p>
+</div></li>
+<li>
+<h5>coin_type: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>The coin_type index of this node. Must be a non-negative
+integer.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="BIP44CoinTypeNode.html" class="tsd-signature-type" data-tsd-kind="Class">BIP44CoinTypeNode</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaMask/key-tree/blob/5f1d6f4/src/BIP44CoinTypeNode.ts#L142">src/BIP44CoinTypeNode.ts:142</a></li></ul></aside></li></ul></section></section></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li><a href="../modules.html">@metamask/key-<wbr/>tree</a>
+<ul>
+<li class="tsd-kind-namespace"><a href="../modules/ed25519.html">ed25519</a></li>
+<li class="tsd-kind-namespace"><a href="../modules/secp256k1.html">secp256k1</a></li></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky">
+<ul>
+<li class="current tsd-kind-class"><a href="BIP44CoinTypeNode.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>BIP44<wbr/>Coin<wbr/>Type<wbr/>Node</span></a>
+<ul>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#coin_type" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>coin_<wbr/>type</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#path" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>path</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#address" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>address</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#chainCode" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>chain<wbr/>Code</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#chainCodeBytes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>chain<wbr/>Code<wbr/>Bytes</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#compressedPublicKey" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>compressed<wbr/>Public<wbr/>Key</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#compressedPublicKeyBytes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>compressed<wbr/>Public<wbr/>Key<wbr/>Bytes</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#curve" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>curve</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#depth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>depth</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#extendedKey" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>extended<wbr/>Key</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#fingerprint" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>fingerprint</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#index" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>index</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#masterFingerprint" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>master<wbr/>Fingerprint</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#parentFingerprint" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>parent<wbr/>Fingerprint</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#privateKey" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>private<wbr/>Key</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#privateKeyBytes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>private<wbr/>Key<wbr/>Bytes</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#publicKey" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>public<wbr/>Key</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#publicKeyBytes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>public<wbr/>Key<wbr/>Bytes</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#deriveBIP44AddressKey" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>deriveBIP44<wbr/>Address<wbr/>Key</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#toJSON" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>toJSON</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#fromDerivationPath" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>from<wbr/>Derivation<wbr/>Path</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#fromJSON" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>fromJSON</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="BIP44CoinTypeNode.html#fromNode" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>from<wbr/>Node</a></li></ul></li></ul></nav></div></div>
+<div class="overlay"></div><script src="../assets/main.js"></script></body></html>
