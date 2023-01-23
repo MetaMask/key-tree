@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.1]
+### Uncategorized
+- Add missing curve parameter ([#110](https://github.com/MetaMask/key-tree/pull/110))
+
 ## [6.2.0]
 ### Added
 - Accept BIP-39 secret recovery phrase as Uint8Array ([#107](https://github.com/MetaMask/key-tree/pull/107))
@@ -108,7 +112,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v6.2.0...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v6.2.1...HEAD
+[6.2.1]: https://github.com/MetaMask/key-tree/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/MetaMask/key-tree/compare/v6.1.0...v6.2.0
 [6.1.0]: https://github.com/MetaMask/key-tree/compare/v6.0.0...v6.1.0
 [6.0.0]: https://github.com/MetaMask/key-tree/compare/v5.0.2...v6.0.0
