@@ -1,10 +1,11 @@
 import { mnemonicToSeed } from '@metamask/scure-bip39';
 import { wordlist as englishWordlist } from '@metamask/scure-bip39/dist/wordlists/english';
+import { assert, bytesToBigInt } from '@metamask/utils';
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
 
 import { DeriveChildKeyArgs } from '.';
-import { BIP39StringNode } from '../constants';
+import { BIP39StringNode, BYTES_KEY_LENGTH } from '../constants';
 import { Curve, secp256k1 } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { getFingerprint } from '../utils';
@@ -50,8 +51,14 @@ export async function createBip39KeyFromSeed(
   curve: Curve = secp256k1,
 ): Promise<SLIP10Node> {
   const key = hmac(sha512, curve.secret, seed);
-  const privateKey = key.slice(0, 32);
-  const chainCode = key.slice(32);
+  const privateKey = key.slice(0, BYTES_KEY_LENGTH);
+  const chainCode = key.slice(BYTES_KEY_LENGTH);
+
+  const privateKeyBigInt = bytesToBigInt(privateKey);
+  assert(
+    privateKeyBigInt > BigInt(0) && privateKeyBigInt < curve.curve.n,
+    'Invalid private key: The private key must larger than 0 and less than the curve order.',
+  );
 
   const masterFingerprint = getFingerprint(
     await curve.getPublicKey(privateKey, true),
