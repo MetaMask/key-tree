@@ -47,13 +47,13 @@ describe('secp256k1', () => {
       '0x1',
     ])('throws if the tweak is not 32 bytes long', (tweak) => {
       expect(() => publicAdd(PUBLIC_KEY, hexToBytes(tweak))).toThrow(
-        'Invalid tweak: Tweak must be a non-empty 32-byte array.',
+        'Invalid tweak: Tweak must be a non-zero 32-byte Uint8Array.',
       );
     });
 
     it('throws if the tweak is zero', () => {
       expect(() => publicAdd(PUBLIC_KEY, new Uint8Array(32).fill(0))).toThrow(
-        'Invalid tweak: Tweak must be a non-empty 32-byte array.',
+        'Invalid tweak: Tweak must be a non-zero 32-byte Uint8Array.',
       );
     });
   });

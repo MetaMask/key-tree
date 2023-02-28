@@ -35,7 +35,7 @@ export const publicAdd = (
 ): Uint8Array => {
   assert(
     isValidBytesKey(tweak, 32),
-    'Invalid tweak: Tweak must be a non-empty 32-byte array.',
+    'Invalid tweak: Tweak must be a non-zero 32-byte Uint8Array.',
   );
 
   const point = Point.fromHex(publicKey);
