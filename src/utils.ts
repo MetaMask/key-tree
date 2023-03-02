@@ -1,5 +1,10 @@
 import { wordlist as englishWordlist } from '@metamask/scure-bip39/dist/wordlists/english';
-import { assert, createDataView, hexToBytes } from '@metamask/utils';
+import {
+  assert,
+  assertExhaustive,
+  createDataView,
+  hexToBytes,
+} from '@metamask/utils';
 import { ripemd160 } from '@noble/hashes/ripemd160';
 import { sha256 } from '@noble/hashes/sha256';
 import { base58check as scureBase58check } from '@scure/base';
@@ -13,6 +18,8 @@ import {
   HardenedBIP32Node,
   UnhardenedBIP32Node,
 } from './constants';
+import { curves, SupportedCurve } from './curves';
+import { Specification, VALID_SPECIFICATIONS } from './derivers';
 
 /**
  * Gets a string representation of a BIP-44 path of depth 2, i.e.:
@@ -380,4 +387,79 @@ export function mnemonicPhraseToBytes(mnemonicPhrase: string): Uint8Array {
   });
 
   return new Uint8Array(new Uint16Array(indices).buffer);
+}
+
+/**
+ * Validates the curve name.
+ *
+ * @param curveName - The name of the curve to validate.
+ */
+export function validateCurve(
+  curveName: unknown,
+): asserts curveName is SupportedCurve {
+  if (!curveName || typeof curveName !== 'string') {
+    throw new Error('Invalid curve: Must specify a curve.');
+  }
+
+  if (!Object.keys(curves).includes(curveName)) {
+    throw new Error(
+      `Invalid curve: Only the following curves are supported: ${Object.keys(
+        curves,
+      ).join(', ')}.`,
+    );
+  }
+}
+
+/**
+ * Get the default specification (BIP-32 or SLIP-10) for a given curve.
+ *
+ * @param curve - The curve to get the specification for.
+ * @returns The specification for the curve.
+ */
+export function getSpecification(curve: SupportedCurve): Specification {
+  validateCurve(curve);
+
+  switch (curve) {
+    case 'secp256k1':
+      return 'bip32';
+    case 'ed25519':
+      return 'slip10';
+
+    /* istanbul ignore next */
+    default:
+      return assertExhaustive(curve);
+  }
+}
+
+/**
+ * Validate that the specified specification is valid.
+ *
+ * @param specification - The specification to validate.
+ * @throws An error if the specification is invalid.
+ */
+export function validateSpecification(
+  specification?: unknown,
+): asserts specification is Specification {
+  assert(specification, 'Invalid specification: Must be specified.');
+  assert(
+    VALID_SPECIFICATIONS.includes(specification as Specification),
+    `Invalid specification: Must be one of ${VALID_SPECIFICATIONS.join(
+      ', ',
+    )}. Received "${specification.toString()}".`,
+  );
+}
+
+/**
+ * Get a 4-byte-long `Uint8Array` from a numeric value.
+ *
+ * @param value - The value to convert to a `Uint8Array`.
+ * @returns The `Uint8Array` corresponding to the `bigint` value.
+ */
+export function numberToUint32(value: number) {
+  const bytes = new Uint8Array(4);
+  const view = createDataView(bytes);
+
+  view.setUint32(0, value, false);
+
+  return bytes;
 }
