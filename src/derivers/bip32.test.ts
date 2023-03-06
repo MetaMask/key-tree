@@ -71,8 +71,6 @@ describe('deriveChildKey', () => {
     );
 
     it('handles invalid keys using SLIP-10', async () => {
-      // TODO: Compare these results to reference implementations.
-
       const node = await SLIP10Node.fromDerivationPath({
         derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
         curve: 'secp256k1',
@@ -92,18 +90,36 @@ describe('deriveChildKey', () => {
       expect(childNode.index).toBe(BIP_32_HARDENED_OFFSET);
       expect(childNode).toMatchInlineSnapshot(`
         Object {
-          "chainCode": "0x2dd86ecbca6c764e76448768e339b040ce56a29b7e690ddaa5bd38595c541faa",
+          "chainCode": "0x69c58a9e53bb674d1bbeb871975f01adce5e058cdcba89f8930225341a75b439",
           "curve": "secp256k1",
           "depth": 1,
           "index": 2147483648,
           "masterFingerprint": 3293725253,
           "parentFingerprint": 3293725253,
-          "privateKey": "0x41d301d366bf9ff128ad00f9d1c9fcfd2646c87a543cf99ff73daee29f73bf5b",
-          "publicKey": "0x045377ddaa9510b262f7469604478d9e377132eae8ab97b0c709f2250387c12f1e3e98c26f2ef0578131bf65b7eb543b55ed9f691709352ba82cb3245c16092abb",
+          "privateKey": "0xb9dbe9cda5d858df377ab6c6a9b3efef99269142e390d24aaceb49c547b9fcad",
+          "publicKey": "0x0422a2beb2a0c800ef19200db9161a3a7ee5645ccf67c05e18e7055a73cb1e1451f2c85f9aaac274bd16ea9a77f102feef3aba3f37ed6ac6e0961fb569011e42cf",
           "specification": "slip10",
         }
       `);
     });
+
+    it.each(fixtures.slip10InvalidPrivateKeys.keys)(
+      'handles invalid keys using SLIP-10 (test vectors)',
+      async ({ path, privateKey, chainCode }) => {
+        const node = await createBip39KeyFromSeed(
+          hexToBytes(fixtures.slip10InvalidPrivateKeys.hexSeed),
+          secp256k1,
+          'slip10',
+        );
+
+        // Simulate an invalid key once.
+        jest.spyOn(secp256k1, 'isValidPrivateKey').mockReturnValueOnce(false);
+
+        const childNode = await node.derive(path.ours.tuple);
+        expect(childNode.privateKey).toBe(privateKey);
+        expect(childNode.chainCode).toBe(chainCode);
+      },
+    );
 
     it('throws the original error if the curve is ed25519', async () => {
       const node = await SLIP10Node.fromDerivationPath({

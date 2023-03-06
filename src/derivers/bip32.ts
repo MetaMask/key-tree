@@ -207,6 +207,9 @@ async function derivePrivateChildKey({
   curve,
   specification,
 }: DerivePrivateChildKeyArgs): Promise<SLIP10Node> {
+  const actualChildIndex =
+    childIndex + (isHardened ? BIP_32_HARDENED_OFFSET : 0);
+
   try {
     const { privateKey: childPrivateKey, chainCode: childChainCode } =
       await generateKey({
@@ -221,7 +224,7 @@ async function derivePrivateChildKey({
       depth: depth + 1,
       masterFingerprint,
       parentFingerprint,
-      index: childIndex + (isHardened ? BIP_32_HARDENED_OFFSET : 0),
+      index: actualChildIndex,
       curve: curve.name,
       specification,
     });
@@ -278,7 +281,7 @@ async function derivePrivateChildKey({
           concatBytes([
             0x01,
             entropy.slice(32, 64),
-            numberToUint32(childIndex),
+            numberToUint32(actualChildIndex),
           ]),
         );
 
@@ -370,7 +373,6 @@ async function derivePublicChildKey({
       case 'bip32': {
         // As per BIP-32, if the resulting key is invalid, the key is generated
         // from the next child index instead.
-        // TODO: Verify that the new child index is valid.
         return await derivePublicChildKey({
           entropy,
           publicKey,
@@ -389,7 +391,6 @@ async function derivePublicChildKey({
         // generated as follows:
         // Key material (32 bytes), child chain code (32 bytes) =
         //   HMAC-SHA512(parent chain code, 0x01 || chain code from invalid key || index).
-        // TODO: Verify that this is correct.
         const newEntropy = hmac(
           sha512,
           chainCode,
@@ -445,11 +446,11 @@ async function deriveSecretExtension({
 }: DeriveSecretExtensionArgs) {
   if (isHardened) {
     // Hardened child
-    const indexBytes = new Uint8Array(4);
-    const view = new DataView(indexBytes.buffer);
-
-    view.setUint32(0, childIndex + BIP_32_HARDENED_OFFSET, false);
-    return concatBytes([new Uint8Array([0]), privateKey, indexBytes]);
+    return concatBytes([
+      new Uint8Array([0]),
+      privateKey,
+      numberToUint32(childIndex + BIP_32_HARDENED_OFFSET),
+    ]);
   }
 
   // Normal child

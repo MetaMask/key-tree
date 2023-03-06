@@ -802,9 +802,6 @@ export default {
   bip32InvalidPrivateKeys: {
     hexSeed:
       '0x747f302d9c916698912d5f70be53a6cf53bc495803a5523d3a7c3afa2afba94ec3803f838b3e1929ab5481f9da35441372283690fdcf27372c38f40ba134fe03',
-
-    privateKey: '0x0000000',
-
     keys: [
       {
         path: {
@@ -865,6 +862,70 @@ export default {
           '0x0a1db8b483d43605120241c81259ea1f64b75c59a3fe5427186ac221cbe3f4d8',
         depth: 2,
         index: 0x80000000 + 456,
+      },
+    ],
+  },
+
+  // These vectors test the error handling behaviour, when an invalid private
+  // key is derived. The actual chance of this happening is extremely low, so
+  // these values are generated using mock return values: The first call to
+  // `isValidPrivateKey` returns `false`, and any subsequent calls return
+  // `true`.
+  slip10InvalidPrivateKeys: {
+    hexSeed:
+      '0x747f302d9c916698912d5f70be53a6cf53bc495803a5523d3a7c3afa2afba94ec3803f838b3e1929ab5481f9da35441372283690fdcf27372c38f40ba134fe03',
+    keys: [
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:3`],
+            string: `bip32:3`,
+          },
+          theirs: `m/3`,
+        },
+        privateKey:
+          '0x7f861ec23cea91757c58ecd4a17dcb9396b3adfdf6a7a97395746fdb5c56854f',
+        chainCode:
+          '0xa801ebec457c8ea6c50dc55bea849384a40c92159ad1972f1a35cc92e145c827',
+      },
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:3`, `bip32:0`],
+            string: `bip32:3/bip32:0`,
+          },
+          theirs: `m/3/0`,
+        },
+        privateKey:
+          '0x1657de87ad376e58538e72fe30a7567ddc0a7eef08ee93a6cdcf7c83f4a62786',
+        chainCode:
+          '0x8235d18356fe4ad0f5bd99ef69c57613e871a66aeb3a9abfdd986188858f41f6',
+      },
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:123'`],
+            string: `bip32:123'`,
+          },
+          theirs: `m/123'`,
+        },
+        privateKey:
+          '0x3967b87fd18ac7cbba8f587ad558070d30b60ba0371e69deb779115001614717',
+        chainCode:
+          '0x7ea274d541b03eef655ba0dce49f80d3618c1206cdc99da662f32b1193225829',
+      },
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:123'`, `bip32:456'`],
+            string: `bip32:123'/bip32:456'`,
+          },
+          theirs: `m/123'/456'`,
+        },
+        privateKey:
+          '0xe533b68958c076ce6d42420d61695d83a0a1af24a9ae5564b7679f52d6dd6f5e',
+        chainCode:
+          '0xfbd82ae4ac9f4e8176034b54a7ed5a2b836879bb1f94b136890fc86fcf4cd4c5',
       },
     ],
   },
