@@ -38,14 +38,14 @@ describe('deriveChildKey', () => {
       expect(childNode.index).toBe(BIP_32_HARDENED_OFFSET + 1);
       expect(childNode).toMatchInlineSnapshot(`
         Object {
-          "chainCode": "0x7130d479bc9ce1cfee01198328193fadb76392927c3bd2094c23ff965c144014",
+          "chainCode": "0xe7862c5448c2e347dbdd0ee287e69888beec88e958388c927d2eff0e04df88f8",
           "curve": "secp256k1",
           "depth": 1,
           "index": 2147483649,
           "masterFingerprint": 3293725253,
           "parentFingerprint": 3293725253,
-          "privateKey": "0x457ab747ec683ff3288b73058a62a0a2192b7f449340e04c0d69d7b9789f6055",
-          "publicKey": "0x04e59bdd93c7bbd052be1f50abfefde2b77f3c6988696cf7db879c2f794e20e10d7966a4350462760aafbce95b5a246ad563ef83f7f674a54ec606f209862a97f7",
+          "privateKey": "0xdcc114faa58e3feccf10e6658494c0c48b9d146dec313f0dedbd263547da23dc",
+          "publicKey": "0x044948f8f48422b7608754bf228d93aff08c8e27fa46397afd80632be39f1213f8ca7aa33fd2b3630bdbbfa259841ca66f18de39f1de89a603c34f15378c817c24",
           "specification": "bip32",
         }
       `);
