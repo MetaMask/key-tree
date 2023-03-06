@@ -27,7 +27,7 @@ describe('BIP44Node', () => {
         privateKey,
         chainCode,
         depth: 2,
-        parentFingerprint: 0,
+        parentFingerprint: 1,
         index: 0,
       });
 
@@ -54,7 +54,7 @@ describe('BIP44Node', () => {
         privateKey,
         chainCode,
         depth: 2,
-        parentFingerprint: 0,
+        parentFingerprint: 1,
         index: 0,
       });
 

@@ -161,7 +161,13 @@ export class SLIP10Node implements SLIP10NodeInterface {
     validateCurve(curve);
     validateBIP32Depth(depth);
     validateBIP32Index(index);
-    validateParentFingerprint(parentFingerprint);
+    validateRootIndex(index, depth);
+    validateParentFingerprint(parentFingerprint, depth);
+    validateMasterParentFingerprint(
+      masterFingerprint,
+      parentFingerprint,
+      depth,
+    );
 
     const curveObject = getCurveByName(curve);
 
@@ -436,14 +442,80 @@ export function validateBIP32Depth(depth: unknown): asserts depth is number {
  * integer `number`. Throws an error if validation fails.
  *
  * @param parentFingerprint - The parent fingerprint to validate.
+ * @param depth - The depth of the node to validate.
+ * @throws If the parent fingerprint is not a positive integer, or invalid for
+ * the current depth.
  */
 export function validateParentFingerprint(
   parentFingerprint: unknown,
+  depth: number,
 ): asserts parentFingerprint is number {
   if (!isValidInteger(parentFingerprint)) {
     throw new Error(
       `Invalid parent fingerprint: The fingerprint must be a positive integer. Received: "${String(
         parentFingerprint,
+      )}".`,
+    );
+  }
+
+  if (depth === 0 && parentFingerprint !== 0) {
+    throw new Error(
+      `Invalid parent fingerprint: The fingerprint of the root node must be 0. Received: "${String(
+        parentFingerprint,
+      )}".`,
+    );
+  }
+
+  if (depth > 0 && parentFingerprint === 0) {
+    throw new Error(
+      `Invalid parent fingerprint: The fingerprint of a child node must not be 0. Received: "${String(
+        parentFingerprint,
+      )}".`,
+    );
+  }
+}
+
+/**
+ * Validate that a given combination of master fingerprint and parent
+ * fingerprint is valid for the given depth.
+ *
+ * @param masterFingerprint - The master fingerprint to validate.
+ * @param parentFingerprint - The parent fingerprint to validate.
+ * @param depth - The depth of the node to validate.
+ * @throws If the combination of master fingerprint and parent fingerprint is
+ * invalid for the given depth.
+ */
+export function validateMasterParentFingerprint(
+  masterFingerprint: number | undefined,
+  parentFingerprint: number,
+  depth: number,
+) {
+  // The master fingerprint is optional.
+  if (!masterFingerprint) {
+    return;
+  }
+
+  if (depth >= 2 && masterFingerprint === parentFingerprint) {
+    throw new Error(
+      `Invalid parent fingerprint: The fingerprint of a child node cannot be equal to the master fingerprint. Received: "${String(
+        parentFingerprint,
+      )}".`,
+    );
+  }
+}
+
+/**
+ * Validate that the index is zero for the root node.
+ *
+ * @param index - The index to validate.
+ * @param depth - The depth of the node to validate.
+ * @throws If the index is not zero for the root node.
+ */
+export function validateRootIndex(index: number, depth: number) {
+  if (depth === 0 && index !== 0) {
+    throw new Error(
+      `Invalid index: The index of the root node must be 0. Received: "${String(
+        index,
       )}".`,
     );
   }
