@@ -172,30 +172,36 @@ export class SLIP10Node implements SLIP10NodeInterface {
         `Invalid private key: Value is not a valid ${curve} private key.`,
       );
 
-      return new SLIP10Node({
-        depth,
-        masterFingerprint,
-        parentFingerprint,
-        index,
-        chainCode: chainCodeBytes,
-        privateKey: privateKeyBytes,
-        publicKey: await curveObject.getPublicKey(privateKeyBytes),
-        curve,
-      });
+      return new SLIP10Node(
+        {
+          depth,
+          masterFingerprint,
+          parentFingerprint,
+          index,
+          chainCode: chainCodeBytes,
+          privateKey: privateKeyBytes,
+          publicKey: await curveObject.getPublicKey(privateKeyBytes),
+          curve,
+        },
+        this.#constructorGuard,
+      );
     }
 
     if (publicKey) {
       const publicKeyBytes = getBytes(publicKey, curveObject.publicKeyLength);
 
-      return new SLIP10Node({
-        depth,
-        masterFingerprint,
-        parentFingerprint,
-        index,
-        chainCode: chainCodeBytes,
-        publicKey: publicKeyBytes,
-        curve,
-      });
+      return new SLIP10Node(
+        {
+          depth,
+          masterFingerprint,
+          parentFingerprint,
+          index,
+          chainCode: chainCodeBytes,
+          publicKey: publicKeyBytes,
+          curve,
+        },
+        this.#constructorGuard,
+      );
     }
 
     throw new Error(
@@ -249,6 +255,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
     });
   }
 
+  static #constructorGuard = Symbol('SLIP10Node.constructor');
+
   public readonly curve: SupportedCurve;
 
   public readonly depth: number;
@@ -265,16 +273,25 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   public readonly publicKeyBytes: Uint8Array;
 
-  constructor({
-    depth,
-    masterFingerprint,
-    parentFingerprint,
-    index,
-    chainCode,
-    privateKey,
-    publicKey,
-    curve,
-  }: SLIP10NodeConstructorOptions) {
+  // eslint-disable-next-line no-restricted-syntax
+  private constructor(
+    {
+      depth,
+      masterFingerprint,
+      parentFingerprint,
+      index,
+      chainCode,
+      privateKey,
+      publicKey,
+      curve,
+    }: SLIP10NodeConstructorOptions,
+    constructorGuard?: symbol,
+  ) {
+    assert(
+      constructorGuard === SLIP10Node.#constructorGuard,
+      'SLIP10Node can only be constructed using `SLIP10Node.fromJSON`, `SLIP10Node.fromExtendedKey`, or `SLIP10Node.fromDerivationPath`.',
+    );
+
     this.depth = depth;
     this.masterFingerprint = masterFingerprint;
     this.parentFingerprint = parentFingerprint;
@@ -331,15 +348,18 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * @returns A neutered version of this node.
    */
   public neuter(): SLIP10Node {
-    return new SLIP10Node({
-      depth: this.depth,
-      masterFingerprint: this.masterFingerprint,
-      parentFingerprint: this.parentFingerprint,
-      index: this.index,
-      chainCode: this.chainCodeBytes,
-      publicKey: this.publicKeyBytes,
-      curve: this.curve,
-    });
+    return new SLIP10Node(
+      {
+        depth: this.depth,
+        masterFingerprint: this.masterFingerprint,
+        parentFingerprint: this.parentFingerprint,
+        index: this.index,
+        chainCode: this.chainCodeBytes,
+        publicKey: this.publicKeyBytes,
+        curve: this.curve,
+      },
+      SLIP10Node.#constructorGuard,
+    );
   }
 
   /**

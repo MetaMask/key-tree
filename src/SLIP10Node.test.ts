@@ -12,6 +12,31 @@ const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);
 
 describe('SLIP10Node', () => {
+  describe('constructor', () => {
+    it('throws an error when the constructor guard is not provided', async () => {
+      const { privateKey, chainCode } = await deriveChildKey({
+        path: fixtures.local.mnemonic,
+        curve: secp256k1,
+      });
+
+      expect(
+        () =>
+          // @ts-expect-error - Constructor is private.
+          new SLIP10Node({
+            privateKey,
+            chainCode,
+            depth: 0,
+            masterFingerprint: 0,
+            parentFingerprint: 0,
+            index: 0,
+            curve: 'secp256k1',
+          }),
+      ).toThrow(
+        'SLIP10Node can only be constructed using `SLIP10Node.fromJSON`, `SLIP10Node.fromExtendedKey`, or `SLIP10Node.fromDerivationPath`.',
+      );
+    });
+  });
+
   describe('fromExtendedKey', () => {
     it('initializes a new node from a private key', async () => {
       const { privateKey, chainCode } = await deriveChildKey({
