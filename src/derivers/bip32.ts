@@ -239,11 +239,22 @@ async function derivePrivateChildKey({
 
     switch (specification) {
       case 'bip32': {
+        const secretExtension = await deriveSecretExtension({
+          privateKey,
+          childIndex: childIndex + 1,
+          isHardened,
+          curve,
+        });
+
+        const newEntropy = generateEntropy({
+          chainCode,
+          extension: secretExtension,
+        });
+
         // As per BIP-32, if the resulting key is invalid, the key is generated
         // from the next child index instead.
-        // TODO: Verify that the new child index is valid.
         return await derivePrivateChildKey({
-          entropy,
+          entropy: newEntropy,
           privateKey,
           chainCode,
           depth,

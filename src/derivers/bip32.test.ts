@@ -12,15 +12,13 @@ import {
   privateKeyToEthAddress,
   publicKeyToEthAddress,
 } from './bip32';
-import { bip39MnemonicToMultipath } from './bip39';
+import { bip39MnemonicToMultipath, createBip39KeyFromSeed } from './bip39';
 
 const privateAddFixtures = fixtures['secp256k1-node'].privateAdd;
 
 describe('deriveChildKey', () => {
   describe('private key derivation', () => {
     it('handles invalid keys using BIP-32', async () => {
-      // TODO: Compare these results to reference implementations.
-
       const node = await SLIP10Node.fromDerivationPath({
         derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
         curve: 'secp256k1',
@@ -52,6 +50,25 @@ describe('deriveChildKey', () => {
         }
       `);
     });
+
+    it.each(fixtures.bip32InvalidPrivateKeys.keys)(
+      'handles invalid keys using BIP-32 (test vectors)',
+      async ({ path, privateKey, chainCode, index, depth }) => {
+        const node = await createBip39KeyFromSeed(
+          hexToBytes(fixtures.bip32InvalidPrivateKeys.hexSeed),
+          secp256k1,
+        );
+
+        // Simulate an invalid key once.
+        jest.spyOn(secp256k1, 'isValidPrivateKey').mockReturnValueOnce(false);
+
+        const childNode = await node.derive(path.ours.tuple);
+        expect(childNode.privateKey).toBe(privateKey);
+        expect(childNode.chainCode).toBe(chainCode);
+        expect(childNode.index).toBe(index);
+        expect(childNode.depth).toBe(depth);
+      },
+    );
 
     it('handles invalid keys using SLIP-10', async () => {
       // TODO: Compare these results to reference implementations.

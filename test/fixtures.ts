@@ -793,4 +793,79 @@ export default {
       ],
     },
   },
+
+  // These vectors test the error handling behaviour, when an invalid private
+  // key is derived. The actual chance of this happening is extremely low, so
+  // these values are generated using mock return values: The first call to
+  // `isValidPrivateKey` returns `false`, and any subsequent calls return
+  // `true`.
+  bip32InvalidPrivateKeys: {
+    hexSeed:
+      '0x747f302d9c916698912d5f70be53a6cf53bc495803a5523d3a7c3afa2afba94ec3803f838b3e1929ab5481f9da35441372283690fdcf27372c38f40ba134fe03',
+
+    privateKey: '0x0000000',
+
+    keys: [
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:3`],
+            string: `bip32:3`,
+          },
+          theirs: `m/3`,
+        },
+        privateKey:
+          '0x4f1502ee43a67a8eae936df0eb9fd7c4cc11c4c4d76cdeb4efb2711319636500',
+        chainCode:
+          '0x576063b42e8e274ceb0a4d5aa2d6eac96334c526634daa7aaf0b44775a08e54e',
+        depth: 1,
+        index: 4,
+      },
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:3`, `bip32:0`],
+            string: `bip32:3/bip32:0`,
+          },
+          theirs: `m/3/0`,
+        },
+        privateKey:
+          '0xc54cdf5ee9a8504000b09334c5085513a380f6b30bb5ea5a944bc44e8a720890',
+        chainCode:
+          '0x9018faed4ffcfd70528920a78aef034c76a5c65d9fee0b85ab9d93af2f650b8f',
+        depth: 2,
+        index: 0,
+      },
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:123'`],
+            string: `bip32:123'`,
+          },
+          theirs: `m/123'`,
+        },
+        privateKey:
+          '0x0b2cb2b767417eb0c62c1d9de3d3d0e45c4136747cf18d70c29adefcc0556a6d',
+        chainCode:
+          '0xb036a60d0615c1f693c0fe1a6fc62ba2b089c964a809a10aa2c4c08d59bb06a2',
+        depth: 1,
+        index: 0x80000000 + 124,
+      },
+      {
+        path: {
+          ours: {
+            tuple: [`bip32:123'`, `bip32:456'`],
+            string: `bip32:123'/bip32:456'`,
+          },
+          theirs: `m/123'/456'`,
+        },
+        privateKey:
+          '0x2915b5e7d9eecf028c96400e0490e4ae5e12b16426304810d69d8cccee529c89',
+        chainCode:
+          '0x0a1db8b483d43605120241c81259ea1f64b75c59a3fe5427186ac221cbe3f4d8',
+        depth: 2,
+        index: 0x80000000 + 456,
+      },
+    ],
+  },
 } as const;
