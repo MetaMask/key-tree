@@ -22,6 +22,7 @@ import {
   encodeBase58check,
   decodeBase58check,
   mnemonicPhraseToBytes,
+  getBytesUnsafe,
 } from './utils';
 
 // Inputs used for testing non-negative integers
@@ -306,6 +307,38 @@ describe('getBytes', () => {
 
     expect(() => getBytes(hexStringToBytes('1234'), 1)).toThrow(
       'Invalid value: Must be a non-zero 1-byte byte array.',
+    );
+  });
+
+  it('throws if the value is zero', () => {
+    expect(() => getBytes('0x00', 1)).toThrow(
+      'Invalid value: Must be a non-zero 1-byte byte array.',
+    );
+
+    expect(() => getBytes(new Uint8Array(1).fill(0), 1)).toThrow(
+      'Invalid value: Must be a non-zero 1-byte byte array.',
+    );
+  });
+});
+
+describe('getBytesUnsafe', () => {
+  it('returns a Uint8Array for a hexadecimal string', () => {
+    expect(getBytesUnsafe('0x1234', 2)).toStrictEqual(hexStringToBytes('1234'));
+    expect(getBytesUnsafe('1234', 2)).toStrictEqual(hexStringToBytes('1234'));
+  });
+
+  it('returns the same Uint8Array if a Uint8Array is passed', () => {
+    const bytes = hexStringToBytes('1234');
+    expect(getBytesUnsafe(bytes, 2)).toBe(bytes);
+  });
+
+  it('throws if the length is invalid', () => {
+    expect(() => getBytesUnsafe('1234', 1)).toThrow(
+      'Invalid value: Must be a 1-byte byte array.',
+    );
+
+    expect(() => getBytesUnsafe(hexStringToBytes('1234'), 1)).toThrow(
+      'Invalid value: Must be a 1-byte byte array.',
     );
   });
 });
