@@ -16,6 +16,7 @@ import { SLIP10Node } from '../SLIP10Node';
 import {
   isValidBytesKey,
   numberToUint32,
+  validateBIP32Index,
   validateSpecification,
 } from '../utils';
 
@@ -242,6 +243,8 @@ async function derivePrivateChildKey({
 
     switch (specification) {
       case 'bip32': {
+        validateBIP32Index(childIndex + 1);
+
         const secretExtension = await deriveSecretExtension({
           privateKey,
           childIndex: childIndex + 1,
@@ -371,6 +374,8 @@ async function derivePublicChildKey({
 
     switch (specification) {
       case 'bip32': {
+        validateBIP32Index(childIndex + 1);
+
         // As per BIP-32, if the resulting key is invalid, the key is generated
         // from the next child index instead.
         return await derivePublicChildKey({
