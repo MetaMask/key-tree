@@ -51,11 +51,11 @@ describe('deriveChildKey', () => {
       `);
     });
 
-    it.each(fixtures.bip32InvalidPrivateKeys.keys)(
+    it.each(fixtures.errorHandling.bip32.keys)(
       'handles invalid keys using BIP-32 (test vectors)',
       async ({ path, privateKey, chainCode, index, depth }) => {
         const node = await createBip39KeyFromSeed(
-          hexToBytes(fixtures.bip32InvalidPrivateKeys.hexSeed),
+          hexToBytes(fixtures.errorHandling.bip32.hexSeed),
           secp256k1,
         );
 
@@ -103,11 +103,11 @@ describe('deriveChildKey', () => {
       `);
     });
 
-    it.each(fixtures.slip10InvalidPrivateKeys.keys)(
+    it.each(fixtures.errorHandling.slip10.keys)(
       'handles invalid keys using SLIP-10 (test vectors)',
       async ({ path, privateKey, chainCode }) => {
         const node = await createBip39KeyFromSeed(
-          hexToBytes(fixtures.slip10InvalidPrivateKeys.hexSeed),
+          hexToBytes(fixtures.errorHandling.slip10.hexSeed),
           secp256k1,
           'slip10',
         );
@@ -145,8 +145,6 @@ describe('deriveChildKey', () => {
 
   describe('public key derivation', () => {
     it('handles invalid keys using BIP-32', async () => {
-      // TODO: Compare these results to reference implementations.
-
       const node = await SLIP10Node.fromDerivationPath({
         derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
         curve: 'secp256k1',
@@ -168,22 +166,20 @@ describe('deriveChildKey', () => {
       expect(childNode.index).toBe(1);
       expect(childNode).toMatchInlineSnapshot(`
         Object {
-          "chainCode": "0x145e1cca88eec3c355707226a1fb87a91e27e18720d9d91c6555cfa307207dbe",
+          "chainCode": "0x4304d9e48a694baabefba498c2ef85f9e88307f4f621f79f19cbf5f704483130",
           "curve": "secp256k1",
           "depth": 1,
           "index": 1,
           "masterFingerprint": 3293725253,
           "parentFingerprint": 3293725253,
           "privateKey": undefined,
-          "publicKey": "0x047e2329db2561e463f4acaefec0d1c89452592ab393552aaa2f3d1afcc93e03ba51fe19e3d994c4c00cc438fa33af2ba5dc41a7d969c6dcab0724411f52a6ade8",
+          "publicKey": "0x048aa5d3fe38c7e81685f9efa72d8b4e9f2cb61647c954e9cdf324a6eefe8a4a00c2b7fa2b2d3e598c87d244fb4eb8708e402aa5ccd945533f4a6ddbc026f77c7b",
           "specification": "bip32",
         }
       `);
     });
 
     it('handles invalid keys using SLIP-10', async () => {
-      // TODO: Compare these results to reference implementations.
-
       const node = await SLIP10Node.fromDerivationPath({
         derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
         curve: 'secp256k1',

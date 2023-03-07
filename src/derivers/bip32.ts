@@ -376,10 +376,20 @@ async function derivePublicChildKey({
       case 'bip32': {
         validateBIP32Index(childIndex + 1);
 
+        const publicExtension = derivePublicExtension({
+          parentPublicKey: publicKey,
+          childIndex: childIndex + 1,
+        });
+
+        const newEntropy = generateEntropy({
+          chainCode,
+          extension: publicExtension,
+        });
+
         // As per BIP-32, if the resulting key is invalid, the key is generated
         // from the next child index instead.
         return await derivePublicChildKey({
-          entropy,
+          entropy: newEntropy,
           publicKey,
           chainCode,
           depth,
