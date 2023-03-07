@@ -426,7 +426,7 @@ export function getSpecification(curve: SupportedCurve): Specification {
     case 'ed25519':
       return 'slip10';
 
-    /* istanbul ignore next */
+    /* c8 ignore next 2 */
     default:
       return assertExhaustive(curve);
   }

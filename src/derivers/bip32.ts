@@ -302,7 +302,7 @@ async function derivePrivateChildKey({
         });
       }
 
-      /* istanbul ignore next */
+      /* c8 ignore next 2 */
       default:
         return assertExhaustive(specification);
     }
@@ -429,7 +429,7 @@ async function derivePublicChildKey({
         });
       }
 
-      /* istanbul ignore next */
+      /* c8 ignore next 2 */
       default:
         return assertExhaustive(specification);
     }
