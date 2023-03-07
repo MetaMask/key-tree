@@ -278,15 +278,14 @@ async function derivePrivateChildKey({
         // generated as follows:
         // Key material (32 bytes), child chain code (32 bytes) =
         //   HMAC-SHA512(parent chain code, 0x01 || chain code from invalid key || index).
-        const newEntropy = hmac(
-          sha512,
+        const newEntropy = generateEntropy({
           chainCode,
-          concatBytes([
+          extension: concatBytes([
             0x01,
             entropy.slice(32, 64),
             numberToUint32(actualChildIndex),
           ]),
-        );
+        });
 
         return await derivePrivateChildKey({
           entropy: newEntropy,
@@ -406,15 +405,14 @@ async function derivePublicChildKey({
         // generated as follows:
         // Key material (32 bytes), child chain code (32 bytes) =
         //   HMAC-SHA512(parent chain code, 0x01 || chain code from invalid key || index).
-        const newEntropy = hmac(
-          sha512,
+        const newEntropy = generateEntropy({
           chainCode,
-          concatBytes([
+          extension: concatBytes([
             0x01,
             entropy.slice(32, 64),
             numberToUint32(childIndex),
           ]),
-        );
+        });
 
         return await derivePublicChildKey({
           entropy: newEntropy,
