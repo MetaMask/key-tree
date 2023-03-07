@@ -319,6 +319,12 @@ describe('getBytes', () => {
       'Invalid value: Must be a non-zero 1-byte byte array.',
     );
   });
+
+  it('throws if the value is not a Uint8Array or a hexadecimal string', () => {
+    expect(() => getBytes(1, 1)).toThrow(
+      'Invalid value: Expected an instance of Uint8Array or hexadecimal string.',
+    );
+  });
 });
 
 describe('getBytesUnsafe', () => {
@@ -339,6 +345,12 @@ describe('getBytesUnsafe', () => {
 
     expect(() => getBytesUnsafe(hexStringToBytes('1234'), 1)).toThrow(
       'Invalid value: Must be a 1-byte byte array.',
+    );
+  });
+
+  it('throws if the value is not a Uint8Array or a hexadecimal string', () => {
+    expect(() => getBytesUnsafe(1, 1)).toThrow(
+      'Invalid value: Expected an instance of Uint8Array or hexadecimal string.',
     );
   });
 });
