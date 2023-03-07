@@ -331,11 +331,15 @@ describe('getBytesUnsafe', () => {
   it('returns a Uint8Array for a hexadecimal string', () => {
     expect(getBytesUnsafe('0x1234', 2)).toStrictEqual(hexStringToBytes('1234'));
     expect(getBytesUnsafe('1234', 2)).toStrictEqual(hexStringToBytes('1234'));
+    expect(getBytesUnsafe('0000', 2)).toStrictEqual(hexStringToBytes('0000'));
   });
 
   it('returns the same Uint8Array if a Uint8Array is passed', () => {
     const bytes = hexStringToBytes('1234');
     expect(getBytesUnsafe(bytes, 2)).toBe(bytes);
+
+    const zeroBytes = hexStringToBytes('0000');
+    expect(getBytesUnsafe(zeroBytes, 2)).toBe(zeroBytes);
   });
 
   it('throws if the length is invalid', () => {
