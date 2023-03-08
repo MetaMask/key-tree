@@ -29,7 +29,7 @@ export type BIP32Node = HardenedBIP32Node | UnhardenedBIP32Node;
 
 export type HardenedSLIP10Node = `slip10:${number}'`;
 export type UnhardenedSLIP10Node = `slip10:${number}`;
-export type SLIP10Node = HardenedSLIP10Node | UnhardenedSLIP10Node;
+export type SLIP10PathNode = HardenedSLIP10Node | UnhardenedSLIP10Node;
 
 export const BIP44PurposeNodeToken = `bip32:44'`;
 
@@ -154,10 +154,10 @@ export type HDPathTuple = RootedHDPathTuple | PartialHDPathTuple;
 
 export type RootedSLIP10PathTuple = readonly [
   BIP39Node,
-  ...(BIP32Node[] | SLIP10Node[]),
+  ...(BIP32Node[] | SLIP10PathNode[]),
 ];
 
-export type SLIP10PathTuple = readonly BIP32Node[] | readonly SLIP10Node[];
+export type SLIP10PathTuple = readonly BIP32Node[] | readonly SLIP10PathNode[];
 export type SLIP10Path = RootedSLIP10PathTuple | SLIP10PathTuple;
 
 export type FullHDPathTuple = RootedHDPathTuple5;

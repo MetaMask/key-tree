@@ -1,6 +1,6 @@
 import {
   BIP44Node,
-  SLIP10Node,
+  SLIP10PathNode,
   BIP44PurposeNodeToken,
   HDPathTuple,
 } from '../src';
@@ -215,7 +215,7 @@ describe('reference implementation tests', () => {
           for (const keyObj of vector.keys) {
             const { path, privateKey } = keyObj;
 
-            let targetNode: SLIP10Node;
+            let targetNode: SLIP10PathNode;
 
             // If the path is empty, use the master node
             if (path.ours.string === '') {
@@ -247,7 +247,7 @@ describe('reference implementation tests', () => {
             );
 
             for (const { path, privateKey, publicKey } of keys) {
-              let targetNode: SLIP10Node;
+              let targetNode: SLIP10PathNode;
               if (path.ours.string === '') {
                 targetNode = node;
               } else {
