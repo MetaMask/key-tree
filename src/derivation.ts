@@ -7,9 +7,10 @@ import {
   BIP_39_PATH_REGEX,
   MIN_BIP_44_DEPTH,
   SLIP10Path,
+  SLIP_10_PATH_REGEX,
 } from './constants';
 import { getCurveByName, SupportedCurve } from './curves';
-import { Deriver, derivers, Specification } from './derivers';
+import { Deriver, derivers } from './derivers';
 import { SLIP10Node } from './SLIP10Node';
 
 /**
@@ -27,7 +28,6 @@ import { SLIP10Node } from './SLIP10Node';
 type BaseDeriveKeyFromPathArgs = {
   path: SLIP10Path;
   depth?: number;
-  specification?: Specification;
 };
 
 type DeriveKeyFromPathNodeArgs = BaseDeriveKeyFromPathArgs & {
@@ -110,7 +110,6 @@ export async function deriveKeyFromPath(
         path: pathPart,
         node: derivedNode,
         curve: getCurveByName(curve),
-        specification: args.specification,
       });
     }
 
@@ -121,7 +120,6 @@ export async function deriveKeyFromPath(
       path: pathNode,
       node: derivedNode,
       curve: getCurveByName(curve),
-      specification: args.specification,
     });
   }, Promise.resolve(node as SLIP10Node));
 }
@@ -166,11 +164,15 @@ export function validatePathSegment(
         // need to explicitly check it again.
         !(node instanceof Uint8Array) &&
         !startsWithBip39 &&
-        !BIP_32_PATH_REGEX.test(node)
+        !BIP_32_PATH_REGEX.test(node) &&
+        !SLIP_10_PATH_REGEX.test(node)
       ) {
         throw getMalformedError();
       }
-    } else if (node instanceof Uint8Array || !BIP_32_PATH_REGEX.test(node)) {
+    } else if (
+      node instanceof Uint8Array ||
+      (!BIP_32_PATH_REGEX.test(node) && !SLIP_10_PATH_REGEX.test(node))
+    ) {
       throw getMalformedError();
     }
   });

@@ -1,11 +1,10 @@
-import { assert } from '@metamask/utils';
-import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
+import { assert, concatBytes } from '@metamask/utils';
 
 import { DeriveChildKeyArgs } from '.';
-import { BIP_32_HARDENED_OFFSET, BYTES_KEY_LENGTH } from '../constants';
-import { Curve, secp256k1 } from '../curves';
+import { BIP_32_HARDENED_OFFSET } from '../constants';
+import { Curve } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
-import { isValidBytesKey, validateBIP32Index } from '../utils';
+import { numberToUint32 } from '../utils';
 import {
   derivePrivateChildKey,
   derivePublicChildKey,
@@ -15,55 +14,14 @@ import {
 } from './shared';
 
 /**
- * Converts a BIP-32 private key to an Ethereum address.
- *
- * **WARNING:** Only validates that the key is non-zero and of the correct
- * length. It is the consumer's responsibility to ensure that the specified
- * key is a valid BIP-44 Ethereum `address_index` key.
- *
- * @param key - The `address_index` private key bytes to convert to an Ethereum
- * address.
- * @returns The Ethereum address corresponding to the given key.
- */
-export function privateKeyToEthAddress(key: Uint8Array) {
-  assert(
-    key instanceof Uint8Array && isValidBytesKey(key, BYTES_KEY_LENGTH),
-    'Invalid key: The key must be a 32-byte, non-zero Uint8Array.',
-  );
-
-  const publicKey = secp256k1.getPublicKey(key, false);
-  return publicKeyToEthAddress(publicKey);
-}
-
-/**
- * Converts a BIP-32 public key to an Ethereum address.
- *
- * **WARNING:** Only validates that the key is non-zero and of the correct
- * length. It is the consumer's responsibility to ensure that the specified
- * key is a valid BIP-44 Ethereum `address_index` key.
- *
- * @param key - The `address_index` public key bytes to convert to an Ethereum
- * address.
- * @returns The Ethereum address corresponding to the given key.
- */
-export function publicKeyToEthAddress(key: Uint8Array) {
-  assert(
-    key instanceof Uint8Array &&
-      isValidBytesKey(key, secp256k1.publicKeyLength),
-    'Invalid key: The key must be a 65-byte, non-zero Uint8Array.',
-  );
-
-  return keccak256(key.slice(1)).slice(-20);
-}
-
-/**
- * Derive a BIP-32 child key with a given path from a parent key.
+ * Derive a SLIP-10 child key with a given path from a parent key.
  *
  * @param options - The options for deriving a child key.
  * @param options.path - The derivation path part to derive.
  * @param options.node - The node to derive from.
  * @param options.curve - The curve to use for derivation.
- * @returns The derived child key as a {@link SLIP10Node}.
+ * @returns A tuple containing the derived private key, public key and chain
+ * code.
  */
 export async function deriveChildKey({
   path,
@@ -72,16 +30,18 @@ export async function deriveChildKey({
 }: DeriveChildKeyArgs): Promise<SLIP10Node> {
   // TODO: Shared validation.
   assert(typeof path === 'string', 'Invalid path: Must be a string.');
-  assert(
-    curve.name === 'secp256k1',
-    'Invalid curve: Only secp256k1 is supported by BIP-32.',
-  );
+
+  const isHardened = path.includes(`'`);
+  if (!isHardened && !curve.deriveUnhardenedKeys) {
+    throw new Error(
+      `Invalid path: Cannot derive unhardened child keys with ${curve.name}.`,
+    );
+  }
 
   if (!node) {
     throw new Error('Invalid parameters: Must specify a node to derive from.');
   }
 
-  const isHardened = path.includes(`'`);
   if (isHardened && !node.privateKey) {
     throw new Error(
       'Invalid parameters: Cannot derive hardened child keys without a private key.',
@@ -98,7 +58,7 @@ export async function deriveChildKey({
     childIndex >= BIP_32_HARDENED_OFFSET
   ) {
     throw new Error(
-      `Invalid BIP-32 index: The index must be a non-negative decimal integer less than ${BIP_32_HARDENED_OFFSET}.`,
+      `Invalid SLIP-10 index: The index must be a non-negative decimal integer less than ${BIP_32_HARDENED_OFFSET}.`,
     );
   }
 
@@ -173,7 +133,7 @@ type DerivePublicKeyArgs = BaseDeriveKeyArgs & {
 type DeriveKeyArgs = DerivePrivateKeyArgs | DerivePublicKeyArgs;
 
 /**
- * Derive a BIP-32 child key from a parent key.
+ * Derive a SLIP-10 child key from a parent key.
  *
  * @param options - The options for deriving a child key.
  * @param options.privateKey - The private key to derive from.
@@ -223,13 +183,32 @@ async function deriveNode({
       childIndex,
       curve,
     });
-  } catch {
-    validateBIP32Index(childIndex + 1);
+  } catch (error) {
+    if (curve.name === 'ed25519') {
+      throw error;
+    }
+
+    const actualChildIndex = isHardened
+      ? childIndex + BIP_32_HARDENED_OFFSET
+      : childIndex;
+
+    // As per SLIP-10, if the resulting key is invalid, the new entropy is
+    // generated as follows:
+    // Key material (32 bytes), child chain code (32 bytes) =
+    //   HMAC-SHA512(parent chain code, 0x01 || chain code from invalid key || index).
+    const newEntropy = generateEntropy({
+      chainCode,
+      extension: concatBytes([
+        0x01,
+        entropy.slice(32, 64),
+        numberToUint32(actualChildIndex),
+      ]),
+    });
 
     const args = {
-      entropy,
+      entropy: newEntropy,
       chainCode,
-      childIndex: childIndex + 1,
+      childIndex,
       isHardened,
       depth,
       parentFingerprint,
@@ -238,39 +217,15 @@ async function deriveNode({
     };
 
     if (privateKey) {
-      const secretExtension = await deriveSecretExtension({
-        privateKey,
-        childIndex: childIndex + 1,
-        isHardened,
-        curve,
-      });
-
-      const newEntropy = generateEntropy({
-        chainCode,
-        extension: secretExtension,
-      });
-
       return deriveNode({
         ...args,
         privateKey,
-        entropy: newEntropy,
       });
     }
-
-    const publicExtension = derivePublicExtension({
-      parentPublicKey: publicKey,
-      childIndex: childIndex + 1,
-    });
-
-    const newEntropy = generateEntropy({
-      chainCode,
-      extension: publicExtension,
-    });
 
     return deriveNode({
       ...args,
       publicKey,
-      entropy: newEntropy,
     });
   }
 }
