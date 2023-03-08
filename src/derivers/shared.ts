@@ -8,10 +8,33 @@ import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
 
 import { DerivedKeys } from '.';
-import { BIP_32_HARDENED_OFFSET } from '../constants';
+import { BIP_32_HARDENED_OFFSET, UNPREFIXED_PATH_REGEX } from '../constants';
 import { Curve, mod } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, numberToUint32 } from '../utils';
+
+type BaseDeriveNodeArgs = {
+  entropy: Uint8Array;
+  chainCode: Uint8Array;
+  childIndex: number;
+  isHardened: boolean;
+  depth: number;
+  parentFingerprint: number;
+  masterFingerprint?: number;
+  curve: Curve;
+};
+
+type DerivePrivateKeyArgs = BaseDeriveNodeArgs & {
+  privateKey: Uint8Array;
+  publicKey?: never;
+};
+
+type DerivePublicKeyArgs = BaseDeriveNodeArgs & {
+  publicKey: Uint8Array;
+  privateKey?: never;
+};
+
+export type DeriveNodeArgs = DerivePrivateKeyArgs | DerivePublicKeyArgs;
 
 type DeriveSecretExtensionArgs = {
   privateKey: Uint8Array;
@@ -302,4 +325,72 @@ type GenerateEntropyArgs = {
  */
 export function generateEntropy({ chainCode, extension }: GenerateEntropyArgs) {
   return hmac(sha512, chainCode, extension);
+}
+
+/**
+ * Validate that a node is specified.
+ *
+ * @param node - The node to validate.
+ * @throws If the node is not specified.
+ */
+export function validateNode(node?: SLIP10Node): asserts node is SLIP10Node {
+  assert(node, 'Invalid parameters: Must specify a node to derive from.');
+}
+
+/**
+ * Validate a path.
+ *
+ * @param path - The path to validate.
+ * @param node - The node to validate the path against.
+ * @param curve - The curve to validate the path against.
+ * @throws If the path is invalid.
+ */
+export function validatePath(
+  path: string | Uint8Array,
+  node: SLIP10Node,
+  curve: Curve,
+): asserts path is string {
+  assert(typeof path === 'string', 'Invalid path: Must be a string.');
+
+  const isHardened = path.endsWith(`'`);
+  assert(
+    !isHardened || node.privateKey,
+    'Invalid parameters: Cannot derive hardened child keys without a private key.',
+  );
+  assert(
+    isHardened || curve.deriveUnhardenedKeys,
+    `Invalid path: Cannot derive unhardened child keys with ${curve.name}.`,
+  );
+}
+
+/**
+ * Validate a path and return the child index and whether it is hardened.
+ *
+ * @param path - The path to validate.
+ * @param node - The node to validate the path against.
+ * @param curve - The curve to validate the path against.
+ * @returns The child index and whether it is hardened.
+ */
+export function getValidatedPath(
+  path: string | Uint8Array,
+  node: SLIP10Node,
+  curve: Curve,
+) {
+  validatePath(path, node, curve);
+
+  const indexPart = path.split(`'`)[0];
+  const childIndex = parseInt(indexPart, 10);
+
+  if (
+    !UNPREFIXED_PATH_REGEX.test(indexPart) ||
+    !Number.isInteger(childIndex) ||
+    childIndex < 0 ||
+    childIndex >= BIP_32_HARDENED_OFFSET
+  ) {
+    throw new Error(
+      `Invalid path: The index must be a non-negative decimal integer less than ${BIP_32_HARDENED_OFFSET}.`,
+    );
+  }
+
+  return { childIndex, isHardened: path.includes(`'`) };
 }

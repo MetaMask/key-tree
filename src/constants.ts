@@ -33,6 +33,8 @@ export type SLIP10Node = HardenedSLIP10Node | UnhardenedSLIP10Node;
 
 export const BIP44PurposeNodeToken = `bip32:44'`;
 
+export const UNPREFIXED_PATH_REGEX = /^\d+$/u;
+
 /**
  * e.g.
  * -  bip32:0

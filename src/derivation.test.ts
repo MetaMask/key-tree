@@ -298,7 +298,7 @@ describe('derivation', () => {
             curve: secp256k1,
           }),
         ).rejects.toThrow(
-          'Invalid BIP-32 index: The index must be a non-negative decimal integer less than 2147483648.',
+          'Invalid path: The index must be a non-negative decimal integer less than 2147483648.',
         );
       }
     });

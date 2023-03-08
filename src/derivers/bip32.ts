@@ -2,16 +2,19 @@ import { assert } from '@metamask/utils';
 import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 
 import { DeriveChildKeyArgs } from '.';
-import { BIP_32_HARDENED_OFFSET, BYTES_KEY_LENGTH } from '../constants';
-import { Curve, secp256k1 } from '../curves';
+import { BYTES_KEY_LENGTH } from '../constants';
+import { secp256k1 } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, validateBIP32Index } from '../utils';
 import {
+  DeriveNodeArgs,
   derivePrivateChildKey,
   derivePublicChildKey,
   derivePublicExtension,
   deriveSecretExtension,
   generateEntropy,
+  getValidatedPath,
+  validateNode,
 } from './shared';
 
 /**
@@ -70,37 +73,13 @@ export async function deriveChildKey({
   node,
   curve,
 }: DeriveChildKeyArgs): Promise<SLIP10Node> {
-  // TODO: Shared validation.
-  assert(typeof path === 'string', 'Invalid path: Must be a string.');
+  validateNode(node);
   assert(
     curve.name === 'secp256k1',
     'Invalid curve: Only secp256k1 is supported by BIP-32.',
   );
 
-  if (!node) {
-    throw new Error('Invalid parameters: Must specify a node to derive from.');
-  }
-
-  const isHardened = path.includes(`'`);
-  if (isHardened && !node.privateKey) {
-    throw new Error(
-      'Invalid parameters: Cannot derive hardened child keys without a private key.',
-    );
-  }
-
-  const indexPart = path.split(`'`)[0];
-  const childIndex = parseInt(indexPart, 10);
-
-  if (
-    !/^\d+$/u.test(indexPart) ||
-    !Number.isInteger(childIndex) ||
-    childIndex < 0 ||
-    childIndex >= BIP_32_HARDENED_OFFSET
-  ) {
-    throw new Error(
-      `Invalid BIP-32 index: The index must be a non-negative decimal integer less than ${BIP_32_HARDENED_OFFSET}.`,
-    );
-  }
+  const { childIndex, isHardened } = getValidatedPath(path, node, curve);
 
   const args = {
     chainCode: node.chainCodeBytes,
@@ -149,29 +128,6 @@ export async function deriveChildKey({
   });
 }
 
-type BaseDeriveKeyArgs = {
-  entropy: Uint8Array;
-  chainCode: Uint8Array;
-  childIndex: number;
-  isHardened: boolean;
-  depth: number;
-  parentFingerprint: number;
-  masterFingerprint?: number;
-  curve: Curve;
-};
-
-type DerivePrivateKeyArgs = BaseDeriveKeyArgs & {
-  privateKey: Uint8Array;
-  publicKey?: never;
-};
-
-type DerivePublicKeyArgs = BaseDeriveKeyArgs & {
-  publicKey: Uint8Array;
-  privateKey?: never;
-};
-
-type DeriveKeyArgs = DerivePrivateKeyArgs | DerivePublicKeyArgs;
-
 /**
  * Derive a BIP-32 child key from a parent key.
  *
@@ -199,7 +155,7 @@ async function deriveNode({
   parentFingerprint,
   masterFingerprint,
   curve,
-}: DeriveKeyArgs): Promise<SLIP10Node> {
+}: DeriveNodeArgs): Promise<SLIP10Node> {
   try {
     if (privateKey) {
       return await derivePrivateChildKey({

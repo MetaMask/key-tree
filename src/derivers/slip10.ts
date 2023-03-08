@@ -1,16 +1,18 @@
-import { assert, concatBytes } from '@metamask/utils';
+import { concatBytes } from '@metamask/utils';
 
 import { DeriveChildKeyArgs } from '.';
 import { BIP_32_HARDENED_OFFSET } from '../constants';
-import { Curve } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { numberToUint32 } from '../utils';
 import {
+  DeriveNodeArgs,
   derivePrivateChildKey,
   derivePublicChildKey,
   derivePublicExtension,
   deriveSecretExtension,
   generateEntropy,
+  getValidatedPath,
+  validateNode,
 } from './shared';
 
 /**
@@ -28,39 +30,9 @@ export async function deriveChildKey({
   node,
   curve,
 }: DeriveChildKeyArgs): Promise<SLIP10Node> {
-  // TODO: Shared validation.
-  assert(typeof path === 'string', 'Invalid path: Must be a string.');
+  validateNode(node);
 
-  const isHardened = path.includes(`'`);
-  if (!isHardened && !curve.deriveUnhardenedKeys) {
-    throw new Error(
-      `Invalid path: Cannot derive unhardened child keys with ${curve.name}.`,
-    );
-  }
-
-  if (!node) {
-    throw new Error('Invalid parameters: Must specify a node to derive from.');
-  }
-
-  if (isHardened && !node.privateKey) {
-    throw new Error(
-      'Invalid parameters: Cannot derive hardened child keys without a private key.',
-    );
-  }
-
-  const indexPart = path.split(`'`)[0];
-  const childIndex = parseInt(indexPart, 10);
-
-  if (
-    !/^\d+$/u.test(indexPart) ||
-    !Number.isInteger(childIndex) ||
-    childIndex < 0 ||
-    childIndex >= BIP_32_HARDENED_OFFSET
-  ) {
-    throw new Error(
-      `Invalid SLIP-10 index: The index must be a non-negative decimal integer less than ${BIP_32_HARDENED_OFFSET}.`,
-    );
-  }
+  const { childIndex, isHardened } = getValidatedPath(path, node, curve);
 
   const args = {
     chainCode: node.chainCodeBytes,
@@ -109,29 +81,6 @@ export async function deriveChildKey({
   });
 }
 
-type BaseDeriveKeyArgs = {
-  entropy: Uint8Array;
-  chainCode: Uint8Array;
-  childIndex: number;
-  isHardened: boolean;
-  depth: number;
-  parentFingerprint: number;
-  masterFingerprint?: number;
-  curve: Curve;
-};
-
-type DerivePrivateKeyArgs = BaseDeriveKeyArgs & {
-  privateKey: Uint8Array;
-  publicKey?: never;
-};
-
-type DerivePublicKeyArgs = BaseDeriveKeyArgs & {
-  publicKey: Uint8Array;
-  privateKey?: never;
-};
-
-type DeriveKeyArgs = DerivePrivateKeyArgs | DerivePublicKeyArgs;
-
 /**
  * Derive a SLIP-10 child key from a parent key.
  *
@@ -159,7 +108,7 @@ async function deriveNode({
   parentFingerprint,
   masterFingerprint,
   curve,
-}: DeriveKeyArgs): Promise<SLIP10Node> {
+}: DeriveNodeArgs): Promise<SLIP10Node> {
   try {
     if (privateKey) {
       return await derivePrivateChildKey({
