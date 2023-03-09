@@ -380,4 +380,24 @@ describe('validatePathSegment', () => {
       ),
     ).toThrow('Invalid HD path segment: The path segment is malformed.');
   });
+
+  it('checks if each segment starts with the same type', () => {
+    expect(() =>
+      validatePathSegment(['slip10:0', 'slip10:1'], true),
+    ).not.toThrow();
+
+    expect(() =>
+      // @ts-expect-error Invalid type.
+      validatePathSegment(['bip32:0', 'slip10:1'], true),
+    ).toThrow(
+      "Invalid HD path segment: Cannot mix 'bip32' and 'slip10' path segments.",
+    );
+
+    expect(() =>
+      // @ts-expect-error Invalid type.
+      validatePathSegment(['slip10:0', 'bip32:1'], true),
+    ).toThrow(
+      "Invalid HD path segment: Cannot mix 'bip32' and 'slip10' path segments.",
+    );
+  });
 });

@@ -196,6 +196,17 @@ export function validatePathSegment(
       'Invalid derivation parameters: May not specify parent key if the path segment starts with a BIP-39 node.',
     );
   }
+
+  const pathWithoutKey = (startsWithBip39 ? path.slice(1) : path) as string[];
+  if (pathWithoutKey.length > 0) {
+    const firstSegmentType = pathWithoutKey[0].split(':')[0];
+    assert(
+      pathWithoutKey.every((segment) =>
+        segment.startsWith(`${firstSegmentType}:`),
+      ),
+      `Invalid HD path segment: Cannot mix 'bip32' and 'slip10' path segments.`,
+    );
+  }
 }
 
 /**
