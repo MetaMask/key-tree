@@ -8,13 +8,10 @@ import { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, validateBIP32Index } from '../utils';
 import {
   DeriveNodeArgs,
-  derivePrivateChildKey,
-  derivePublicChildKey,
-  derivePublicExtension,
+  deriveChildKey as sharedDeriveChildKey,
   deriveSecretExtension,
   generateEntropy,
-  getValidatedPath,
-  validateNode,
+  derivePublicExtension,
 } from './shared';
 
 /**
@@ -68,165 +65,68 @@ export function publicKeyToEthAddress(key: Uint8Array) {
  * @param options.curve - The curve to use for derivation.
  * @returns The derived child key as a {@link SLIP10Node}.
  */
-export async function deriveChildKey({
-  path,
-  node,
-  curve,
-}: DeriveChildKeyArgs): Promise<SLIP10Node> {
-  validateNode(node);
+export async function deriveChildKey(
+  options: DeriveChildKeyArgs,
+): Promise<SLIP10Node> {
   assert(
-    curve.name === 'secp256k1',
+    options.curve.name === 'secp256k1',
     'Invalid curve: Only secp256k1 is supported by BIP-32.',
   );
 
-  const { childIndex, isHardened } = getValidatedPath(path, node, curve);
-
-  const args = {
-    chainCode: node.chainCodeBytes,
-    childIndex,
-    isHardened,
-    depth: node.depth,
-    parentFingerprint: node.fingerprint,
-    masterFingerprint: node.masterFingerprint,
-    curve,
-  };
-
-  if (node.privateKeyBytes) {
-    const secretExtension = await deriveSecretExtension({
-      privateKey: node.privateKeyBytes,
-      childIndex,
-      isHardened,
-      curve,
-    });
-
-    const entropy = generateEntropy({
-      chainCode: node.chainCodeBytes,
-      extension: secretExtension,
-    });
-
-    return deriveNode({
-      privateKey: node.privateKeyBytes,
-      entropy,
-      ...args,
-    });
-  }
-
-  const publicExtension = derivePublicExtension({
-    parentPublicKey: node.compressedPublicKeyBytes,
-    childIndex,
-  });
-
-  const entropy = generateEntropy({
-    chainCode: node.chainCodeBytes,
-    extension: publicExtension,
-  });
-
-  return deriveNode({
-    publicKey: node.compressedPublicKeyBytes,
-    entropy,
-    ...args,
-  });
+  return sharedDeriveChildKey(options, handleError);
 }
 
 /**
- * Derive a BIP-32 child key from a parent key.
+ * Handles an error thrown during derivation by incrementing the child index
+ * and retrying.
  *
+ * @param _ - The error that was thrown.
  * @param options - The options for deriving a child key.
- * @param options.privateKey - The private key to derive from.
- * @param options.publicKey - The public key to derive from.
- * @param options.entropy - The entropy to use for deriving the child key.
- * @param options.chainCode - The chain code to use for deriving the child key.
- * @param options.childIndex - The child index to use for deriving the child key.
- * @param options.isHardened - Whether the child key is hardened.
- * @param options.depth - The depth of the child key.
- * @param options.parentFingerprint - The fingerprint of the parent key.
- * @param options.masterFingerprint - The fingerprint of the master key.
- * @param options.curve - The curve to use for deriving the child key.
- * @returns The derived child key as {@link SLIP10Node}.
+ * @returns The options for deriving a child key with the child index
+ * incremented by one.
  */
-async function deriveNode({
-  privateKey,
-  publicKey,
-  entropy,
-  chainCode,
-  childIndex,
-  isHardened,
-  depth,
-  parentFingerprint,
-  masterFingerprint,
-  curve,
-}: DeriveNodeArgs): Promise<SLIP10Node> {
-  try {
-    if (privateKey) {
-      return await derivePrivateChildKey({
-        entropy,
-        privateKey,
-        depth,
-        masterFingerprint,
-        parentFingerprint,
-        childIndex,
-        isHardened,
-        curve,
-      });
-    }
+async function handleError(
+  _: unknown,
+  options: DeriveNodeArgs,
+): Promise<DeriveNodeArgs> {
+  const { childIndex, privateKey, publicKey, isHardened, curve, chainCode } =
+    options;
 
-    return await derivePublicChildKey({
-      entropy,
-      publicKey,
-      depth,
-      masterFingerprint,
-      parentFingerprint,
-      childIndex,
-      curve,
-    });
-  } catch {
-    validateBIP32Index(childIndex + 1);
+  validateBIP32Index(childIndex + 1);
 
-    const args = {
-      entropy,
-      chainCode,
+  if (privateKey) {
+    const secretExtension = await deriveSecretExtension({
+      privateKey,
       childIndex: childIndex + 1,
       isHardened,
-      depth,
-      parentFingerprint,
-      masterFingerprint,
       curve,
-    };
-
-    if (privateKey) {
-      const secretExtension = await deriveSecretExtension({
-        privateKey,
-        childIndex: childIndex + 1,
-        isHardened,
-        curve,
-      });
-
-      const newEntropy = generateEntropy({
-        chainCode,
-        extension: secretExtension,
-      });
-
-      return deriveNode({
-        ...args,
-        privateKey,
-        entropy: newEntropy,
-      });
-    }
-
-    const publicExtension = derivePublicExtension({
-      parentPublicKey: publicKey,
-      childIndex: childIndex + 1,
     });
 
     const newEntropy = generateEntropy({
       chainCode,
-      extension: publicExtension,
+      extension: secretExtension,
     });
 
-    return deriveNode({
-      ...args,
-      publicKey,
+    return {
+      ...options,
+      childIndex: childIndex + 1,
       entropy: newEntropy,
-    });
+    };
   }
+
+  const publicExtension = derivePublicExtension({
+    parentPublicKey: publicKey,
+    childIndex: childIndex + 1,
+  });
+
+  const newEntropy = generateEntropy({
+    chainCode,
+    extension: publicExtension,
+  });
+
+  return {
+    ...options,
+    childIndex: childIndex + 1,
+    entropy: newEntropy,
+  };
 }

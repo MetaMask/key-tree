@@ -7,11 +7,91 @@ import {
 import { hmac } from '@noble/hashes/hmac';
 import { sha512 } from '@noble/hashes/sha512';
 
-import { DerivedKeys } from '.';
+import { DeriveChildKeyArgs, DerivedKeys } from '.';
 import { BIP_32_HARDENED_OFFSET, UNPREFIXED_PATH_REGEX } from '../constants';
 import { Curve, mod } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, numberToUint32 } from '../utils';
+
+type ErrorHandler = (
+  error: unknown,
+  options: DeriveNodeArgs,
+) => Promise<DeriveNodeArgs>;
+
+/**
+ * Derive a BIP-32 or SLIP-10 child key with a given path from a parent key.
+ *
+ * Since BIP-32 and SLIP-10 are very similar, this function can be used to
+ * derive both types of keys.
+ *
+ * @param options - The options for deriving a child key.
+ * @param options.path - The derivation path part to derive.
+ * @param options.node - The node to derive from.
+ * @param options.curve - The curve to use for derivation.
+ * @param handleError - A function that can handle errors that occur during
+ * derivation.
+ * @returns The derived node.
+ */
+export async function deriveChildKey(
+  { path, node, curve }: DeriveChildKeyArgs,
+  handleError: ErrorHandler,
+) {
+  validateNode(node);
+
+  const { childIndex, isHardened } = getValidatedPath(path, node, curve);
+
+  const args = {
+    chainCode: node.chainCodeBytes,
+    childIndex,
+    isHardened,
+    depth: node.depth,
+    parentFingerprint: node.fingerprint,
+    masterFingerprint: node.masterFingerprint,
+    curve,
+  };
+
+  if (node.privateKeyBytes) {
+    const secretExtension = await deriveSecretExtension({
+      privateKey: node.privateKeyBytes,
+      childIndex,
+      isHardened,
+      curve,
+    });
+
+    const entropy = generateEntropy({
+      chainCode: node.chainCodeBytes,
+      extension: secretExtension,
+    });
+
+    return await deriveNode(
+      {
+        privateKey: node.privateKeyBytes,
+        entropy,
+        ...args,
+      },
+      handleError,
+    );
+  }
+
+  const publicExtension = derivePublicExtension({
+    parentPublicKey: node.compressedPublicKeyBytes,
+    childIndex,
+  });
+
+  const entropy = generateEntropy({
+    chainCode: node.chainCodeBytes,
+    extension: publicExtension,
+  });
+
+  return await deriveNode(
+    {
+      publicKey: node.compressedPublicKeyBytes,
+      entropy,
+      ...args,
+    },
+    handleError,
+  );
+}
 
 type BaseDeriveNodeArgs = {
   entropy: Uint8Array;
@@ -42,6 +122,70 @@ type DeriveSecretExtensionArgs = {
   isHardened: boolean;
   curve: Curve;
 };
+
+/**
+ * Derive a SLIP-10 child key from a parent key.
+ *
+ * @param options - The options for deriving a child key.
+ * @param options.privateKey - The private key to derive from.
+ * @param options.publicKey - The public key to derive from.
+ * @param options.entropy - The entropy to use for deriving the child key.
+ * @param options.chainCode - The chain code to use for deriving the child key.
+ * @param options.childIndex - The child index to use for deriving the child key.
+ * @param options.isHardened - Whether the child key is hardened.
+ * @param options.depth - The depth of the child key.
+ * @param options.parentFingerprint - The fingerprint of the parent key.
+ * @param options.masterFingerprint - The fingerprint of the master key.
+ * @param options.curve - The curve to use for deriving the child key.
+ * @param handleError - A function to handle errors during derivation.
+ * @returns The derived child key as {@link SLIP10Node}.
+ */
+async function deriveNode(
+  options: DeriveNodeArgs,
+  handleError: (
+    error: unknown,
+    args: DeriveNodeArgs,
+  ) => Promise<DeriveNodeArgs>,
+): Promise<SLIP10Node> {
+  const {
+    privateKey,
+    publicKey,
+    entropy,
+    childIndex,
+    isHardened,
+    depth,
+    parentFingerprint,
+    masterFingerprint,
+    curve,
+  } = options;
+
+  try {
+    if (privateKey) {
+      return await derivePrivateChildKey({
+        entropy,
+        privateKey,
+        depth,
+        masterFingerprint,
+        parentFingerprint,
+        childIndex,
+        isHardened,
+        curve,
+      });
+    }
+
+    return await derivePublicChildKey({
+      entropy,
+      publicKey,
+      depth,
+      masterFingerprint,
+      parentFingerprint,
+      childIndex,
+      curve,
+    });
+  } catch (error) {
+    return await deriveNode(await handleError(error, options), handleError);
+  }
+}
 
 /**
  * Derive a BIP-32 secret extension from a parent key and child index.
@@ -158,7 +302,7 @@ type DerivePrivateChildKeyArgs = {
  * @param args.curve - The curve to use for derivation.
  * @returns The derived {@link SLIP10Node}.
  */
-export async function derivePrivateChildKey({
+async function derivePrivateChildKey({
   entropy,
   privateKey,
   depth,
@@ -345,7 +489,7 @@ export function validateNode(node?: SLIP10Node): asserts node is SLIP10Node {
  * @param curve - The curve to validate the path against.
  * @throws If the path is invalid.
  */
-export function validatePath(
+function validatePath(
   path: string | Uint8Array,
   node: SLIP10Node,
   curve: Curve,
@@ -371,7 +515,7 @@ export function validatePath(
  * @param curve - The curve to validate the path against.
  * @returns The child index and whether it is hardened.
  */
-export function getValidatedPath(
+function getValidatedPath(
   path: string | Uint8Array,
   node: SLIP10Node,
   curve: Curve,
