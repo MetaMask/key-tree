@@ -7,20 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [7.0.0]
-### Uncategorized
-- Update docs to include latest changes ([#126](https://github.com/MetaMask/key-tree/pull/126))
-- Add randomly generated test vectors ([#125](https://github.com/MetaMask/key-tree/pull/125))
-- BREAKING: Remove specification field in favour of SLIP-10 path type ([#124](https://github.com/MetaMask/key-tree/pull/124))
-- Add audit report ([#123](https://github.com/MetaMask/key-tree/pull/123))
+### Added
+- BREAKING: Add SLIP-10 (`slip10:`) path type ([#124](https://github.com/MetaMask/key-tree/pull/124))
+  - `bip32:` can no longer be used to derive ed25519 keys
+  
+### Changed
 - Handle errors when resulting public or private key is invalid ([#120](https://github.com/MetaMask/key-tree/pull/120))
+  - Rather than throwing an error, a new key will be derived instead, as per the SLIP-10 or BIP-32 specification
 - Improve extended key validation ([#121](https://github.com/MetaMask/key-tree/pull/121))
 - Validate that master private key and seed are within bounds ([#118](https://github.com/MetaMask/key-tree/pull/118))
 - Allow zero private key for `ed25519` ([#122](https://github.com/MetaMask/key-tree/pull/122))
-- Validate tweak passed to privateAdd ([#117](https://github.com/MetaMask/key-tree/pull/117))
-- Validate tweak passed to `publicAdd` ([#116](https://github.com/MetaMask/key-tree/pull/116))
-- Bump peaceiris/actions-gh-pages to more recent version ([#114](https://github.com/MetaMask/key-tree/pull/114))
-- Bump http-cache-semantics from 4.1.0 to 4.1.1 ([#112](https://github.com/MetaMask/key-tree/pull/112))
-- Bump @metamask/utils from 3.4.1 to 3.5.0 ([#113](https://github.com/MetaMask/key-tree/pull/113))
+  - Previously a zero private key `0x000..000` would be rejected when using ed25519, but all private keys are valid for ed25519
 
 ## [6.2.1]
 ### Fixed
