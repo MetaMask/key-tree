@@ -1,6 +1,6 @@
 # @metamask/key-tree
 
-An interface over [SLIP-10] and [BIP-44] key derivation paths.
+An interface over [SLIP-10], [BIP-32], and [BIP-44] key derivation paths.
 
 This library was audited by Cure53 in February 2023. The audit report can be found [here (PDF)](./audits/Cure53-2023-02.pdf).
 
@@ -14,8 +14,8 @@ or
 
 ## Usage
 
-This package is designed to accommodate the creation of keys for any level of a SLIP-10 or BIP-44 path.
-Recall that a BIP-44 HD tree path consists of the following nodes (and depths):
+This package is designed to accommodate the creation of keys for any level of a [SLIP-10] or [BIP-44] path.
+Recall that a [BIP-44] HD tree path consists of the following nodes (and depths):
 
 > `m / 44' / coin_type' / account' / change / address_index`
 >
@@ -26,8 +26,8 @@ and `address_index` usually furnishes key pairs intended for user addresses / ac
 For details, refer to the [BIP-44] specification.
 For the authoritative list of protocol `coin_type` indices, see [SLIP-44].
 
-The [SLIP-10] interface provides a more generic way for deriving keys, which is not constrained to the BIP-44 path
-nodes. Currently only Secp256k1 and Ed25519 are supported for SLIP-10, but NIST P-256 may be added if there is
+The [SLIP-10] interface provides a more generic way for deriving keys, which is not constrained to the [BIP-44] path
+nodes. Currently only Secp256k1 and Ed25519 are supported for [SLIP-10], but NIST P-256 may be added if there is
 sufficient demand for it.
 
 This package exports a few classes intended to facilitate the creation of keys in contexts with different privileges.
@@ -133,7 +133,7 @@ See the docstrings in the [BIP44Node](./src/BIP44Node.ts), [BIP44CoinTypeNode](.
 
 ### Internals
 
-This package also has methods for deriving arbitrary [BIP-32] keys, and generating seeds from BIP-39 mnemonics.
+This package also has methods for deriving arbitrary [BIP-32] keys, and generating seeds from [BIP-39] mnemonics.
 These methods do not constitute a safe key derivation API, and their use is **strongly discouraged**.
 Nevertheless, since those methods were the main exports of this package prior to version `3.0.0`, consumers can
 still access them by importing `@metamask/key-tree/derivation`.
