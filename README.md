@@ -41,11 +41,11 @@ import { BIP44CoinTypeNode } from '@metamask/key-tree';
 const coinType = 60;
 
 // Imagine that this takes place in some privileged context with access to
-// the user's mnemonic.
-const mnemonic = getMnemonic();
+// the user's secret recovery phrase.
+const secretRecoveryPhrase = getSecretRecoveryPhrase();
 
 const coinTypeNode = await BIP44CoinTypeNode.fromDerivationPath([
-  `bip39:${mnemonic}`,
+  `bip39:${secretRecoveryPhrase}`,
   `bip32:44'`, // By BIP-44, the "purpose" node must be "44'"
   `bip32:${coinType}'`,
 ]);
@@ -104,13 +104,13 @@ import { SLIP10Node } from '@metamask/key-tree';
 // Create a SLIP10Node from a derivation path. You can also specify a key and depth instead.
 const node = await SLIP10Node.fromDerivationPath({
   curve: 'secp256k1',
-  derivationPath: [`bip39:${mnemonic}`, `slip10:0'`],
+  derivationPath: [`bip39:${secretRecoveryPhrase}`, `slip10:0'`],
 });
 
 // SLIP-10 supports Ed25519 as well.
 const ed25519Node = await SLIP10Node.fromDerivationPath({
   curve: 'ed25519',
-  derivationPath: [`bip39:${mnemonic}`, `slip10:0'`],
+  derivationPath: [`bip39:${secretRecoveryPhrase}`, `slip10:0'`],
 });
 
 // Derive the child node at m / 0' / 1' / 2'. This results in a new SLIP10Node.
@@ -133,7 +133,8 @@ See the docstrings in the [BIP44Node](./src/BIP44Node.ts), [BIP44CoinTypeNode](.
 
 ### Internals
 
-This package also has methods for deriving arbitrary [BIP-32] keys, and generating seeds from [BIP-39] mnemonics.
+This package also has methods for deriving arbitrary [SLIP-10] and [BIP-32] keys, and generating seeds from [BIP-39]
+secret recovery phrases.
 These methods do not constitute a safe key derivation API, and their use is **strongly discouraged**.
 Nevertheless, since those methods were the main exports of this package prior to version `3.0.0`, consumers can
 still access them by importing `@metamask/key-tree/derivation`.
