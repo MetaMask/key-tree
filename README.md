@@ -103,14 +103,29 @@ import { SLIP10Node } from '@metamask/key-tree';
 
 // Create a SLIP10Node from a derivation path. You can also specify a key and depth instead.
 const node = await SLIP10Node.fromDerivationPath({
-  curve: 'secp256k1', // or 'ed25519'
-  derivationPath: [`bip39:${mnemonic}`, `bip32:0'`],
+  curve: 'secp256k1',
+  derivationPath: [`bip39:${mnemonic}`, `slip10:0'`],
+});
+
+// SLIP-10 supports Ed25519 as well.
+const ed25519Node = await SLIP10Node.fromDerivationPath({
+  curve: 'ed25519',
+  derivationPath: [`bip39:${mnemonic}`, `slip10:0'`],
 });
 
 // Derive the child node at m / 0' / 1' / 2'. This results in a new SLIP10Node.
-// Note that you cannot derive unhardened child nodes when using Ed25519
-const childNode = await node.derive([`bip32:1'`, `bip32:2'`]);
+// Note that you cannot derive unhardened child nodes when using Ed25519.
+const childNode = await node.derive([`slip10:1'`, `slip10:2'`]);
 ```
+
+The `SLIP10Node` class supports both `bip32:` and `slip10:` paths. While [BIP-32] and [SLIP-10] are mostly compatible with
+each other, there are some differences:
+
+- Ed25519 is only supported by [SLIP-10], so you must use `slip10:` paths when deriving Ed25519 keys.
+- Key derivation errors (i.e., invalid keys being derived) are handled slightly different. While the chance of
+  encountering such an error is extremely low, it is possible.
+
+If you require full compatibility with one or the other, you can choose between the `bip32:` and `slip10:` path types.
 
 There are other ways of deriving keys in addition to the above example.
 See the docstrings in the [BIP44Node](./src/BIP44Node.ts), [BIP44CoinTypeNode](./src/BIP44CoinTypeNode.ts) and
@@ -118,14 +133,14 @@ See the docstrings in the [BIP44Node](./src/BIP44Node.ts), [BIP44CoinTypeNode](.
 
 ### Internals
 
-This package also has methods for deriving arbitrary BIP-32 keys, and generating seeds from BIP-39 mnemonics.
+This package also has methods for deriving arbitrary [BIP-32] keys, and generating seeds from BIP-39 mnemonics.
 These methods do not constitute a safe key derivation API, and their use is **strongly discouraged**.
 Nevertheless, since those methods were the main exports of this package prior to version `3.0.0`, consumers can
 still access them by importing `@metamask/key-tree/derivation`.
 
 ## Security
 
-This package is rigorously tested against reference implementations and the [BIP-32] specification.
+This package is rigorously tested against reference implementations and the [SLIP-10] and [BIP-32] specifications.
 See the [reference implementation tests](./test/reference-implementations.test.ts) for details.
 
 ## Further Reading
