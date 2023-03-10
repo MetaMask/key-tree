@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - BREAKING: Add SLIP-10 (`slip10:`) path type ([#124](https://github.com/MetaMask/key-tree/pull/124))
   - `bip32:` can no longer be used to derive ed25519 keys
-  
+
 ### Changed
 - Handle errors when resulting public or private key is invalid ([#120](https://github.com/MetaMask/key-tree/pull/120))
   - Rather than throwing an error, a new key will be derived instead, as per the SLIP-10 or BIP-32 specification
