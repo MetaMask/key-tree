@@ -234,11 +234,7 @@ export function derivePublicExtension({
   parentPublicKey,
   childIndex,
 }: DerivePublicExtensionArgs) {
-  const indexBytes = new Uint8Array(4);
-  const view = new DataView(indexBytes.buffer);
-
-  view.setUint32(0, childIndex, false);
-  return concatBytes([parentPublicKey, indexBytes]);
+  return concatBytes([parentPublicKey, numberToUint32(childIndex)]);
 }
 
 type GenerateKeyArgs = {

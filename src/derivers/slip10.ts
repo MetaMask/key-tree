@@ -36,6 +36,8 @@ async function handleError(
 ): Promise<DeriveNodeArgs> {
   const { curve, isHardened, childIndex, entropy, chainCode } = options;
 
+  // `ed25519` keys are always valid, so this error should never be thrown. If
+  // it is, we re-throw it.
   if (curve.name === 'ed25519') {
     throw error;
   }
