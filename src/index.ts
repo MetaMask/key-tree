@@ -28,7 +28,5 @@ export {
   getBIP44AddressKeyDeriver,
 } from './BIP44CoinTypeNode';
 export * from './constants';
-export type {
-  CoinTypeToAddressIndices,
-  isValidBIP32PathSegment,
-} from './utils';
+export type { CoinTypeToAddressIndices } from './utils';
+export { isValidBIP32PathSegment } from './utils';

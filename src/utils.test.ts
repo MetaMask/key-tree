@@ -199,7 +199,7 @@ describe('isValidBIP32Index', () => {
 });
 
 describe('isValidBIP32PathSegment', () => {
-  it('returns true if the path is valid', () => {
+  it('returns true if the path segment is valid', () => {
     expect(isValidBIP32PathSegment(`0`)).toBe(true);
     expect(isValidBIP32PathSegment(`0'`)).toBe(true);
     expect(isValidBIP32PathSegment(`1`)).toBe(true);
@@ -209,7 +209,7 @@ describe('isValidBIP32PathSegment', () => {
   });
 
   it.each(['foo', `123''`, `'123'`, `123'/456'`, ...inputs])(
-    'returns false if the index is invalid',
+    'returns false if the path segment is invalid',
     (input) => {
       // @ts-expect-error Invalid type.
       expect(isValidBIP32PathSegment(input)).toBe(false);
