@@ -208,9 +208,10 @@ describe('isValidBIP32Path', () => {
     expect(isValidBIP32Path(`1000'`)).toBe(true);
   });
 
-  it.each(['foo', `123''`, `'123'`, `123'/456'`])(
+  it.each(['foo', `123''`, `'123'`, `123'/456'`, ...inputs])(
     'returns false if the index is invalid',
     (input) => {
+      // @ts-expect-error Invalid type.
       expect(isValidBIP32Path(input)).toBe(false);
     },
   );
