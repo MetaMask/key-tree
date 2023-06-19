@@ -173,13 +173,13 @@ export function isValidBIP32Index(index: number): boolean {
 }
 
 /**
- * Check if the value is a valid BIP-32 path, i.e., a string of the form
+ * Check if the value is a valid BIP-32 path segment, i.e., a string of the form
  * `0'`.
  *
  * @param path - The BIP-32 path to test.
  * @returns Whether the path is a valid BIP-32 path.
  */
-export function isValidBIP32Path(path: string): path is UnprefixedNode {
+export function isValidBIP32PathSegment(path: string): path is UnprefixedNode {
   if (typeof path !== 'string') {
     return false;
   }
