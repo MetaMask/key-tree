@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [7.1.0]
-### Uncategorized
+### Added
 - Add `isValidBIP32PathSegment` function ([#131](https://github.com/MetaMask/key-tree/pull/131))
+
+### Changed
 - Bump `@metamask/utils` to `6.0.1` ([#132](https://github.com/MetaMask/key-tree/pull/132))
-- Bump yaml from 2.1.1 to 2.2.2 ([#129](https://github.com/MetaMask/key-tree/pull/129))
-- Regenerate test vectors with more fields ([#128](https://github.com/MetaMask/key-tree/pull/128))
 
 ## [7.0.0]
 ### Added
