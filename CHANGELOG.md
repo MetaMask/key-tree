@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [7.1.1]
-### Uncategorized
-- Check if BIP-32 path segment is `<= 2^31-1` ([#134](https://github.com/MetaMask/key-tree/pull/134))
+### Fixed
+- Fix `isValidBIP32PathSegment` to correctly check if BIP-32 path segment is `<= 2^31-1` ([#134](https://github.com/MetaMask/key-tree/pull/134))
 
 ## [7.1.0]
 ### Added
