@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [8.0.0]
-### Uncategorized
-- Bump @metamask/utils from 6.0.1 to 6.2.0 ([#140](https://github.com/MetaMask/key-tree/pull/140))
-- Standardise repo per module template as of July 2023 ([#139](https://github.com/MetaMask/key-tree/pull/139))
-- Bump semver from 6.3.0 to 6.3.1 ([#138](https://github.com/MetaMask/key-tree/pull/138))
+### Changed
+- **BREAKING:** Build the package as both CJS and ESM ([#140](https://github.com/MetaMask/key-tree/pull/139))
+  - Distribution files have been moved from `dist` to `dist/cjs` (and `dist/esm`). If you are explicitly importing from `dist`, you have to update the import.
+- Bump `@metamask/utils` to `6.2.0` ([#140](https://github.com/MetaMask/key-tree/pull/140))
 
 ## [7.1.1]
 ### Fixed
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.0.0]
 ### Added
-- BREAKING: Add SLIP-10 (`slip10:`) path type ([#124](https://github.com/MetaMask/key-tree/pull/124))
+- **BREAKING:** Add SLIP-10 (`slip10:`) path type ([#124](https://github.com/MetaMask/key-tree/pull/124))
   - `bip32:` can no longer be used to derive ed25519 keys
 
 ### Changed
@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.0.0]
 ### Changed
-- BREAKING: Rename all occurrences of `Buffer` with `Bytes` or `Uint8Array` ([#84](https://github.com/MetaMask/key-tree/pull/84))
+- **BREAKING:** Rename all occurrences of `Buffer` with `Bytes` or `Uint8Array` ([#84](https://github.com/MetaMask/key-tree/pull/84))
   - All `[...]Buffer` fields have been replaced with `[...]Bytes`, e.g., `BIP44Node.privateKeyBuffer` is now `BIP44Node.privateKeyBytes`.
   - This change does not affect the string fields, like `BIP44Node.privateKey`.
 - BREAKING: Swap out Buffer with browser-compatible Uint8Array ([#83](https://github.com/MetaMask/key-tree/pull/83))
