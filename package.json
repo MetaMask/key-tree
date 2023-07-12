@@ -29,6 +29,7 @@
     "build:source": "yarn build:esm && yarn build:cjs",
     "build:types": "tsc --project tsconfig.build.json",
     "generate-vectors": "ts-node scripts/generate-vectors.ts > ./test/vectors/derivation.json",
+    "postinstall": "simple-git-hooks",
     "lint": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
     "lint:changelog": "auto-changelog validate",
     "lint:constraints": "yarn constraints",
