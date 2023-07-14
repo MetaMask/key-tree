@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [9.0.0]
-### Uncategorized
+### Changed
+- **BREAKING:** Disallow importing from `./dist` paths ([#147](https://github.com/MetaMask/key-tree/pull/147))
 - Export `mnemonicPhraseToBytes` and `createBip39KeyFromSeed` ([#149](https://github.com/MetaMask/key-tree/pull/149))
-- BREAKING: Synchronise package with module-template to fix regression ([#147](https://github.com/MetaMask/key-tree/pull/147))
-- Remove git hooks ([#146](https://github.com/MetaMask/key-tree/pull/146))
+
+### Fixed
+- Add support for Node.js with ESM ([#147](https://github.com/MetaMask/key-tree/pull/147))
+- Remove `postinstall` script ([#146](https://github.com/MetaMask/key-tree/pull/146))
+  - This caused installation to fail.
 
 ## [8.0.0]
 ### Changed
