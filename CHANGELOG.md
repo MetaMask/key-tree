@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.0]
+### Uncategorized
+- Export `mnemonicPhraseToBytes` and `createBip39KeyFromSeed` ([#149](https://github.com/MetaMask/key-tree/pull/149))
+- BREAKING: Synchronise package with module-template to fix regression ([#147](https://github.com/MetaMask/key-tree/pull/147))
+- Remove git hooks ([#146](https://github.com/MetaMask/key-tree/pull/146))
+
 ## [8.0.0]
 ### Changed
 - **BREAKING:** Build the package as both CJS and ESM ([#140](https://github.com/MetaMask/key-tree/pull/139))
@@ -143,7 +149,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v8.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/MetaMask/key-tree/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/MetaMask/key-tree/compare/v7.1.1...v8.0.0
 [7.1.1]: https://github.com/MetaMask/key-tree/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/MetaMask/key-tree/compare/v7.0.0...v7.1.0
