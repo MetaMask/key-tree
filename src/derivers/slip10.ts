@@ -1,14 +1,14 @@
 import { concatBytes } from '@metamask/utils';
 
 import type { DeriveChildKeyArgs } from '.';
-import type { DeriveNodeArgs } from './shared';
+import { BIP_32_HARDENED_OFFSET } from '../constants';
+import type { SLIP10Node } from '../SLIP10Node';
+import { numberToUint32 } from '../utils';
 import {
   generateEntropy,
   deriveChildKey as sharedDeriveChildKey,
 } from './shared';
-import { BIP_32_HARDENED_OFFSET } from '../constants';
-import type { SLIP10Node } from '../SLIP10Node';
-import { numberToUint32 } from '../utils';
+import type { DeriveNodeArgs } from './shared';
 
 /**
  * Derive a SLIP-10 child key with a given path from a parent key.

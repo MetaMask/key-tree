@@ -6,8 +6,8 @@ import {
 } from '@metamask/utils';
 import * as hmacModule from '@noble/hashes/hmac';
 
-import { createBip39KeyFromSeed } from './bip39';
 import { secp256k1 } from '../curves';
+import { createBip39KeyFromSeed } from './bip39';
 
 describe('createBip39KeyFromSeed', () => {
   const RANDOM_SEED = hexToBytes(

@@ -1,4 +1,3 @@
-import fixtures from './fixtures';
 import type { SLIP10Node, HDPathTuple } from '../src';
 import { BIP44Node, BIP44PurposeNodeToken } from '../src';
 import { ed25519, secp256k1 } from '../src/curves';
@@ -8,6 +7,7 @@ import {
   getBIP44CoinTypeToAddressPathTuple,
   hexStringToBytes,
 } from '../src/utils';
+import fixtures from './fixtures';
 
 describe('reference implementation tests', () => {
   describe('local', () => {
