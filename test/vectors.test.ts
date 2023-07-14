@@ -2,10 +2,12 @@
 
 import { hexToBytes } from '@metamask/utils';
 
-import { secp256k1, SLIP10PathTuple } from '../src';
-import { Curve, ed25519 } from '../src/curves';
-import { createBip39KeyFromSeed } from '../src/derivers/bip39';
 import derivationVectors from './vectors/derivation.json';
+import type { SLIP10PathTuple } from '../src';
+import { secp256k1 } from '../src';
+import type { Curve } from '../src/curves';
+import { ed25519 } from '../src/curves';
+import { createBip39KeyFromSeed } from '../src/derivers/bip39';
 
 type Vector = typeof derivationVectors.bip32.hardened[0];
 

@@ -1,12 +1,12 @@
 import { bytesToHex, hexToBytes } from '@metamask/utils';
 
-import fixtures from '../test/fixtures';
 import { BIP44PurposeNodeToken } from './constants';
 import { ed25519, secp256k1 } from './curves';
 import { compressPublicKey } from './curves/secp256k1';
 import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { SLIP10Node } from './SLIP10Node';
 import { hexStringToBytes, mnemonicPhraseToBytes } from './utils';
+import fixtures from '../test/fixtures';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);

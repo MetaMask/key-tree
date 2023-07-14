@@ -1,10 +1,10 @@
 import { hexToBytes } from '@metamask/utils';
 import { CURVE } from '@noble/secp256k1';
 
+import { privateAdd } from './shared';
 import fixtures from '../../test/fixtures';
 import { secp256k1 } from '../curves';
 import { hexStringToBytes } from '../utils';
-import { privateAdd } from './shared';
 
 describe('privateAdd', () => {
   const PRIVATE_KEY = hexStringToBytes(

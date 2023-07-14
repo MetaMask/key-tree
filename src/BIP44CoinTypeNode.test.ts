@@ -8,9 +8,9 @@ import {
   deriveBIP44AddressKey,
   getBIP44AddressKeyDeriver,
 } from '.';
-import fixtures from '../test/fixtures';
 import { encodeExtendedKey, PRIVATE_KEY_VERSION } from './extended-keys';
 import { mnemonicPhraseToBytes } from './utils';
+import fixtures from '../test/fixtures';
 
 const defaultBip39NodeToken = `bip39:${fixtures.local.mnemonic}` as const;
 const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);
