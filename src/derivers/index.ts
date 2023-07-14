@@ -1,8 +1,8 @@
-import type { Curve } from '../curves';
-import type { SLIP10Node } from '../SLIP10Node';
 import * as bip32 from './bip32';
 import * as bip39 from './bip39';
 import * as slip10 from './slip10';
+import type { Curve } from '../curves';
+import type { SLIP10Node } from '../SLIP10Node';
 
 export type DerivedKeys = {
   /**
@@ -28,3 +28,5 @@ export const derivers = {
   bip39,
   slip10,
 };
+
+export { createBip39KeyFromSeed } from './bip39';
