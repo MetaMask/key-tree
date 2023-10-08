@@ -8,8 +8,8 @@ import { bip39MnemonicToMultipath, createBip39KeyFromSeed } from './bip39';
 import { deriveChildKey } from './slip10';
 
 describe('deriveChildKey', () => {
-  it('handles deriving invalid private keys', async () => {
-    const node = await SLIP10Node.fromDerivationPath({
+  it('handles deriving invalid private keys', () => {
+    const node = SLIP10Node.fromDerivationPath({
       derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
       curve: 'secp256k1',
     });
@@ -17,7 +17,7 @@ describe('deriveChildKey', () => {
     // Simulate an invalid key once.
     jest.spyOn(secp256k1, 'isValidPrivateKey').mockReturnValueOnce(false);
 
-    const childNode = await deriveChildKey({
+    const childNode = deriveChildKey({
       node,
       path: `0'`,
       curve: secp256k1,
@@ -40,8 +40,8 @@ describe('deriveChildKey', () => {
 
   it.each(fixtures.errorHandling.slip10.keys)(
     'handles deriving invalid private keys (test vectors)',
-    async ({ path, privateKey, chainCode }) => {
-      const node = await createBip39KeyFromSeed(
+    ({ path, privateKey, chainCode }) => {
+      const node = createBip39KeyFromSeed(
         hexToBytes(fixtures.errorHandling.slip10.hexSeed),
         secp256k1,
       );
@@ -49,14 +49,14 @@ describe('deriveChildKey', () => {
       // Simulate an invalid key once.
       jest.spyOn(secp256k1, 'isValidPrivateKey').mockReturnValueOnce(false);
 
-      const childNode = await node.derive(path.ours.tuple);
+      const childNode = node.derive(path.ours.tuple);
       expect(childNode.privateKey).toBe(privateKey);
       expect(childNode.chainCode).toBe(chainCode);
     },
   );
 
-  it('throws the original error if the curve is ed25519', async () => {
-    const node = await SLIP10Node.fromDerivationPath({
+  it('throws the original error if the curve is ed25519', () => {
+    const node = SLIP10Node.fromDerivationPath({
       derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
       curve: 'ed25519',
     });
@@ -67,27 +67,27 @@ describe('deriveChildKey', () => {
       throw error;
     });
 
-    await expect(
+    expect(() =>
       deriveChildKey({
         node,
         path: `0'`,
         curve: ed25519,
       }),
-    ).rejects.toThrow(error);
+    ).toThrow(error);
   });
 
-  it('handles deriving invalid public keys', async () => {
-    const node = await SLIP10Node.fromDerivationPath({
+  it('handles deriving invalid public keys', () => {
+    const node = SLIP10Node.fromDerivationPath({
       derivationPath: [bip39MnemonicToMultipath(fixtures.local.mnemonic)],
       curve: 'secp256k1',
-    }).then((privateNode) => privateNode.neuter());
+    }).neuter();
 
     // Simulate an invalid key once.
     jest.spyOn(secp256k1, 'publicAdd').mockImplementationOnce(() => {
       throw new Error('Invalid key.');
     });
 
-    const childNode = await deriveChildKey({
+    const childNode = deriveChildKey({
       node,
       path: `0`,
       curve: secp256k1,

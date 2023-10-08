@@ -8,9 +8,9 @@ import {
   ed25519,
   MAX_BIP_32_INDEX,
   secp256k1,
+  createBip39KeyFromSeed,
 } from '../src';
 import type { Curve } from '../src/curves';
-import { createBip39KeyFromSeed } from '../src/derivers/bip39';
 
 /**
  * Get a random boolean value.
@@ -82,13 +82,13 @@ function getRandomPath(
  * boolean value.
  * @returns A random key vector.
  */
-async function getRandomKeyVector(
+function getRandomKeyVector(
   node: SLIP10Node,
   spec: 'bip32' | 'slip10',
   hardened?: boolean,
 ) {
   const path = getRandomPath(spec, undefined, hardened);
-  const child = await node.derive(path);
+  const child = node.derive(path);
 
   return {
     path: {
@@ -114,15 +114,16 @@ async function getRandomKeyVector(
  * @param hardened - Whether the keys should be hardened. Defaults to a random
  * boolean value.
  * @param curve - The curve to use. Defaults to secp256k1.
+ * @returns The random vector.
  */
-async function getRandomVector(
+function getRandomVector(
   spec: 'bip32' | 'slip10',
   amount = 10,
   hardened?: boolean,
   curve: Curve = secp256k1,
 ) {
   const seed = getRandomSeed();
-  const node = await createBip39KeyFromSeed(seed, curve);
+  const node = createBip39KeyFromSeed(seed, curve);
 
   return {
     hexSeed: bytesToHex(seed),
@@ -133,11 +134,9 @@ async function getRandomVector(
     masterFingerprint: node.masterFingerprint,
     index: node.index,
     depth: node.depth,
-    keys: await Promise.all(
-      new Array(amount)
-        .fill(0)
-        .map(async () => getRandomKeyVector(node, spec, hardened)),
-    ),
+    keys: new Array(amount)
+      .fill(0)
+      .map(() => getRandomKeyVector(node, spec, hardened)),
   };
 }
 
@@ -152,17 +151,15 @@ async function getRandomVector(
  * @param curve - The curve to use. Defaults to secp256k1.
  * @returns The random vectors.
  */
-async function getRandomVectors(
+function getRandomVectors(
   spec: 'bip32' | 'slip10',
   amount = 10,
   hardened?: boolean,
   curve: Curve = secp256k1,
 ) {
-  return Promise.all(
-    new Array(amount)
-      .fill(0)
-      .map(async () => getRandomVector(spec, undefined, hardened, curve)),
-  );
+  return new Array(amount)
+    .fill(0)
+    .map(() => getRandomVector(spec, undefined, hardened, curve));
 }
 
 /**
@@ -170,26 +167,23 @@ async function getRandomVectors(
  *
  * @returns The output for the vectors.
  */
-async function getOutput() {
+function getOutput() {
   return {
     bip32: {
-      hardened: await getRandomVectors('bip32', 50, true),
-      unhardened: await getRandomVectors('bip32', 50, false),
-      mixed: await getRandomVectors('bip32', 50),
+      hardened: getRandomVectors('bip32', 50, true),
+      unhardened: getRandomVectors('bip32', 50, false),
+      mixed: getRandomVectors('bip32', 50),
     },
     slip10: {
       hardened: {
-        secp256k1: await getRandomVectors('slip10', 50, true),
-        ed25519: await getRandomVectors('slip10', 50, true, ed25519),
+        secp256k1: getRandomVectors('slip10', 50, true),
+        ed25519: getRandomVectors('slip10', 50, true, ed25519),
       },
-      unhardened: await getRandomVectors('slip10', 50, false),
-      mixed: await getRandomVectors('bip32', 50),
+      unhardened: getRandomVectors('slip10', 50, false),
+      mixed: getRandomVectors('bip32', 50),
     },
   };
 }
 
-getOutput()
-  .then((output) => {
-    console.log(JSON.stringify(output, undefined, 2));
-  })
-  .catch(console.error);
+const output = getOutput();
+console.log(JSON.stringify(output, undefined, 2));

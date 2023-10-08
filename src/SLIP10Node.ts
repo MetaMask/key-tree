@@ -118,8 +118,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * for documentation.
    *
    * @param json - The JSON representation of a SLIP-10 node.
+   * @returns A SLIP-10 node from the given JSON.
    */
-  static async fromJSON(json: JsonSLIP10Node): Promise<SLIP10Node> {
+  static fromJSON(json: JsonSLIP10Node): SLIP10Node {
     return SLIP10Node.fromExtendedKey(json);
   }
 
@@ -144,8 +145,9 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * specified, this parameter is ignored.
    * @param options.chainCode - The chain code for the node.
    * @param options.curve - The curve used by the node.
+   * @returns A SLIP-10 node from the given options.
    */
-  static async fromExtendedKey({
+  static fromExtendedKey({
     depth,
     masterFingerprint,
     parentFingerprint,
@@ -185,7 +187,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
           index,
           chainCode: chainCodeBytes,
           privateKey: privateKeyBytes,
-          publicKey: await curveObject.getPublicKey(privateKeyBytes),
+          publicKey: curveObject.getPublicKey(privateKeyBytes),
           curve,
         },
         this.#constructorGuard,
@@ -237,7 +239,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * @param options.curve - The curve used by the node.
    * @returns A new SLIP-10 node.
    */
-  static async fromDerivationPath({
+  static fromDerivationPath({
     derivationPath,
     curve,
   }: SLIP10DerivationPathOptions) {
@@ -253,7 +255,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       );
     }
 
-    return await deriveKeyFromPath({
+    return deriveKeyFromPath({
       path: derivationPath,
       depth: derivationPath.length - 1,
       curve,
@@ -377,8 +379,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
    * to derive a child key from the parent key contained within this node.
    * @returns The {@link SLIP10Node} corresponding to the derived child key.
    */
-  public async derive(path: SLIP10PathTuple): Promise<SLIP10Node> {
-    return await deriveChildNode({
+  public derive(path: SLIP10PathTuple): SLIP10Node {
+    return deriveChildNode({
       path,
       node: this,
     });
@@ -512,10 +514,10 @@ type DeriveChildNodeArgs = {
  * @param options.path - The path to the child node / key.
  * @returns The derived key and depth.
  */
-export async function deriveChildNode({
+export function deriveChildNode({
   path,
   node,
-}: DeriveChildNodeArgs): Promise<SLIP10Node> {
+}: DeriveChildNodeArgs): SLIP10Node {
   if (path.length === 0) {
     throw new Error(
       'Invalid HD tree derivation path: Deriving a path of length 0 is not defined.',
@@ -527,7 +529,7 @@ export async function deriveChildNode({
   const newDepth = node.depth + path.length;
   validateBIP32Depth(newDepth);
 
-  return await deriveKeyFromPath({
+  return deriveKeyFromPath({
     path,
     node,
     depth: newDepth,

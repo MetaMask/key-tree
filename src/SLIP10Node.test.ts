@@ -13,8 +13,8 @@ const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);
 
 describe('SLIP10Node', () => {
   describe('constructor', () => {
-    it('throws an error when the constructor guard is not provided', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+    it('throws an error when the constructor guard is not provided', () => {
+      const { privateKey, chainCode } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
@@ -38,13 +38,13 @@ describe('SLIP10Node', () => {
   });
 
   describe('fromExtendedKey', () => {
-    it('initializes a new node from a private key', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+    it('initializes a new node from a private key', () => {
+      const { privateKey, chainCode } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         privateKey,
         chainCode,
         depth: 0,
@@ -58,13 +58,13 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(65);
     });
 
-    it('initializes a new node from a hexadecimal private key and chain code', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+    it('initializes a new node from a hexadecimal private key and chain code', () => {
+      const { privateKey, chainCode } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         privateKey,
         chainCode,
         depth: 0,
@@ -78,13 +78,13 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(65);
     });
 
-    it('initializes a new ed25519 node from a private key', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+    it('initializes a new ed25519 node from a private key', () => {
+      const { privateKey, chainCode } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: ed25519,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         privateKey,
         chainCode,
         depth: 0,
@@ -98,8 +98,8 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(33);
     });
 
-    it('initializes a new ed25519 node from a zero private key', async () => {
-      const node = await SLIP10Node.fromExtendedKey({
+    it('initializes a new ed25519 node from a zero private key', () => {
+      const node = SLIP10Node.fromExtendedKey({
         privateKey: new Uint8Array(32).fill(0),
         chainCode: new Uint8Array(32).fill(1),
         depth: 0,
@@ -113,13 +113,13 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(33);
     });
 
-    it('initializes a new node from a public key', async () => {
-      const { publicKeyBytes, chainCodeBytes } = await deriveChildKey({
+    it('initializes a new node from a public key', () => {
+      const { publicKeyBytes, chainCodeBytes } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         publicKey: publicKeyBytes,
         chainCode: chainCodeBytes,
         depth: 0,
@@ -133,13 +133,13 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(65);
     });
 
-    it('initializes a new ed25519 node from a public key', async () => {
-      const { publicKeyBytes, chainCodeBytes } = await deriveChildKey({
+    it('initializes a new ed25519 node from a public key', () => {
+      const { publicKeyBytes, chainCodeBytes } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: ed25519,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         publicKey: publicKeyBytes,
         chainCode: chainCodeBytes,
         depth: 0,
@@ -153,13 +153,13 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(33);
     });
 
-    it('initializes a new node from a hexadecimal public key and chain code', async () => {
-      const { publicKey, chainCode } = await deriveChildKey({
+    it('initializes a new node from a hexadecimal public key and chain code', () => {
+      const { publicKey, chainCode } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         publicKey,
         chainCode,
         depth: 0,
@@ -173,22 +173,22 @@ describe('SLIP10Node', () => {
       expect(node.publicKeyBytes).toHaveLength(65);
     });
 
-    it('initializes a new node from JSON', async () => {
-      const node = await deriveChildKey({
+    it('initializes a new node from JSON', () => {
+      const node = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
 
-      expect(await SLIP10Node.fromJSON(node.toJSON())).toStrictEqual(node);
+      expect(SLIP10Node.fromJSON(node.toJSON())).toStrictEqual(node);
     });
 
-    it('initializes a new node from JSON with a public key', async () => {
-      const { privateKey, chainCode } = await deriveChildKey({
+    it('initializes a new node from JSON with a public key', () => {
+      const { privateKey, chainCode } = deriveChildKey({
         path: fixtures.local.mnemonic,
         curve: secp256k1,
       });
 
-      const node = await SLIP10Node.fromExtendedKey({
+      const node = SLIP10Node.fromExtendedKey({
         privateKey,
         chainCode,
         depth: 0,
@@ -199,13 +199,13 @@ describe('SLIP10Node', () => {
 
       const neuteredNode = node.neuter();
 
-      expect(await SLIP10Node.fromJSON(neuteredNode.toJSON())).toStrictEqual(
+      expect(SLIP10Node.fromJSON(neuteredNode.toJSON())).toStrictEqual(
         neuteredNode,
       );
     });
 
-    it('throws if no public or private key is specified', async () => {
-      await expect(
+    it('throws if no public or private key is specified', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           chainCode: new Uint8Array(32).fill(1),
           depth: 0,
@@ -213,12 +213,12 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid options: Must provide either a private key or a public key.',
       );
     });
 
-    it('throws if the depth is invalid', async () => {
+    it('throws if the depth is invalid', () => {
       const inputs = [
         -1,
         0.1,
@@ -233,7 +233,7 @@ describe('SLIP10Node', () => {
       ];
 
       for (const input of inputs) {
-        await expect(
+        expect(() =>
           SLIP10Node.fromExtendedKey({
             depth: input as any,
             parentFingerprint: 0,
@@ -242,7 +242,7 @@ describe('SLIP10Node', () => {
             chainCode: new Uint8Array(32).fill(1),
             curve: 'secp256k1',
           }),
-        ).rejects.toThrow(
+        ).toThrow(
           `Invalid HD tree path depth: The depth must be a positive integer. Received: "${String(
             input,
           )}"`,
@@ -250,7 +250,7 @@ describe('SLIP10Node', () => {
       }
     });
 
-    it('throws if the parent fingerprint is invalid', async () => {
+    it('throws if the parent fingerprint is invalid', () => {
       const inputs = [
         -1,
         0.1,
@@ -265,7 +265,7 @@ describe('SLIP10Node', () => {
       ];
 
       for (const input of inputs) {
-        await expect(
+        expect(() =>
           SLIP10Node.fromExtendedKey({
             depth: 0,
             parentFingerprint: input as any,
@@ -274,7 +274,7 @@ describe('SLIP10Node', () => {
             chainCode: new Uint8Array(32).fill(1),
             curve: 'secp256k1',
           }),
-        ).rejects.toThrow(
+        ).toThrow(
           `Invalid parent fingerprint: The fingerprint must be a positive integer. Received: "${String(
             input,
           )}"`,
@@ -282,8 +282,8 @@ describe('SLIP10Node', () => {
       }
     });
 
-    it('throws if the private key is invalid', async () => {
-      await expect(
+    it('throws if the private key is invalid', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           privateKey: 'foo',
           chainCode: new Uint8Array(32).fill(1),
@@ -292,11 +292,11 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow('Value must be a hexadecimal string.');
+      ).toThrow('Value must be a hexadecimal string.');
     });
 
-    it('throws if the private key is not a Uint8Array or hexadecimal string', async () => {
-      await expect(
+    it('throws if the private key is not a Uint8Array or hexadecimal string', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           // @ts-expect-error Invalid private key type.
           privateKey: 123,
@@ -306,13 +306,13 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid value: Expected an instance of Uint8Array or hexadecimal string.',
       );
     });
 
-    it('throws if the private key is zero for secp256k1', async () => {
-      await expect(
+    it('throws if the private key is zero for secp256k1', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           privateKey: new Uint8Array(32).fill(0),
           chainCode: new Uint8Array(32).fill(1),
@@ -321,13 +321,13 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid private key: Value is not a valid secp256k1 private key.',
       );
     });
 
-    it('throws if the depth is zero and the parent fingerprint is not zero', async () => {
-      await expect(
+    it('throws if the depth is zero and the parent fingerprint is not zero', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           privateKey: new Uint8Array(32).fill(1),
           chainCode: new Uint8Array(32).fill(1),
@@ -336,13 +336,13 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid parent fingerprint: The fingerprint of the root node must be 0. Received: "1".',
       );
     });
 
-    it('throws if the depth is not zero and the parent fingerprint is zero', async () => {
-      await expect(
+    it('throws if the depth is not zero and the parent fingerprint is zero', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           privateKey: new Uint8Array(32).fill(1),
           chainCode: new Uint8Array(32).fill(1),
@@ -351,13 +351,13 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid parent fingerprint: The fingerprint of a child node must not be 0. Received: "0".',
       );
     });
 
-    it('throws if the depth is >= 2 and the parent fingerprint is equal to the master fingerprint', async () => {
-      await expect(
+    it('throws if the depth is >= 2 and the parent fingerprint is equal to the master fingerprint', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           privateKey: new Uint8Array(32).fill(1),
           chainCode: new Uint8Array(32).fill(1),
@@ -367,13 +367,13 @@ describe('SLIP10Node', () => {
           index: 0,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid parent fingerprint: The fingerprint of a child node cannot be equal to the master fingerprint. Received: "1".',
       );
     });
 
-    it('throws if the depth is zero and the index is not zero', async () => {
-      await expect(
+    it('throws if the depth is zero and the index is not zero', () => {
+      expect(() =>
         SLIP10Node.fromExtendedKey({
           privateKey: new Uint8Array(32).fill(1),
           chainCode: new Uint8Array(32).fill(1),
@@ -382,16 +382,16 @@ describe('SLIP10Node', () => {
           index: 1,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid index: The index of the root node must be 0. Received: "1".',
       );
     });
   });
 
   describe('fromDerivationPath', () => {
-    it('initializes a new node from a derivation path', async () => {
+    it('initializes a new node from a derivation path', () => {
       // Ethereum coin type node
-      const node = await SLIP10Node.fromDerivationPath({
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -413,8 +413,8 @@ describe('SLIP10Node', () => {
       });
     });
 
-    it('initializes a new node from a derivation path with a Uint8Array', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('initializes a new node from a derivation path with a Uint8Array', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39BytesToken,
           BIP44PurposeNodeToken,
@@ -423,7 +423,7 @@ describe('SLIP10Node', () => {
         curve: 'secp256k1',
       });
 
-      const stringNode = await SLIP10Node.fromDerivationPath({
+      const stringNode = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -435,13 +435,13 @@ describe('SLIP10Node', () => {
       expect(node.toJSON()).toStrictEqual(stringNode.toJSON());
     });
 
-    it('initializes a new node from a derivation path with a Uint8Array using ed25519', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('initializes a new node from a derivation path with a Uint8Array using ed25519', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39BytesToken, `slip10:44'`, `slip10:60'`],
         curve: 'ed25519',
       });
 
-      const stringNode = await SLIP10Node.fromDerivationPath({
+      const stringNode = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken, `slip10:44'`, `slip10:60'`],
         curve: 'ed25519',
       });
@@ -449,39 +449,39 @@ describe('SLIP10Node', () => {
       expect(node.toJSON()).toStrictEqual(stringNode.toJSON());
     });
 
-    it('throws if the derivation path is empty', async () => {
-      await expect(
+    it('throws if the derivation path is empty', () => {
+      expect(() =>
         SLIP10Node.fromDerivationPath({
           derivationPath: [] as any,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid derivation path: May not specify an empty derivation path.',
       );
     });
 
-    it('throws if no derivation path is specified', async () => {
-      await expect(
+    it('throws if no derivation path is specified', () => {
+      expect(() =>
         // @ts-expect-error No derivation path specified
         SLIP10Node.fromDerivationPath({
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow('Invalid options: Must provide a derivation path.');
+      ).toThrow('Invalid options: Must provide a derivation path.');
     });
 
-    it('throws if the derivation path is of depth 0 and not a single BIP-39 node', async () => {
-      await expect(
+    it('throws if the derivation path is of depth 0 and not a single BIP-39 node', () => {
+      expect(() =>
         SLIP10Node.fromDerivationPath({
           derivationPath: [`bip32:0'`] as any,
           curve: 'secp256k1',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid HD path segment: The segment must consist of a single BIP-39 node for depths of 0. Received: "bip32:0\'".',
       );
     });
 
-    it('throws an error if attempting to modify the fields of a node', async () => {
-      const node: any = await SLIP10Node.fromDerivationPath({
+    it('throws an error if attempting to modify the fields of a node', () => {
+      const node: any = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -510,30 +510,30 @@ describe('SLIP10Node', () => {
       );
     });
 
-    it('throws an error if no curve is specified', async () => {
-      await expect(
+    it('throws an error if no curve is specified', () => {
+      expect(() =>
         // @ts-expect-error No curve specified, but required in type
         SLIP10Node.fromDerivationPath({}),
-      ).rejects.toThrow('Invalid curve: Must specify a curve.');
+      ).toThrow('Invalid curve: Must specify a curve.');
     });
 
-    it('throws an error for unsupported curves', async () => {
-      await expect(
+    it('throws an error for unsupported curves', () => {
+      expect(() =>
         SLIP10Node.fromDerivationPath({
           // @ts-expect-error Invalid curve name for type
           curve: 'foo bar',
           specification: 'bip32',
         }),
-      ).rejects.toThrow(
+      ).toThrow(
         'Invalid curve: Only the following curves are supported: secp256k1, ed25519.',
       );
     });
   });
 
   describe('derive', () => {
-    it('derives a child node', async () => {
+    it('derives a child node', () => {
       const coinTypeNode = `bip32:40'`;
-      const targetNode = await SLIP10Node.fromDerivationPath({
+      const targetNode = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -542,12 +542,12 @@ describe('SLIP10Node', () => {
         curve: 'secp256k1',
       });
 
-      const node = await SLIP10Node.fromDerivationPath({
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken, BIP44PurposeNodeToken],
         curve: 'secp256k1',
       });
 
-      const childNode = await node.derive([coinTypeNode]);
+      const childNode = node.derive([coinTypeNode]);
 
       expect(childNode).toMatchObject({
         depth: targetNode.depth,
@@ -556,18 +556,18 @@ describe('SLIP10Node', () => {
       });
     });
 
-    it('derives a public child node', async () => {
-      const targetNode = await SLIP10Node.fromDerivationPath({
+    it('derives a public child node', () => {
+      const targetNode = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken, 'bip32:0'],
         curve: 'secp256k1',
       });
 
-      const node = await SLIP10Node.fromDerivationPath({
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken],
         curve: 'secp256k1',
-      }).then((privateNode) => privateNode.neuter());
+      }).neuter();
 
-      const childNode = await node.derive(['bip32:0']);
+      const childNode = node.derive(['bip32:0']);
 
       expect(childNode.privateKey).toBeUndefined();
       expect(childNode).toMatchObject({
@@ -576,19 +576,19 @@ describe('SLIP10Node', () => {
       });
     });
 
-    it('throws when trying to derive a hardened node without a private key', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('throws when trying to derive a hardened node without a private key', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken, BIP44PurposeNodeToken],
         curve: 'secp256k1',
       });
 
-      await expect(node.neuter().derive([`bip32:0'`])).rejects.toThrow(
+      expect(() => node.neuter().derive([`bip32:0'`])).toThrow(
         'Invalid parameters: Cannot derive hardened child keys without a private key.',
       );
     });
 
-    it('throws if the child derivation path is zero', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('throws if the child derivation path is zero', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -598,13 +598,13 @@ describe('SLIP10Node', () => {
         curve: 'secp256k1',
       });
 
-      await expect(node.derive([] as any)).rejects.toThrow(
+      expect(() => node.derive([] as any)).toThrow(
         'Invalid HD tree derivation path: Deriving a path of length 0 is not defined',
       );
     });
 
-    it('throws when trying to derive a unhardened node with ed25519', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('throws when trying to derive a unhardened node with ed25519', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           `slip10:44'`,
@@ -614,7 +614,7 @@ describe('SLIP10Node', () => {
         curve: 'ed25519',
       });
 
-      await expect(node.derive(['slip10:0'])).rejects.toThrow(
+      expect(() => node.derive(['slip10:0'])).toThrow(
         'Invalid path: Cannot derive unhardened child keys with ed25519.',
       );
     });
@@ -628,14 +628,14 @@ describe('SLIP10Node', () => {
 
     it.each(slip10)(
       'returns the public key for an ed25519 node',
-      async ({ hexSeed, keys }) => {
-        const { privateKey, chainCode } = await createBip39KeyFromSeed(
+      ({ hexSeed, keys }) => {
+        const { privateKey, chainCode } = createBip39KeyFromSeed(
           hexStringToBytes(hexSeed),
           ed25519,
         );
 
         for (const { path, publicKey } of keys) {
-          const node = await SLIP10Node.fromExtendedKey({
+          const node = SLIP10Node.fromExtendedKey({
             privateKey,
             chainCode,
             curve: 'ed25519',
@@ -648,7 +648,7 @@ describe('SLIP10Node', () => {
             continue;
           }
 
-          const childNode = await node.derive(path.ours.tuple);
+          const childNode = node.derive(path.ours.tuple);
           expect(childNode.publicKey).toBe(publicKey);
         }
       },
@@ -656,14 +656,14 @@ describe('SLIP10Node', () => {
 
     it.each(bip32)(
       'returns the public key for an secp256k1 node',
-      async ({ hexSeed, keys }) => {
-        const { privateKey, chainCode } = await createBip39KeyFromSeed(
+      ({ hexSeed, keys }) => {
+        const { privateKey, chainCode } = createBip39KeyFromSeed(
           hexStringToBytes(hexSeed),
           secp256k1,
         );
 
         for (const { path, publicKey } of keys) {
-          const node = await SLIP10Node.fromExtendedKey({
+          const node = SLIP10Node.fromExtendedKey({
             privateKey,
             chainCode,
             curve: 'secp256k1',
@@ -676,7 +676,7 @@ describe('SLIP10Node', () => {
             continue;
           }
 
-          const childNode = await node.derive(path.ours.tuple);
+          const childNode = node.derive(path.ours.tuple);
           expect(childNode.publicKey).toBe(publicKey);
         }
       },
@@ -684,8 +684,8 @@ describe('SLIP10Node', () => {
   });
 
   describe('compressedPublicKey', () => {
-    it('returns the public key in compressed form', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('returns the public key in compressed form', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -702,8 +702,8 @@ describe('SLIP10Node', () => {
   });
 
   describe('compressedPublicKeyBytes', () => {
-    it('returns the public key in compressed form', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('returns the public key in compressed form', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -725,13 +725,13 @@ describe('SLIP10Node', () => {
 
     it.each(sampleAddressIndices)(
       'returns the address for an secp256k1 node',
-      async ({ index, address }) => {
-        const { privateKey, chainCode } = await createBip39KeyFromSeed(
+      ({ index, address }) => {
+        const { privateKey, chainCode } = createBip39KeyFromSeed(
           hexToBytes(hexSeed),
           secp256k1,
         );
 
-        const node = await SLIP10Node.fromExtendedKey({
+        const node = SLIP10Node.fromExtendedKey({
           privateKey,
           chainCode,
           curve: 'secp256k1',
@@ -740,17 +740,14 @@ describe('SLIP10Node', () => {
           index: 0,
         });
 
-        const childNode = await node.derive([
-          ...path.ours.tuple,
-          `bip32:${index}`,
-        ]);
+        const childNode = node.derive([...path.ours.tuple, `bip32:${index}`]);
 
         expect(childNode.address).toBe(address);
       },
     );
 
-    it('throws an error when trying to get an address for an ed25519 node', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('throws an error when trying to get an address for an ed25519 node', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken, `slip10:44'`, `slip10:60'`],
         curve: 'ed25519',
       });
@@ -762,8 +759,8 @@ describe('SLIP10Node', () => {
   });
 
   describe('fingerprint', () => {
-    it('returns the fingerprint for a public key', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('returns the fingerprint for a public key', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -777,16 +774,13 @@ describe('SLIP10Node', () => {
   });
 
   describe('masterFingerprint', () => {
-    it('returns the master fingerprint for a node', async () => {
-      const masterNode = await SLIP10Node.fromDerivationPath({
+    it('returns the master fingerprint for a node', () => {
+      const masterNode = SLIP10Node.fromDerivationPath({
         derivationPath: [defaultBip39NodeToken],
         curve: 'secp256k1',
       });
 
-      const node = await masterNode.derive([
-        BIP44PurposeNodeToken,
-        `bip32:60'`,
-      ]);
+      const node = masterNode.derive([BIP44PurposeNodeToken, `bip32:60'`]);
 
       expect(node.masterFingerprint).toBe(3293725253);
       expect(node.masterFingerprint).toBe(masterNode.fingerprint);
@@ -794,8 +788,8 @@ describe('SLIP10Node', () => {
   });
 
   describe('neuter', () => {
-    it('returns a SLIP-10 node without a private key', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('returns a SLIP-10 node without a private key', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,
@@ -814,8 +808,8 @@ describe('SLIP10Node', () => {
   });
 
   describe('toJSON', () => {
-    it('returns a JSON-compatible representation of the node', async () => {
-      const node = await SLIP10Node.fromDerivationPath({
+    it('returns a JSON-compatible representation of the node', () => {
+      const node = SLIP10Node.fromDerivationPath({
         derivationPath: [
           defaultBip39NodeToken,
           BIP44PurposeNodeToken,

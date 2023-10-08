@@ -17,10 +17,8 @@ import type { DeriveNodeArgs } from './shared';
  * @returns A tuple containing the derived private key, public key and chain
  * code.
  */
-export async function deriveChildKey(
-  options: DeriveChildKeyArgs,
-): Promise<SLIP10Node> {
-  return await sharedDeriveChildKey(options, handleError);
+export function deriveChildKey(options: DeriveChildKeyArgs): SLIP10Node {
+  return sharedDeriveChildKey(options, handleError);
 }
 
 /**
@@ -30,10 +28,7 @@ export async function deriveChildKey(
  * @param options - The options that were used for derivation.
  * @returns The new options to use for derivation.
  */
-async function handleError(
-  error: unknown,
-  options: DeriveNodeArgs,
-): Promise<DeriveNodeArgs> {
+function handleError(error: unknown, options: DeriveNodeArgs): DeriveNodeArgs {
   const { curve, isHardened, childIndex, entropy, chainCode } = options;
 
   // `ed25519` keys are always valid, so this error should never be thrown. If

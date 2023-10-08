@@ -109,8 +109,9 @@ export class BIP44Node implements BIP44NodeInterface {
    * for documentation.
    *
    * @param json - The JSON representation of a SLIP-10 node.
+   * @returns The {@link BIP44Node} corresponding to the given JSON.
    */
-  static async fromJSON(json: JsonBIP44Node): Promise<BIP44Node> {
+  static fromJSON(json: JsonBIP44Node): BIP44Node {
     return BIP44Node.fromExtendedKey(json);
   }
 
@@ -129,10 +130,10 @@ export class BIP44Node implements BIP44NodeInterface {
    * @param options.publicKey - The public key for the node. If a private key is
    * specified, this parameter is ignored.
    * @param options.chainCode - The chain code for the node.
+   * @returns The {@link BIP44Node} corresponding to the given key and chain
+   * code.
    */
-  static async fromExtendedKey(
-    options: BIP44ExtendedKeyOptions | string,
-  ): Promise<BIP44Node> {
+  static fromExtendedKey(options: BIP44ExtendedKeyOptions | string): BIP44Node {
     if (typeof options === 'string') {
       const extendedKey = decodeExtendedKey(options);
 
@@ -172,7 +173,7 @@ export class BIP44Node implements BIP44NodeInterface {
 
     validateBIP44Depth(depth);
 
-    const node = await SLIP10Node.fromExtendedKey({
+    const node = SLIP10Node.fromExtendedKey({
       privateKey,
       publicKey,
       chainCode,
@@ -205,14 +206,15 @@ export class BIP44Node implements BIP44NodeInterface {
    * @param options - An object containing the derivation path.
    * @param options.derivationPath - The rooted HD tree path that will be used
    * to derive the key of this node.
+   * @returns The {@link BIP44Node} corresponding to the derived key.
    */
-  static async fromDerivationPath({
+  static fromDerivationPath({
     derivationPath,
-  }: BIP44DerivationPathOptions): Promise<BIP44Node> {
+  }: BIP44DerivationPathOptions): BIP44Node {
     validateBIP44Depth(derivationPath.length - 1);
     validateBIP44DerivationPath(derivationPath, MIN_BIP_44_DEPTH);
 
-    const node = await SLIP10Node.fromDerivationPath({
+    const node = SLIP10Node.fromDerivationPath({
       derivationPath,
       curve: 'secp256k1',
     });
@@ -341,7 +343,7 @@ export class BIP44Node implements BIP44NodeInterface {
    * to derive a child key from the parent key contained within this node.
    * @returns The {@link BIP44Node} corresponding to the derived child key.
    */
-  public async derive(path: PartialHDPathTuple): Promise<BIP44Node> {
+  public derive(path: PartialHDPathTuple): BIP44Node {
     if (this.depth === MAX_BIP_44_DEPTH) {
       throw new Error(
         'Illegal operation: This HD tree node is already a leaf node.',
@@ -353,7 +355,7 @@ export class BIP44Node implements BIP44NodeInterface {
     validateBIP44Depth(newDepth);
     validateBIP44DerivationPath(path, (this.depth + 1) as BIP44Depth);
 
-    const node = await this.#node.derive(path);
+    const node = this.#node.derive(path);
     return new BIP44Node(node);
   }
 

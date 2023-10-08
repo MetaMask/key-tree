@@ -3,10 +3,9 @@
 import { hexToBytes } from '@metamask/utils';
 
 import type { SLIP10PathTuple } from '../src';
-import { secp256k1 } from '../src';
+import { secp256k1, createBip39KeyFromSeed } from '../src';
 import type { Curve } from '../src/curves';
 import { ed25519 } from '../src/curves';
-import { createBip39KeyFromSeed } from '../src/derivers/bip39';
 import derivationVectors from './vectors/derivation.json';
 
 type Vector = typeof derivationVectors.bip32.hardened[0];
@@ -49,8 +48,8 @@ function generateTests(
   { publicDerivation = false, curve = secp256k1 }: Options = {},
 ) {
   describe(`seed: ${hexSeed}`, () => {
-    it('derives the correct master keys', async () => {
-      const node = await createBip39KeyFromSeed(hexToBytes(hexSeed), curve);
+    it('derives the correct master keys', () => {
+      const node = createBip39KeyFromSeed(hexToBytes(hexSeed), curve);
 
       expect(node.privateKey).toBe(privateKey);
       expect(node.compressedPublicKey).toBe(publicKey);
@@ -61,13 +60,13 @@ function generateTests(
       expect(node.depth).toBe(depth);
     });
 
-    it('derives the correct child keys', async () => {
+    it('derives the correct child keys', () => {
       expect.assertions(keys.length * 7);
 
-      const node = await createBip39KeyFromSeed(hexToBytes(hexSeed), curve);
+      const node = createBip39KeyFromSeed(hexToBytes(hexSeed), curve);
 
       for (const key of keys) {
-        const childNode = await node.derive(key.path.tuple as SLIP10PathTuple);
+        const childNode = node.derive(key.path.tuple as SLIP10PathTuple);
 
         expect(childNode.privateKey).toBe(key.privateKey);
         expect(childNode.compressedPublicKey).toBe(key.publicKey);
@@ -80,18 +79,16 @@ function generateTests(
     });
 
     if (publicDerivation) {
-      it('derives the correct public child keys', async () => {
+      it('derives the correct public child keys', () => {
         expect.assertions(keys.length * 7);
 
-        const node = await createBip39KeyFromSeed(
+        const node = createBip39KeyFromSeed(
           hexToBytes(hexSeed),
           curve,
-        ).then((privateNode) => privateNode.neuter());
+        ).neuter();
 
         for (const key of keys) {
-          const childNode = await node.derive(
-            key.path.tuple as SLIP10PathTuple,
-          );
+          const childNode = node.derive(key.path.tuple as SLIP10PathTuple);
 
           expect(childNode.privateKey).toBeUndefined();
           expect(childNode.compressedPublicKey).toBe(key.publicKey);

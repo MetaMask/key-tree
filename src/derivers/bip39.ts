@@ -1,4 +1,4 @@
-import { mnemonicToSeed } from '@metamask/scure-bip39';
+import { mnemonicToSeedSync } from '@metamask/scure-bip39';
 import { wordlist as englishWordlist } from '@metamask/scure-bip39/dist/wordlists/english';
 import { assert } from '@metamask/utils';
 import { hmac } from '@noble/hashes/hmac';
@@ -29,12 +29,12 @@ export function bip39MnemonicToMultipath(mnemonic: string): BIP39StringNode {
  * @param options.curve - The curve to use for derivation.
  * @returns The node.
  */
-export async function deriveChildKey({
+export function deriveChildKey({
   path,
   curve,
-}: DeriveChildKeyArgs): Promise<SLIP10Node> {
+}: DeriveChildKeyArgs): SLIP10Node {
   return createBip39KeyFromSeed(
-    await mnemonicToSeed(path, englishWordlist),
+    mnemonicToSeedSync(path, englishWordlist),
     curve,
   );
 }
@@ -47,10 +47,10 @@ export async function deriveChildKey({
  * @returns An object containing the corresponding BIP-39 master key and chain
  * code.
  */
-export async function createBip39KeyFromSeed(
+export function createBip39KeyFromSeed(
   seed: Uint8Array,
   curve: Curve,
-): Promise<SLIP10Node> {
+): SLIP10Node {
   assert(
     seed.length >= 16 && seed.length <= 64,
     'Invalid seed: The seed must be between 16 and 64 bytes long.',
@@ -66,7 +66,7 @@ export async function createBip39KeyFromSeed(
   );
 
   const masterFingerprint = getFingerprint(
-    await curve.getPublicKey(privateKey, true),
+    curve.getPublicKey(privateKey, true),
   );
 
   return SLIP10Node.fromExtendedKey({

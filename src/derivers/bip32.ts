@@ -65,9 +65,7 @@ export function publicKeyToEthAddress(key: Uint8Array) {
  * @param options.curve - The curve to use for derivation.
  * @returns The derived child key as a {@link SLIP10Node}.
  */
-export async function deriveChildKey(
-  options: DeriveChildKeyArgs,
-): Promise<SLIP10Node> {
+export function deriveChildKey(options: DeriveChildKeyArgs): SLIP10Node {
   assert(
     options.curve.name === 'secp256k1',
     'Invalid curve: Only secp256k1 is supported by BIP-32.',
@@ -85,17 +83,14 @@ export async function deriveChildKey(
  * @returns The options for deriving a child key with the child index
  * incremented by one.
  */
-async function handleError(
-  _: unknown,
-  options: DeriveNodeArgs,
-): Promise<DeriveNodeArgs> {
+function handleError(_: unknown, options: DeriveNodeArgs): DeriveNodeArgs {
   const { childIndex, privateKey, publicKey, isHardened, curve, chainCode } =
     options;
 
   validateBIP32Index(childIndex + 1);
 
   if (privateKey) {
-    const secretExtension = await deriveSecretExtension({
+    const secretExtension = deriveSecretExtension({
       privateKey,
       childIndex: childIndex + 1,
       isHardened,

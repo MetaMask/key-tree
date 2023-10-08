@@ -36,7 +36,7 @@ describe('ed25519', () => {
 
     it.each(slip10)(
       'returns the 0-padded public key for a private key',
-      async ({ keys }) => {
+      ({ keys }) => {
         for (const { privateKey, publicKey } of keys) {
           expect(bytesToHex(getPublicKey(hexToBytes(privateKey)))).toBe(
             publicKey,

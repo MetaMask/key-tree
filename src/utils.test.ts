@@ -401,8 +401,8 @@ describe('decodeBase58Check', () => {
 });
 
 describe('getFingerprint', () => {
-  it('returns the fingerprint for a compressed public key', async () => {
-    const node = await BIP44Node.fromExtendedKey(
+  it('returns the fingerprint for a compressed public key', () => {
+    const node = BIP44Node.fromExtendedKey(
       'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
     );
 
@@ -423,10 +423,10 @@ describe('getFingerprint', () => {
 describe('mnemonicPhraseToBytes', () => {
   it.each([fixtures.local.mnemonic, fixtures['eth-hd-keyring'].mnemonic])(
     'converts a mnemonic phrase to a Uint8Array',
-    async (mnemonicPhrase) => {
+    (mnemonicPhrase) => {
       const array = mnemonicPhraseToBytes(mnemonicPhrase);
-      expect(await mnemonicToSeed(array, wordlist)).toStrictEqual(
-        await mnemonicToSeed(mnemonicPhrase, wordlist),
+      expect(mnemonicToSeed(array, wordlist)).toStrictEqual(
+        mnemonicToSeed(mnemonicPhrase, wordlist),
       );
     },
   );

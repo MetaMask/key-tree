@@ -75,12 +75,14 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    * @param json - The {@link JsonBIP44Node} for the key of this node.
    * @param coin_type - The coin_type index of this node. Must be a non-negative
    * integer.
+   * @returns The derived {@link BIP44CoinTypeNode} for the specified
+   * {@link JsonBIP44Node} and `coin_type`.
    */
-  static async fromJSON(json: JsonBIP44Node, coin_type: number) {
+  static fromJSON(json: JsonBIP44Node, coin_type: number) {
     validateCoinType(coin_type);
     validateCoinTypeNodeDepth(json.depth);
 
-    const node = await BIP44Node.fromExtendedKey({
+    const node = BIP44Node.fromExtendedKey({
       depth: json.depth,
       index: json.index,
       parentFingerprint: json.parentFingerprint,
@@ -107,11 +109,13 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    * `0 / 1 / 2 / 3 / 4 / 5`
    *
    * @param derivationPath - The derivation path for the key of this node.
+   * @returns The derived {@link BIP44CoinTypeNode} for the specified
+   * derivation path.
    */
-  static async fromDerivationPath(derivationPath: CoinTypeHDPathTuple) {
+  static fromDerivationPath(derivationPath: CoinTypeHDPathTuple) {
     validateCoinTypeNodeDepth(derivationPath.length - 1);
 
-    const node = await BIP44Node.fromDerivationPath({
+    const node = BIP44Node.fromDerivationPath({
       derivationPath,
     });
 
@@ -143,8 +147,10 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    * @param node - The {@link BIP44Node} for the key of this node.
    * @param coin_type - The coin_type index of this node. Must be a non-negative
    * integer.
+   * @returns The derived {@link BIP44CoinTypeNode} for the specified
+   * {@link BIP44Node} and `coin_type`.
    */
-  static async fromNode(node: BIP44Node, coin_type: number) {
+  static fromNode(node: BIP44Node, coin_type: number) {
     if (!(node instanceof BIP44Node)) {
       throw new Error('Invalid node: Expected an instance of BIP44Node.');
     }
@@ -152,8 +158,7 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
     validateCoinType(coin_type);
     validateCoinTypeNodeDepth(node.depth);
 
-    // TODO: Make this function not async in a future version.
-    return Promise.resolve(new BIP44CoinTypeNode(node, coin_type));
+    return new BIP44CoinTypeNode(node, coin_type);
   }
 
   readonly #node: BIP44Node;
@@ -256,12 +261,12 @@ export class BIP44CoinTypeNode implements BIP44CoinTypeNodeInterface {
    * @param indices.address_index - The `address_index` index.
    * @returns The derived BIP-44 `address_index` node.
    */
-  async deriveBIP44AddressKey({
+  deriveBIP44AddressKey({
     account = 0,
     change = 0,
     address_index,
-  }: CoinTypeToAddressIndices): Promise<BIP44Node> {
-    return await this.#node.derive(
+  }: CoinTypeToAddressIndices): BIP44Node {
+    return this.#node.derive(
       getBIP44CoinTypeToAddressPathTuple({ account, change, address_index }),
     );
   }
@@ -326,18 +331,18 @@ function validateCoinType(coin_type: unknown): asserts coin_type is number {
  * @param indices.address_index - The `address_index` index.
  * @returns The derived `address_index` key for the specified derivation path.
  */
-export async function deriveBIP44AddressKey(
+export function deriveBIP44AddressKey(
   parentKeyOrNode: BIP44CoinTypeNode | JsonBIP44CoinTypeNode | string,
   { account = 0, change = 0, address_index }: CoinTypeToAddressIndices,
-): Promise<BIP44Node> {
+): BIP44Node {
   const path = getBIP44CoinTypeToAddressPathTuple({
     account,
     change,
     address_index,
   });
 
-  const node = await getNode(parentKeyOrNode);
-  const childNode = await deriveChildNode({
+  const node = getNode(parentKeyOrNode);
+  const childNode = deriveChildNode({
     path,
     node,
   });
@@ -352,7 +357,7 @@ export type BIP44AddressKeyDeriver = {
    * @returns The key corresponding to the path of this deriver and the
    * specified `address_index` value.
    */
-  (address_index: number, isHardened?: boolean): Promise<BIP44Node>;
+  (address_index: number, isHardened?: boolean): BIP44Node;
 
   /**
    * A human-readable representation of the derivation path of this deriver
@@ -394,22 +399,22 @@ export type BIP44AddressKeyDeriver = {
  * @returns The deriver function for the derivation path specified by the
  * `coin_type` node, `account`, and `change` indices.
  */
-export async function getBIP44AddressKeyDeriver(
+export function getBIP44AddressKeyDeriver(
   node: BIP44CoinTypeNode | JsonBIP44CoinTypeNode | string,
   accountAndChangeIndices?: Omit<CoinTypeToAddressIndices, 'address_index'>,
 ) {
   const { account = 0, change = 0 } = accountAndChangeIndices ?? {};
 
-  const actualNode = await getNode(node);
+  const actualNode = getNode(node);
 
   const accountNode = getHardenedBIP32NodeToken(account);
   const changeNode = getBIP32NodeToken(change);
 
-  const bip44AddressKeyDeriver: BIP44AddressKeyDeriver = async (
+  const bip44AddressKeyDeriver: BIP44AddressKeyDeriver = (
     address_index: number,
     isHardened = false,
-  ): Promise<BIP44Node> => {
-    const slip10Node = await deriveChildNode({
+  ): BIP44Node => {
+    const slip10Node = deriveChildNode({
       path: [
         accountNode,
         changeNode,
@@ -441,10 +446,11 @@ export async function getBIP44AddressKeyDeriver(
  * The depth of the node is validated to be a valid coin type node.
  *
  * @param node - A BIP-44 coin type node, JSON node or extended key.
+ * @returns The {@link BIP44CoinTypeNode} for the specified node.
  */
-async function getNode(
+function getNode(
   node: BIP44CoinTypeNode | JsonBIP44CoinTypeNode | string,
-): Promise<BIP44CoinTypeNode> {
+): BIP44CoinTypeNode {
   if (node instanceof BIP44CoinTypeNode) {
     validateCoinTypeNodeDepth(node.depth);
 
@@ -452,8 +458,8 @@ async function getNode(
   }
 
   if (typeof node === 'string') {
-    const bip44Node = await BIP44Node.fromExtendedKey(node);
-    const coinTypeNode = await BIP44CoinTypeNode.fromNode(
+    const bip44Node = BIP44Node.fromExtendedKey(node);
+    const coinTypeNode = BIP44CoinTypeNode.fromNode(
       bip44Node,
       bip44Node.index - BIP_32_HARDENED_OFFSET,
     );

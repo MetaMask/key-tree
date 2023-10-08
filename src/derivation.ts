@@ -64,9 +64,7 @@ type DeriveKeyFromPathArgs =
  * @param args.depth - The depth of the segment.
  * @returns The derived key.
  */
-export async function deriveKeyFromPath(
-  args: DeriveKeyFromPathArgs,
-): Promise<SLIP10Node> {
+export function deriveKeyFromPath(args: DeriveKeyFromPathArgs): SLIP10Node {
   const { path, depth = path.length } = args;
 
   const node = 'node' in args ? args.node : undefined;
@@ -98,11 +96,9 @@ export async function deriveKeyFromPath(
   // Derive through each part of path. `pathSegment` needs to be cast because
   // `HDPathTuple.reduce()` doesn't work. Note that the first element of the
   // path can be a Uint8Array.
-  return await (path as readonly [Uint8Array | string, ...string[]]).reduce<
-    Promise<SLIP10Node>
-  >(async (promise, pathNode, index) => {
-    const derivedNode = await promise;
-
+  return (
+    path as readonly [Uint8Array | string, ...string[]]
+  ).reduce<SLIP10Node>((derivedNode, pathNode, index) => {
     if (typeof pathNode === 'string') {
       const [pathType, pathPart] = pathNode.split(':');
 
@@ -111,7 +107,7 @@ export async function deriveKeyFromPath(
       assert(hasDeriver(pathType), `Unknown derivation type: "${pathType}".`);
 
       const deriver = derivers[pathType] as Deriver;
-      return await deriver.deriveChildKey({
+      return deriver.deriveChildKey({
         path: pathPart,
         node: derivedNode,
         curve: getCurveByName(curve),
@@ -121,12 +117,12 @@ export async function deriveKeyFromPath(
     // Only the first path segment can be a Uint8Array.
     assert(index === 0, getMalformedError());
 
-    return await derivers.bip39.deriveChildKey({
+    return derivers.bip39.deriveChildKey({
       path: pathNode,
       node: derivedNode,
       curve: getCurveByName(curve),
     });
-  }, Promise.resolve(node as SLIP10Node));
+  }, node as SLIP10Node);
 }
 
 /**

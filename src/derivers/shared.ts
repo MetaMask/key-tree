@@ -14,10 +14,7 @@ import { mod } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, numberToUint32 } from '../utils';
 
-type ErrorHandler = (
-  error: unknown,
-  options: DeriveNodeArgs,
-) => Promise<DeriveNodeArgs>;
+type ErrorHandler = (error: unknown, options: DeriveNodeArgs) => DeriveNodeArgs;
 
 /**
  * Derive a BIP-32 or SLIP-10 child key with a given path from a parent key.
@@ -33,10 +30,10 @@ type ErrorHandler = (
  * derivation.
  * @returns The derived node.
  */
-export async function deriveChildKey(
+export function deriveChildKey(
   { path, node, curve }: DeriveChildKeyArgs,
   handleError: ErrorHandler,
-) {
+): SLIP10Node {
   validateNode(node);
 
   const { childIndex, isHardened } = getValidatedPath(path, node, curve);
@@ -52,7 +49,7 @@ export async function deriveChildKey(
   };
 
   if (node.privateKeyBytes) {
-    const secretExtension = await deriveSecretExtension({
+    const secretExtension = deriveSecretExtension({
       privateKey: node.privateKeyBytes,
       childIndex,
       isHardened,
@@ -64,7 +61,7 @@ export async function deriveChildKey(
       extension: secretExtension,
     });
 
-    return await deriveNode(
+    return deriveNode(
       {
         privateKey: node.privateKeyBytes,
         entropy,
@@ -84,7 +81,7 @@ export async function deriveChildKey(
     extension: publicExtension,
   });
 
-  return await deriveNode(
+  return deriveNode(
     {
       publicKey: node.compressedPublicKeyBytes,
       entropy,
@@ -141,13 +138,10 @@ type DeriveSecretExtensionArgs = {
  * @param handleError - A function to handle errors during derivation.
  * @returns The derived child key as {@link SLIP10Node}.
  */
-async function deriveNode(
+function deriveNode(
   options: DeriveNodeArgs,
-  handleError: (
-    error: unknown,
-    args: DeriveNodeArgs,
-  ) => Promise<DeriveNodeArgs>,
-): Promise<SLIP10Node> {
+  handleError: ErrorHandler,
+): SLIP10Node {
   const {
     privateKey,
     publicKey,
@@ -162,7 +156,7 @@ async function deriveNode(
 
   try {
     if (privateKey) {
-      return await derivePrivateChildKey({
+      return derivePrivateChildKey({
         entropy,
         privateKey,
         depth,
@@ -174,7 +168,7 @@ async function deriveNode(
       });
     }
 
-    return await derivePublicChildKey({
+    return derivePublicChildKey({
       entropy,
       publicKey,
       depth,
@@ -184,7 +178,7 @@ async function deriveNode(
       curve,
     });
   } catch (error) {
-    return await deriveNode(await handleError(error, options), handleError);
+    return deriveNode(handleError(error, options), handleError);
   }
 }
 
@@ -198,7 +192,7 @@ async function deriveNode(
  * @param options.curve - The curve to use for derivation.
  * @returns The secret extension bytes.
  */
-export async function deriveSecretExtension({
+export function deriveSecretExtension({
   privateKey,
   childIndex,
   isHardened,
@@ -214,7 +208,7 @@ export async function deriveSecretExtension({
   }
 
   // Normal child
-  const parentPublicKey = await curve.getPublicKey(privateKey, true);
+  const parentPublicKey = curve.getPublicKey(privateKey, true);
   return derivePublicExtension({ parentPublicKey, childIndex });
 }
 
@@ -253,23 +247,23 @@ type GenerateKeyArgs = {
  * @param options.curve - The curve to use for derivation.
  * @returns The derived key.
  */
-async function generateKey({
+function generateKey({
   privateKey,
   entropy,
   curve,
-}: GenerateKeyArgs): Promise<DerivedKeys & { privateKey: Uint8Array }> {
+}: GenerateKeyArgs): DerivedKeys & { privateKey: Uint8Array } {
   const keyMaterial = entropy.slice(0, 32);
   const childChainCode = entropy.slice(32);
 
   // If curve is ed25519: The returned child key ki is parse256(IL).
   // https://github.com/satoshilabs/slips/blob/133ea52a8e43d338b98be208907e144277e44c0e/slip-0010.md#private-parent-key--private-child-key
   if (curve.name === 'ed25519') {
-    const publicKey = await curve.getPublicKey(keyMaterial);
+    const publicKey = curve.getPublicKey(keyMaterial);
     return { privateKey: keyMaterial, publicKey, chainCode: childChainCode };
   }
 
   const childPrivateKey = privateAdd(privateKey, keyMaterial, curve);
-  const publicKey = await curve.getPublicKey(childPrivateKey);
+  const publicKey = curve.getPublicKey(childPrivateKey);
 
   return { privateKey: childPrivateKey, publicKey, chainCode: childChainCode };
 }
@@ -299,7 +293,7 @@ type DerivePrivateChildKeyArgs = {
  * @param args.curve - The curve to use for derivation.
  * @returns The derived {@link SLIP10Node}.
  */
-async function derivePrivateChildKey({
+function derivePrivateChildKey({
   entropy,
   privateKey,
   depth,
@@ -308,18 +302,18 @@ async function derivePrivateChildKey({
   childIndex,
   isHardened,
   curve,
-}: DerivePrivateChildKeyArgs): Promise<SLIP10Node> {
+}: DerivePrivateChildKeyArgs): SLIP10Node {
   const actualChildIndex =
     childIndex + (isHardened ? BIP_32_HARDENED_OFFSET : 0);
 
   const { privateKey: childPrivateKey, chainCode: childChainCode } =
-    await generateKey({
+    generateKey({
       privateKey,
       entropy,
       curve,
     });
 
-  return await SLIP10Node.fromExtendedKey({
+  return SLIP10Node.fromExtendedKey({
     privateKey: childPrivateKey,
     chainCode: childChainCode,
     depth: depth + 1,
@@ -385,7 +379,7 @@ type DerivePublicChildKeyArgs = {
  * @param args.curve - The curve to use for derivation.
  * @returns The derived {@link SLIP10Node}.
  */
-export async function derivePublicChildKey({
+export function derivePublicChildKey({
   entropy,
   publicKey,
   depth,
@@ -393,7 +387,7 @@ export async function derivePublicChildKey({
   parentFingerprint,
   childIndex,
   curve,
-}: DerivePublicChildKeyArgs): Promise<SLIP10Node> {
+}: DerivePublicChildKeyArgs): SLIP10Node {
   const { publicKey: childPublicKey, chainCode: childChainCode } =
     generatePublicKey({
       publicKey,
@@ -401,7 +395,7 @@ export async function derivePublicChildKey({
       curve,
     });
 
-  return await SLIP10Node.fromExtendedKey({
+  return SLIP10Node.fromExtendedKey({
     publicKey: childPublicKey,
     chainCode: childChainCode,
     depth: depth + 1,

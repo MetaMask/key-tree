@@ -20,7 +20,7 @@ export type DeriveChildKeyArgs = {
 };
 
 export type Deriver = {
-  deriveChildKey: (args: DeriveChildKeyArgs) => Promise<SLIP10Node>;
+  deriveChildKey: (args: DeriveChildKeyArgs) => SLIP10Node;
 };
 
 export const derivers = {
