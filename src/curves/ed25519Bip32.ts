@@ -77,16 +77,16 @@ export const getPublicKey = async (
 /**
  * Adds a tweak to a public key.
  *
- * @param _publicKey - The public key.
- * @param _tweak - The tweak to add.
+ * @param publicKey - The public key.
+ * @param tweak - The tweak to add.
  * @returns The resulting public key.
  */
 export const publicAdd = (
   publicKey: Uint8Array,
   tweak: Uint8Array,
 ): Uint8Array => {
-  return ed25519.ExtendedPoint.fromHex(remove0x(bytesToHex(_publicKey)))
-    .add(ed25519.ExtendedPoint.fromHex(remove0x(bytesToHex(_tweak))))
+  return ed25519.ExtendedPoint.fromHex(remove0x(bytesToHex(publicKey)))
+    .add(ed25519.ExtendedPoint.fromHex(remove0x(bytesToHex(tweak))))
     .toRawBytes();
 };
 

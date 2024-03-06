@@ -351,7 +351,7 @@ export async function deriveChildKey(
 
   assert(
     !isHardened,
-    "Invalid parameters: Cannot derive hardened child keys without a private key.",
+    'Invalid parameters: Cannot derive hardened child keys without a private key.',
   );
 
   const parentNode = {
