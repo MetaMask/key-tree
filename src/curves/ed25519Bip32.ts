@@ -81,3 +81,5 @@ export const decompressPublicKey = (publicKey: Uint8Array): Uint8Array => {
   // Ed25519 public keys don't have a compressed form.
   return publicKey;
 };
+
+export const masterNodeGenerationSpec = 'cip3Icarus';
