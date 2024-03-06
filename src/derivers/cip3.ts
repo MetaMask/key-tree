@@ -126,7 +126,7 @@ export const getKeyExtension = (
   ]);
 };
 
-type Cip3SupportedCurve = Extract<Curve, { name: 'ed25519Bip32' }>;
+export type Cip3SupportedCurve = Extract<Curve, { name: 'ed25519Bip32' }>;
 
 type DeriveKeyBaseArgs = { childIndex: number };
 

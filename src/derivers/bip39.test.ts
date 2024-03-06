@@ -7,7 +7,7 @@ import {
 import * as hmacModule from '@noble/hashes/hmac';
 
 import fixtures from '../../test/fixtures';
-import { secp256k1, ed25519Bip32 } from '../curves';
+import { secp256k1, ed25519Bip32, type Curve } from '../curves';
 import {
   entropyToCip3MasterNode,
   createBip39KeyFromSeed,
@@ -69,6 +69,17 @@ describe('createBip39KeyFromSeed', () => {
       );
     },
   );
+
+  it('throws with unsupported masterNodeGenerationSpec error', async () => {
+    await expect(
+      deriveChildKey({
+        path: '',
+        curve: {
+          masterNodeGenerationSpec: 'notValidMasterNodeGenerationSpec',
+        } as unknown as Curve,
+      }),
+    ).rejects.toThrow('Unsupported master node generation spec.');
+  });
 });
 
 describe('Cip3', () => {

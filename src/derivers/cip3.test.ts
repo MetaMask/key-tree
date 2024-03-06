@@ -2,12 +2,13 @@ import { bytesToHex, hexToBytes } from '@metamask/utils';
 
 import fixtures from '../../test/fixtures';
 import { BIP_32_HARDENED_OFFSET } from '../constants';
-import { ed25519Bip32 } from '../curves';
+import { ed25519, ed25519Bip32 } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import {
   add,
   bigIntToBytes,
   bytesToBigInt,
+  type Cip3SupportedCurve,
   deriveChainCode,
   deriveChildKey,
   derivePrivateKey,
@@ -163,6 +164,18 @@ describe('Cip3', () => {
 
         expect(JSON.stringify(addressIndexNodeRes)).toBe(
           JSON.stringify(addressIndexNode),
+        );
+      });
+
+      it('throws with unsupported curve error', async () => {
+        await expect(
+          deriveChildKey({
+            node: await SLIP10Node.fromJSON(bip39Node),
+            path: purpose,
+            curve: ed25519 as unknown as Cip3SupportedCurve,
+          }),
+        ).rejects.toThrow(
+          `Unsupported curve: Only ed25519Bip32 is supported by CIP3.`,
         );
       });
     });
