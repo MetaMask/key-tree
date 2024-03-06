@@ -19,9 +19,9 @@ describe('getPublicKey', () => {
 
 describe('publicAdd', () => {
   it(`returns correct public key from private key`, async () => {
-    const _publicKey = hexToBytes(fixtures.cip3[0].nodes.bip39Node.publicKey);
-    const _tweak = hexToBytes(fixtures.cip3[0].nodes.purposeNode.publicKey);
-    const added = ed25519Bip32.publicAdd(_publicKey, _tweak);
+    const publicKey = hexToBytes(fixtures.cip3[0].nodes.bip39Node.publicKey);
+    const tweak = hexToBytes(fixtures.cip3[0].nodes.purposeNode.publicKey);
+    const added = ed25519Bip32.publicAdd(publicKey, tweak);
 
     expect(bytesToHex(added)).toBe(
       '0xf78d2a445afe9c961ac196fbac282b499d9ab6bbe8801354ee06fc22d46503e2',
