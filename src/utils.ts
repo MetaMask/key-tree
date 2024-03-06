@@ -385,7 +385,7 @@ export const getFingerprint = (
 ): number => {
   if (!isValidBytesKey(publicKey, compressedPublicKeyLength)) {
     throw new Error(
-      `Invalid public key: The key must be ${compressedPublicKeyLength} byte, non-zero byte array.`,
+      `Invalid public key: The key must be a ${compressedPublicKeyLength}-byte, non-zero byte array.`,
     );
   }
 
