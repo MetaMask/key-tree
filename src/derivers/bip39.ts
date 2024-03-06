@@ -34,16 +34,20 @@ export async function deriveChildKey({
   path,
   curve,
 }: DeriveChildKeyArgs): Promise<SLIP10Node> {
-  if (curve.masterNodeGenerationSpec === 'cip3') {
-    return entropyToCip3MasterNode(
-      mnemonicToEntropy(path, englishWordlist),
-      curve,
-    );
+  switch (curve.masterNodeGenerationSpec) {
+    case 'slip10':
+      return createBip39KeyFromSeed(
+        await mnemonicToSeed(path, englishWordlist),
+        curve,
+      );
+    case 'cip3':
+      return entropyToCip3MasterNode(
+        mnemonicToEntropy(path, englishWordlist),
+        curve,
+      );
+    default:
+      throw new Error('Unsupported master node generation spec.');
   }
-  return createBip39KeyFromSeed(
-    await mnemonicToSeed(path, englishWordlist),
-    curve,
-  );
 }
 
 /**

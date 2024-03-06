@@ -11,10 +11,7 @@ import {
   ed25519Bip32,
 } from '../src';
 import { type Curve } from '../src/curves';
-import {
-  entropyToCip3MasterNode,
-  createBip39KeyFromSeed,
-} from '../src/derivers/bip39';
+import { deriveChildKey } from '../src/derivers/bip39';
 
 /**
  * Get a random boolean value.
@@ -126,11 +123,7 @@ async function getRandomVector(
   curve: Curve = secp256k1,
 ) {
   const seed = getRandomSeed();
-  const node =
-    curve.masterNodeGenerationSpec === 'slip10'
-      ? await createBip39KeyFromSeed(seed, curve)
-      : // in the context of tests, we assume seed to be just random bytes which we use here as entropy
-        await entropyToCip3MasterNode(seed, curve);
+  const node = await deriveChildKey({ path: seed, curve });
 
   return {
     hexSeed: bytesToHex(seed),
