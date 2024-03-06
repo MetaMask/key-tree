@@ -39,19 +39,11 @@ const bytesToNumberLE = (bytes: Uint8Array): bigint => {
   return hexToBigInt(bytesToHex(Uint8Array.from(bytes).reverse()));
 };
 
-const modN = (a: bigint) => {
-  return mod(a, curve.n);
-};
-
-// Little-endian SHA512 with modulo n
-const modNLE = (hash: Uint8Array): bigint => {
-  return modN(bytesToNumberLE(hash));
-};
-
 // equivalent to https://github.com/jedisct1/libsodium/blob/93a6e79750a31bc0b946bf483b2ba1c77f9e94ce/src/libsodium/crypto_scalarmult/ed25519/ref10/scalarmult_ed25519_ref10.c#L105
 // which is used by cardano-js-sdk/crypto https://github.com/input-output-hk/cardano-js-sdk/blob/8a6db2a251cd1c956f52730a0d35de2b7fc67404/packages/crypto/src/Bip32/Bip32PrivateKey.ts#L161
 const multiplyWithBase = (key: Uint8Array): Uint8Array => {
-  const scalar = modNLE(key); // The actual scalar
+  // Little-endian SHA512 with modulo n
+  const scalar = mod(bytesToNumberLE(key), curve.n); // The actual scalar
   const point = ed25519.ExtendedPoint.BASE.multiply(scalar); // Point on Edwards curve aka public key
   return point.toRawBytes(); // Uint8Array representation
 };
