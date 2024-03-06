@@ -41,7 +41,7 @@ export const publicKeyLength = 32;
  * @param bytes - The Uint8Array of bytes to convert.
  * @returns The converted bigint value.
  */
-const bytesToNumberLE = (bytes: Uint8Array): bigint => {
+export const bytesToNumberLE = (bytes: Uint8Array): bigint => {
   return hexToBigInt(bytesToHex(Uint8Array.from(bytes).reverse()));
 };
 
@@ -53,7 +53,7 @@ const bytesToNumberLE = (bytes: Uint8Array): bigint => {
  * @param key - The key to multiply with the base point.
  * @returns The resulting point on the Edwards curve.
  */
-const multiplyWithBase = (key: Uint8Array): Uint8Array => {
+export const multiplyWithBase = (key: Uint8Array): Uint8Array => {
   // Little-endian SHA512 with modulo n
   const scalar = mod(bytesToNumberLE(key), curve.n); // The actual scalar
   const point = ed25519.ExtendedPoint.BASE.multiply(scalar); // Point on Edwards curve aka public key
