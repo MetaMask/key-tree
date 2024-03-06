@@ -438,13 +438,14 @@ export function validateCurve(
  * Get a 4-byte-long `Uint8Array` from a numeric value.
  *
  * @param value - The value to convert to a `Uint8Array`.
+ * @param littleEndian - Whether to use little endian byte order.
  * @returns The `Uint8Array` corresponding to the `bigint` value.
  */
-export function numberToUint32(value: number) {
+export function numberToUint32(value: number, littleEndian = false) {
   const bytes = new Uint8Array(4);
   const view = createDataView(bytes);
 
-  view.setUint32(0, value, false);
+  view.setUint32(0, value, littleEndian);
 
   return bytes;
 }
