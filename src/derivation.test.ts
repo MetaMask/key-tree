@@ -43,6 +43,7 @@ describe('derivation', () => {
 
       expect(node.privateKey).toBe(accountNode.privateKey);
     });
+
     it('derives full BIP-44 paths', async () => {
       // generate keys
       const keys = await Promise.all(
