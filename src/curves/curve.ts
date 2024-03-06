@@ -10,6 +10,16 @@ export const curves = {
   ed25519Bip32,
 };
 
+type CurveSpecification =
+  | {
+      masterNodeGenerationSpec: 'slip10';
+      name: Extract<SupportedCurve, 'secp256k1' | 'ed25519'>;
+    }
+  | {
+      name: Extract<SupportedCurve, 'ed25519Bip32'>;
+      masterNodeGenerationSpec: 'cip3';
+    };
+
 export type Curve = {
   secret: Uint8Array;
   deriveUnhardenedKeys: boolean;
@@ -27,16 +37,7 @@ export type Curve = {
   decompressPublicKey: (publicKey: Uint8Array) => Uint8Array;
   privateKeyLength: number;
   compressedPublicKeyLength: number;
-} & (
-  | {
-      masterNodeGenerationSpec: 'slip10';
-      name: Extract<SupportedCurve, 'secp256k1' | 'ed25519'>;
-    }
-  | {
-      name: Extract<SupportedCurve, 'ed25519Bip32'>;
-      masterNodeGenerationSpec: 'cip3';
-    }
-);
+} & CurveSpecification;
 
 /**
  * Get a curve by name.
