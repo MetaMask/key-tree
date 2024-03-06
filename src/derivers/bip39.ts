@@ -74,6 +74,7 @@ export async function createBip39KeyFromSeed(
 
   const masterFingerprint = getFingerprint(
     await curve.getPublicKey(privateKey, true),
+    curve.compressedPublicKeyLength,
   );
 
   return SLIP10Node.fromExtendedKey({
@@ -120,6 +121,7 @@ export async function entropyToCip3MasterNode(
 
   const masterFingerprint = getFingerprint(
     await curve.getPublicKey(privateKey),
+    curve.compressedPublicKeyLength,
   );
 
   return SLIP10Node.fromExtendedKey({

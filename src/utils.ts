@@ -376,12 +376,16 @@ export const encodeBase58check = (value: Uint8Array): string => {
  * Get the fingerprint of a compressed public key as number.
  *
  * @param publicKey - The compressed public key to get the fingerprint for.
+ * @param compressedPublicKeyLength - The length of the compressed public key.
  * @returns The fingerprint of the public key.
  */
-export const getFingerprint = (publicKey: Uint8Array): number => {
-  if (!isValidBytesKey(publicKey, 33) && !isValidBytesKey(publicKey, 32)) {
+export const getFingerprint = (
+  publicKey: Uint8Array,
+  compressedPublicKeyLength: number,
+): number => {
+  if (!isValidBytesKey(publicKey, compressedPublicKeyLength)) {
     throw new Error(
-      `Invalid public key: The key must be a 33 or 32-byte, non-zero byte array.`,
+      `Invalid public key: The key must be ${compressedPublicKeyLength} byte, non-zero byte array.`,
     );
   }
 

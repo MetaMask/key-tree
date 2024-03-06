@@ -347,7 +347,10 @@ export class SLIP10Node implements SLIP10NodeInterface {
   }
 
   public get fingerprint(): number {
-    return getFingerprint(this.compressedPublicKeyBytes);
+    return getFingerprint(
+      this.compressedPublicKeyBytes,
+      getCurveByName(this.curve).compressedPublicKeyLength,
+    );
   }
 
   /**

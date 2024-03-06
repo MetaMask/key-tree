@@ -85,3 +85,5 @@ export const decompressPublicKey = (publicKey: Uint8Array): Uint8Array => {
 export const privateKeyLength = 64;
 
 export const masterNodeGenerationSpec = 'cip3';
+
+export const compressedPublicKeyLength = 32;
