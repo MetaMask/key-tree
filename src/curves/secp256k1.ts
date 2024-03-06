@@ -56,4 +56,6 @@ export const decompressPublicKey = (publicKey: Uint8Array): Uint8Array => {
   return point.toRawBytes(false);
 };
 
+export const privateKeyLength = 32;
+
 export const masterNodeGenerationSpec = 'slip10';

@@ -42,4 +42,6 @@ export const decompressPublicKey = (publicKey: Uint8Array): Uint8Array => {
   return publicKey;
 };
 
+export const privateKeyLength = 32;
+
 export const masterNodeGenerationSpec = 'slip10';

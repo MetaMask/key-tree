@@ -25,6 +25,7 @@ export type Curve = {
   publicAdd: (publicKey: Uint8Array, tweak: Uint8Array) => Uint8Array;
   compressPublicKey: (publicKey: Uint8Array) => Uint8Array;
   decompressPublicKey: (publicKey: Uint8Array) => Uint8Array;
+  privateKeyLength: number;
 } & (
   | {
       masterNodeGenerationSpec: 'slip10';

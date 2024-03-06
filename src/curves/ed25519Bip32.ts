@@ -82,4 +82,6 @@ export const decompressPublicKey = (publicKey: Uint8Array): Uint8Array => {
   return publicKey;
 };
 
+export const privateKeyLength = 64;
+
 export const masterNodeGenerationSpec = 'cip3Icarus';
