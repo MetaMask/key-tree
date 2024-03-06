@@ -5,10 +5,17 @@ import { BIP_32_HARDENED_OFFSET } from '../constants';
 import { ed25519Bip32 } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import {
+  add,
+  bigIntToBytes,
+  bytesToBigInt,
   deriveChainCode,
   deriveChildKey,
   derivePrivateKey,
   derivePublicKey,
+  mod2Pow256,
+  padEnd32Bytes,
+  toReversed,
+  trunc28Mul8,
 } from './cip3';
 
 const fixtureNodeToParentNode = (
@@ -158,6 +165,80 @@ describe('Cip3', () => {
           JSON.stringify(addressIndexNode),
         );
       });
+    });
+  });
+
+  describe('toReversed', () => {
+    it('reverts bytes', () => {
+      const bytes = new Uint8Array([1, 2, 3, 4, 5]);
+      expect(toReversed(bytes)).toStrictEqual(new Uint8Array([5, 4, 3, 2, 1]));
+    });
+  });
+
+  describe('bytesToBigInt', () => {
+    it('converts bytes to bigint', () => {
+      const bytes = new Uint8Array([1, 2, 3, 4, 5]);
+      expect(bytesToBigInt(bytes)).toStrictEqual(BigInt('0x0504030201'));
+    });
+  });
+
+  describe('bigIntToBytes', () => {
+    it('converts bigint to bytes', () => {
+      const bigInt = BigInt('0x0504030201');
+      expect(bigIntToBytes(bigInt)).toStrictEqual(
+        new Uint8Array([1, 2, 3, 4, 5]),
+      );
+    });
+  });
+
+  describe('padEnd32Bytes', () => {
+    it('pads end of byte array to 32 bytes', () => {
+      const bytes = new Uint8Array([1, 2, 3, 4, 5]);
+      const padding = new Array(27).fill(0);
+      const padded = new Uint8Array([1, 2, 3, 4, 5, ...padding]);
+      expect(padEnd32Bytes(bytes)).toStrictEqual(padded);
+    });
+  });
+
+  describe('trunc28Mul8', () => {
+    it('truncates bytes to length 28 and multiply byt 8', () => {
+      const bytes = hexToBytes(
+        '0xade6ef960e9fc741bc1808bd91ed7c3944c760de5947662adc428029c722deab',
+      );
+      const expectedResult = hexToBytes(
+        '0x68357fb774f83c0ee2c540e88d6ce7cb213a06f3ce3a3253e116024c01000000',
+      );
+      const result = trunc28Mul8(bytes);
+      expect(result).toStrictEqual(expectedResult);
+    });
+  });
+
+  describe('mod2Pow256', () => {
+    it('modulo 2^256', () => {
+      const bytes = hexToBytes(
+        '0xd664152bff95f76efdd0052643eb096eea6f18b6793365563bcaa12b3aa04fed',
+      );
+      const expectedResult = hexToBytes(
+        '0xd664152bff95f76efdd0052643eb096eea6f18b6793365563bcaa12b3aa04fed',
+      );
+      const result = mod2Pow256(bytes);
+      expect(result).toStrictEqual(expectedResult);
+    });
+  });
+
+  describe('add', () => {
+    it('adds two arrays of bytes', () => {
+      const left = hexToBytes(
+        '0xa09de4b08a21d9223bd3b8196e3c92b809898755d6d0246d662063b203000000',
+      );
+      const right = hexToBytes(
+        '0x5049005d5a97d5ea60753fb511460079a56b9981bc2e75f05e40dd46788c7748',
+      );
+      const expectedResult = hexToBytes(
+        '0xf0e6e40de5b8ae0d9c48f8ce7f829231aff420d792ff995dc56040f97b8c7748',
+      );
+      const result = add(left, right);
+      expect(result).toStrictEqual(expectedResult);
     });
   });
 });

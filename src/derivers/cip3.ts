@@ -33,7 +33,7 @@ import { generateEntropy, getValidatedPath, validateNode } from './shared';
  * @param bytes - The input Uint8Array.
  * @returns A new Uint8Array with the bytes in reversed order.
  */
-const toReversed = (bytes: Uint8Array) => bytes.slice().reverse();
+export const toReversed = (bytes: Uint8Array) => bytes.slice().reverse();
 
 /**
  * Converts an array of bytes to a BigInt.
@@ -41,7 +41,7 @@ const toReversed = (bytes: Uint8Array) => bytes.slice().reverse();
  * @param bytes - The array of bytes to convert.
  * @returns The BigInt representation of the bytes.
  */
-const bytesToBigInt = (bytes: Uint8Array) => {
+export const bytesToBigInt = (bytes: Uint8Array) => {
   const reversed = toReversed(bytes);
   const bytesInHex = bytesToHex(reversed);
   return BigInt(bytesInHex);
@@ -53,7 +53,7 @@ const bytesToBigInt = (bytes: Uint8Array) => {
  * @param bigInt - The BigInt to convert.
  * @returns The byte array representation of the BigInt.
  */
-const bigIntToBytes = (bigInt: bigint) => {
+export const bigIntToBytes = (bigInt: bigint) => {
   const hexadecimal = bigInt.toString(16);
   return toReversed(hexToBytes(hexadecimal));
 };
@@ -64,7 +64,7 @@ const bigIntToBytes = (bigInt: bigint) => {
  * @param bytes - The bytes array to pad.
  * @returns The padded bytes array.
  */
-const padEnd32Bytes = (bytes: Uint8Array) => {
+export const padEnd32Bytes = (bytes: Uint8Array) => {
   return concatBytes([
     bytes,
     new Uint8Array(Math.max(32 - bytes.length, 0)).fill(0),
@@ -77,7 +77,7 @@ const padEnd32Bytes = (bytes: Uint8Array) => {
  * @param bytes - Little-Endian big number in bytes.
  * @returns PadEnd32Bytes(left[0, 28] * 8)).
  */
-const trunc28Mul8 = (bytes: Uint8Array): Uint8Array => {
+export const trunc28Mul8 = (bytes: Uint8Array): Uint8Array => {
   const truncLeftMul8 = bytesToBigInt(bytes.slice(0, 28)) * BigInt(8);
   return padEnd32Bytes(bigIntToBytes(truncLeftMul8));
 };
@@ -88,7 +88,7 @@ const trunc28Mul8 = (bytes: Uint8Array): Uint8Array => {
  * @param bytes - Little-Endian big number in bytes.
  * @returns PadEnd32Bytes(mod(bytes, 2^256))).
  */
-const mod2Pow256 = (bytes: Uint8Array): Uint8Array => {
+export const mod2Pow256 = (bytes: Uint8Array): Uint8Array => {
   return padEnd32Bytes(
     bigIntToBytes(mod(bytesToBigInt(bytes), BigInt(2) ** BigInt(256))),
   );
@@ -101,7 +101,7 @@ const mod2Pow256 = (bytes: Uint8Array): Uint8Array => {
  * @param right - Right hand side Little-Endian big number.
  * @returns PadEnd32Bytes(left + right).
  */
-const add = (left: Uint8Array, right: Uint8Array): Uint8Array => {
+export const add = (left: Uint8Array, right: Uint8Array): Uint8Array => {
   const added = bytesToBigInt(left) + bytesToBigInt(right);
   return padEnd32Bytes(bigIntToBytes(added)).slice(0, 32);
 };
@@ -114,7 +114,11 @@ const add = (left: Uint8Array, right: Uint8Array): Uint8Array => {
  * @param childIndex - Child index.
  * @returns PadEnd32Bytes(left + right).
  */
-const getKeyExtension = (tag: number, key: Uint8Array, childIndex: number) => {
+export const getKeyExtension = (
+  tag: number,
+  key: Uint8Array,
+  childIndex: number,
+) => {
   return concatBytes([
     new Uint8Array([tag]),
     key,
