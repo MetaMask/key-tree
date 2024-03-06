@@ -379,9 +379,9 @@ export const encodeBase58check = (value: Uint8Array): string => {
  * @returns The fingerprint of the public key.
  */
 export const getFingerprint = (publicKey: Uint8Array): number => {
-  if (!isValidBytesKey(publicKey, 33)) {
+  if (!isValidBytesKey(publicKey, 33) && !isValidBytesKey(publicKey, 32)) {
     throw new Error(
-      `Invalid public key: The key must be a 33-byte, non-zero byte array.`,
+      `Invalid public key: The key must be a 33 or 32-byte, non-zero byte array.`,
     );
   }
 

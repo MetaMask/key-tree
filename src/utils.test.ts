@@ -411,11 +411,11 @@ describe('getFingerprint', () => {
 
   it('throws if the public key is not a valid Uint8Array', () => {
     expect(() => getFingerprint(new Uint8Array(33).fill(0))).toThrow(
-      'Invalid public key: The key must be a 33-byte, non-zero byte array.',
+      'Invalid public key: The key must be a 33 or 32-byte, non-zero byte array.',
     );
 
     expect(() => getFingerprint(new Uint8Array(65).fill(1))).toThrow(
-      'Invalid public key: The key must be a 33-byte, non-zero byte array.',
+      'Invalid public key: The key must be a 33 or 32-byte, non-zero byte array.',
     );
   });
 });
