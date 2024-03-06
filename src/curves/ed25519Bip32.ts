@@ -82,8 +82,8 @@ export const getPublicKey = async (
  * @returns The resulting public key.
  */
 export const publicAdd = (
-  _publicKey: Uint8Array,
-  _tweak: Uint8Array,
+  publicKey: Uint8Array,
+  tweak: Uint8Array,
 ): Uint8Array => {
   return ed25519.ExtendedPoint.fromHex(remove0x(bytesToHex(_publicKey)))
     .add(ed25519.ExtendedPoint.fromHex(remove0x(bytesToHex(_tweak))))
