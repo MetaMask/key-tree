@@ -117,6 +117,7 @@ export async function entropyToCip3MasterNode(
   rootNode[0] &= 0b1111_1000;
   rootNode[31] &= 0b0001_1111;
   rootNode[31] |= 0b0100_0000;
+  /* eslint-enable no-bitwise */
 
   const privateKey = rootNode.slice(0, curve.privateKeyLength);
   const chainCode = rootNode.slice(curve.privateKeyLength);
