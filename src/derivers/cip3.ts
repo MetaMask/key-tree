@@ -23,21 +23,47 @@ import { generateEntropy, getValidatedPath, validateNode } from './shared';
  * - See https://input-output-hk.github.io/adrestia/static/Ed25519_BIP.pdf.
  */
 
-// Native BigInt uses big-endian. Since cip3(bip32Edd25519) uses little-endian, we need to reverse the bytes
-// and have separate functions for bigIntToBytes and bytesToBigInt, .slice() is used just to make a copy of the array
+/**
+ * Reverses the order of bytes in a Uint8Array.
+ *
+ * Native BigInt uses big-endian. Since cip3(bip32Edd25519) uses little-endian.
+ * We need to reverse the bytes and have separate functions for bigIntToBytes and bytesToBigInt.
+ * .slice() is used just to make a copy of the array.
+ *
+ * @param bytes - The input Uint8Array.
+ * @returns A new Uint8Array with the bytes in reversed order.
+ */
 const toReversed = (bytes: Uint8Array) => bytes.slice().reverse();
 
+/**
+ * Converts an array of bytes to a BigInt.
+ *
+ * @param bytes - The array of bytes to convert.
+ * @returns The BigInt representation of the bytes.
+ */
 const bytesToBigInt = (bytes: Uint8Array) => {
   const reversed = toReversed(bytes);
   const bytesInHex = bytesToHex(reversed);
   return BigInt(bytesInHex);
 };
 
+/**
+ * Converts a BigInt to a byte array.
+ *
+ * @param bigInt - The BigInt to convert.
+ * @returns The byte array representation of the BigInt.
+ */
 const bigIntToBytes = (bigInt: bigint) => {
   const hexadecimal = bigInt.toString(16);
   return toReversed(hexToBytes(hexadecimal));
 };
 
+/**
+ * Pads end of the given bytes array with zeros to a length of 32 bytes.
+ *
+ * @param bytes - The bytes array to pad.
+ * @returns The padded bytes array.
+ */
 const padEnd32Bytes = (bytes: Uint8Array) => {
   return concatBytes([
     bytes,
