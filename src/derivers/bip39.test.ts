@@ -9,7 +9,7 @@ import * as hmacModule from '@noble/hashes/hmac';
 import fixtures from '../../test/fixtures';
 import { secp256k1, ed25519Bip32 } from '../curves';
 import {
-  entropyToCip3IcarusMasterNode,
+  entropyToCip3MasterNode,
   createBip39KeyFromSeed,
   deriveChildKey,
 } from './bip39';
@@ -71,11 +71,11 @@ describe('createBip39KeyFromSeed', () => {
   );
 });
 
-describe('Cip3Icarus', () => {
-  fixtures.cip3Icarus.forEach((fixture) => {
-    describe('entropyToCip3IcarusMasterNode', () => {
+describe('Cip3', () => {
+  fixtures.cip3.forEach((fixture) => {
+    describe('entropyToCip3MasterNode', () => {
       it('derives the correct bip39 key for ed25519Bip32 curve', async () => {
-        const result = await entropyToCip3IcarusMasterNode(
+        const result = await entropyToCip3MasterNode(
           hexToBytes(fixture.entropyHex),
           ed25519Bip32,
         );

@@ -7,7 +7,7 @@ import type { Curve } from '../src/curves';
 import { ed25519Bip32, ed25519 } from '../src/curves';
 import {
   createBip39KeyFromSeed,
-  entropyToCip3IcarusMasterNode,
+  entropyToCip3MasterNode,
 } from '../src/derivers/bip39';
 import derivationVectors from './vectors/derivation.json';
 
@@ -17,7 +17,7 @@ const masterNodeFromSeed = async (seed: Uint8Array, curve: Curve) => {
   return curve.masterNodeGenerationSpec === 'slip10'
     ? createBip39KeyFromSeed(seed, curve)
     : // in the context of tests, we assume seed to be just random bytes which we use here as entropy
-      entropyToCip3IcarusMasterNode(seed, curve);
+      entropyToCip3MasterNode(seed, curve);
 };
 
 type Options = {
@@ -168,15 +168,15 @@ describe('vectors', () => {
     });
   });
 
-  describe('cip3Icarus', () => {
+  describe('cip3', () => {
     describe('hardened', () => {
-      for (const vector of derivationVectors.cip3Icarus.hardened) {
+      for (const vector of derivationVectors.cip3.hardened) {
         generateTests(vector, { curve: ed25519Bip32 });
       }
     });
 
     describe('unhardened', () => {
-      for (const vector of derivationVectors.cip3Icarus.unhardened) {
+      for (const vector of derivationVectors.cip3.unhardened) {
         generateTests(vector, {
           publicDerivation: true,
           curve: ed25519Bip32,
@@ -185,7 +185,7 @@ describe('vectors', () => {
     });
 
     describe('mixed', () => {
-      for (const vector of derivationVectors.cip3Icarus.mixed) {
+      for (const vector of derivationVectors.cip3.mixed) {
         generateTests(vector, { curve: ed25519Bip32 });
       }
     });

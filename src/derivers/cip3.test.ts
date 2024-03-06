@@ -9,18 +9,18 @@ import {
   deriveChildKey,
   derivePrivateKey,
   derivePublicKey,
-} from './cip3Icarus';
+} from './cip3';
 
 const fixtureNodeToParentNode = (
-  fixtureNode: typeof fixtures.cip3Icarus[number]['nodes'][keyof typeof fixtures.cip3Icarus[number]['nodes']],
+  fixtureNode: typeof fixtures.cip3[number]['nodes'][keyof typeof fixtures.cip3[number]['nodes']],
 ) => ({
   privateKeyBytes: hexToBytes(fixtureNode.privateKey),
   publicKeyBytes: hexToBytes(fixtureNode.publicKey),
   chainCodeBytes: hexToBytes(fixtureNode.chainCode),
 });
 
-describe('Cip3Icarus', () => {
-  fixtures.cip3Icarus.forEach((fixture) => {
+describe('Cip3', () => {
+  fixtures.cip3.forEach((fixture) => {
     describe('derivePrivate', () => {
       const { bip39Node, purposeNode, coinTypeNode, accountNode, changeNode } =
         fixture.nodes;

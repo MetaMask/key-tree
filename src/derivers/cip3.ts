@@ -23,7 +23,7 @@ import { generateEntropy, getValidatedPath, validateNode } from './shared';
  * - See https://input-output-hk.github.io/adrestia/static/Ed25519_BIP.pdf.
  */
 
-// Native BigInt uses big-endian. Since cip3Icarus(bip32Edd25519) uses little-endian, we need to reverse the bytes
+// Native BigInt uses big-endian. Since cip3(bip32Edd25519) uses little-endian, we need to reverse the bytes
 // and have separate functions for bigIntToBytes and bytesToBigInt, .slice() is used just to make a copy of the array
 const toReversed = (bytes: Uint8Array) => bytes.slice().reverse();
 
@@ -96,7 +96,7 @@ const getKeyExtension = (tag: number, key: Uint8Array, childIndex: number) => {
   ]);
 };
 
-type Cip3IcarusSupportedCurve = Extract<Curve, { name: 'ed25519Bip32' }>;
+type Cip3SupportedCurve = Extract<Curve, { name: 'ed25519Bip32' }>;
 
 type DeriveKeyBaseArgs = { childIndex: number };
 
@@ -214,7 +214,7 @@ const PUBLIC_KEY_TAGS = {
 };
 
 type DerivePublicKeyArgs = DeriveWithoutPrivateArgs & {
-  curve: Cip3IcarusSupportedCurve;
+  curve: Cip3SupportedCurve;
 };
 
 /**
@@ -258,8 +258,8 @@ export const derivePublicKey = async ({
   return curve.publicAdd(parentNode.publicKeyBytes, right);
 };
 
-type Cip3IcarusDeriveChildKeyArgs = DeriveChildKeyArgs & {
-  curve: Cip3IcarusSupportedCurve;
+type Cip3DeriveChildKeyArgs = DeriveChildKeyArgs & {
+  curve: Cip3SupportedCurve;
 };
 
 /**
@@ -269,7 +269,7 @@ type Cip3IcarusDeriveChildKeyArgs = DeriveChildKeyArgs & {
  * @returns SLIP10Node.
  */
 export async function deriveChildKey(
-  options: Cip3IcarusDeriveChildKeyArgs,
+  options: Cip3DeriveChildKeyArgs,
 ): Promise<SLIP10Node> {
   const { curve, node, path } = options;
   validateNode(node);
@@ -277,7 +277,7 @@ export async function deriveChildKey(
   const { childIndex, isHardened } = getValidatedPath(path, node, curve);
   if (curve.name !== 'ed25519Bip32' || !node) {
     throw new Error(
-      'Unsupported curve: Only ed25519Bip32 is supported by CIP3Icarus.',
+      'Unsupported curve: Only ed25519Bip32 is supported by CIP3.',
     );
   }
 

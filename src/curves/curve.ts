@@ -33,7 +33,7 @@ export type Curve = {
     }
   | {
       name: Extract<SupportedCurve, 'ed25519Bip32'>;
-      masterNodeGenerationSpec: 'cip3Icarus';
+      masterNodeGenerationSpec: 'cip3';
     }
 );
 

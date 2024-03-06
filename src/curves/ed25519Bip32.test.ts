@@ -4,7 +4,7 @@ import { ed25519Bip32 } from '.';
 import fixtures from '../../test/fixtures';
 
 describe('getPublicKey', () => {
-  fixtures.cip3Icarus.forEach((fixture) => {
+  fixtures.cip3.forEach((fixture) => {
     Object.values(fixture.nodes).forEach((node) => {
       it(`returns correct public key from private key`, async () => {
         const publicKey = await ed25519Bip32.getPublicKey(
@@ -19,12 +19,8 @@ describe('getPublicKey', () => {
 
 describe('publicAdd', () => {
   it(`returns correct public key from private key`, async () => {
-    const _publicKey = hexToBytes(
-      fixtures.cip3Icarus[0].nodes.bip39Node.publicKey,
-    );
-    const _tweak = hexToBytes(
-      fixtures.cip3Icarus[0].nodes.purposeNode.publicKey,
-    );
+    const _publicKey = hexToBytes(fixtures.cip3[0].nodes.bip39Node.publicKey);
+    const _tweak = hexToBytes(fixtures.cip3[0].nodes.purposeNode.publicKey);
     const added = ed25519Bip32.publicAdd(_publicKey, _tweak);
 
     expect(bytesToHex(added)).toBe(

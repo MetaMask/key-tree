@@ -445,7 +445,7 @@ export default {
       ],
     },
   ],
-  cip3Icarus: [
+  cip3: [
     {
       // taken from CIP-03 test vectors https://github.com/cardano-foundation/CIPs/blob/09d7d8ee1bd64f7e6b20b5a6cae088039dce00cb/CIP-0003/Icarus.md#test-vectors
       mnemonic:

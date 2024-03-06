@@ -34,8 +34,8 @@ export async function deriveChildKey({
   path,
   curve,
 }: DeriveChildKeyArgs): Promise<SLIP10Node> {
-  if (curve.masterNodeGenerationSpec === 'cip3Icarus') {
-    return entropyToCip3IcarusMasterNode(
+  if (curve.masterNodeGenerationSpec === 'cip3') {
+    return entropyToCip3MasterNode(
       mnemonicToEntropy(path, englishWordlist),
       curve,
     );
@@ -97,9 +97,9 @@ export async function createBip39KeyFromSeed(
  * @param curve - The curve to use.
  * @returns The root key pair consisting of 64-byte private key and 32-byte chain code.
  */
-export async function entropyToCip3IcarusMasterNode(
+export async function entropyToCip3MasterNode(
   entropy: Uint8Array,
-  curve: Extract<Curve, { masterNodeGenerationSpec: 'cip3Icarus' }>,
+  curve: Extract<Curve, { masterNodeGenerationSpec: 'cip3' }>,
 ): Promise<SLIP10Node> {
   const rootNode = pbkdf2(sha512, curve.secret, entropy, {
     c: 4096,

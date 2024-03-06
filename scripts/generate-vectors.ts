@@ -12,7 +12,7 @@ import {
 } from '../src';
 import { type Curve } from '../src/curves';
 import {
-  entropyToCip3IcarusMasterNode,
+  entropyToCip3MasterNode,
   createBip39KeyFromSeed,
 } from '../src/derivers/bip39';
 
@@ -62,7 +62,7 @@ function getRandomSeed(length = randomInt(16, 64)) {
  * @returns A random BIP-32 path.
  */
 function getRandomPath(
-  spec: 'bip32' | 'slip10' | 'cip3Icarus',
+  spec: 'bip32' | 'slip10' | 'cip3',
   length = randomInt(1, 20),
   hardened?: boolean,
 ) {
@@ -88,7 +88,7 @@ function getRandomPath(
  */
 async function getRandomKeyVector(
   node: SLIP10Node,
-  spec: 'bip32' | 'slip10' | 'cip3Icarus',
+  spec: 'bip32' | 'slip10' | 'cip3',
   hardened?: boolean,
 ) {
   const path = getRandomPath(spec, undefined, hardened);
@@ -120,7 +120,7 @@ async function getRandomKeyVector(
  * @param curve - The curve to use. Defaults to secp256k1.
  */
 async function getRandomVector(
-  spec: 'bip32' | 'slip10' | 'cip3Icarus',
+  spec: 'bip32' | 'slip10' | 'cip3',
   amount = 10,
   hardened?: boolean,
   curve: Curve = secp256k1,
@@ -130,7 +130,7 @@ async function getRandomVector(
     curve.masterNodeGenerationSpec === 'slip10'
       ? await createBip39KeyFromSeed(seed, curve)
       : // in the context of tests, we assume seed to be just random bytes which we use here as entropy
-        await entropyToCip3IcarusMasterNode(seed, curve);
+        await entropyToCip3MasterNode(seed, curve);
 
   return {
     hexSeed: bytesToHex(seed),
@@ -161,7 +161,7 @@ async function getRandomVector(
  * @returns The random vectors.
  */
 async function getRandomVectors(
-  spec: 'bip32' | 'slip10' | 'cip3Icarus',
+  spec: 'bip32' | 'slip10' | 'cip3',
   amount = 10,
   hardened?: boolean,
   curve: Curve = secp256k1,
@@ -193,10 +193,10 @@ async function getOutput() {
       unhardened: await getRandomVectors('slip10', 50, false),
       mixed: await getRandomVectors('bip32', 50),
     },
-    cip3Icarus: {
-      hardened: await getRandomVectors('cip3Icarus', 50, true, ed25519Bip32),
-      unhardened: await getRandomVectors('cip3Icarus', 50, false, ed25519Bip32),
-      mixed: await getRandomVectors('cip3Icarus', 50, undefined, ed25519Bip32),
+    cip3: {
+      hardened: await getRandomVectors('cip3', 50, true, ed25519Bip32),
+      unhardened: await getRandomVectors('cip3', 50, false, ed25519Bip32),
+      mixed: await getRandomVectors('cip3', 50, undefined, ed25519Bip32),
     },
   };
 }

@@ -24,8 +24,8 @@ const ethereumBip32PathParts = [
 
 describe('derivation', () => {
   describe('deriveKeyFromPath', () => {
-    it('derives the correct account key for cip3Icarus', async () => {
-      const fixture = fixtures.cip3Icarus[0];
+    it('derives the correct account key for cip3', async () => {
+      const fixture = fixtures.cip3[0];
 
       const { accountNode } = fixture.nodes;
       // generate parent key
@@ -33,7 +33,7 @@ describe('derivation', () => {
       const accountPath = fixture.derivationPath.slice(0, 3);
 
       const cardanoBip32Path = accountPath.map(
-        (pathElement) => `cip3Icarus:${pathElement}`,
+        (pathElement) => `cip3:${pathElement}`,
       );
       const multipath = [bip39Part, ...cardanoBip32Path] as SLIP10Path;
       const node = await deriveKeyFromPath({

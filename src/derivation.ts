@@ -8,7 +8,7 @@ import {
   BIP_39_PATH_REGEX,
   MIN_BIP_44_DEPTH,
   SLIP_10_PATH_REGEX,
-  CIP_3_ICARUS_PATH_REGEX,
+  CIP_3_PATH_REGEX,
 } from './constants';
 import type { SupportedCurve } from './curves';
 import { getCurveByName } from './curves';
@@ -172,7 +172,7 @@ export function validatePathSegment(
         !startsWithBip39 &&
         !BIP_32_PATH_REGEX.test(node) &&
         !SLIP_10_PATH_REGEX.test(node) &&
-        !CIP_3_ICARUS_PATH_REGEX.test(node)
+        !CIP_3_PATH_REGEX.test(node)
       ) {
         throw getMalformedError();
       }
@@ -180,7 +180,7 @@ export function validatePathSegment(
       node instanceof Uint8Array ||
       (!BIP_32_PATH_REGEX.test(node) &&
         !SLIP_10_PATH_REGEX.test(node) &&
-        !CIP_3_ICARUS_PATH_REGEX.test(node))
+        !CIP_3_PATH_REGEX.test(node))
     ) {
       throw getMalformedError();
     }
