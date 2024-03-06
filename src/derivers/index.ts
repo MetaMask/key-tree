@@ -2,6 +2,7 @@ import type { Curve } from '../curves';
 import type { SLIP10Node } from '../SLIP10Node';
 import * as bip32 from './bip32';
 import * as bip39 from './bip39';
+import * as cip3Icarus from './cip3Icarus';
 import * as slip10 from './slip10';
 
 export type DerivedKeys = {
@@ -27,6 +28,7 @@ export const derivers = {
   bip32,
   bip39,
   slip10,
+  cip3Icarus,
 };
 
 export { createBip39KeyFromSeed } from './bip39';
