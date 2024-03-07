@@ -11,7 +11,7 @@ import {
 } from '../src/derivers/bip39';
 import derivationVectors from './vectors/derivation.json';
 
-type Vector = typeof derivationVectors.bip32.hardened[0];
+type Vector = (typeof derivationVectors.bip32.hardened)[0];
 
 const masterNodeFromSeed = async (seed: Uint8Array, curve: Curve) => {
   return curve.masterNodeGenerationSpec === 'slip10'

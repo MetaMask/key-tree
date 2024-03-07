@@ -20,7 +20,7 @@ import {
 } from './cip3';
 
 const fixtureNodeToParentNode = (
-  fixtureNode: typeof fixtures.cip3[number]['nodes'][keyof typeof fixtures.cip3[number]['nodes']],
+  fixtureNode: (typeof fixtures.cip3)[number]['nodes'][keyof (typeof fixtures.cip3)[number]['nodes']],
 ) => ({
   privateKeyBytes: hexToBytes(fixtureNode.privateKey),
   publicKeyBytes: hexToBytes(fixtureNode.publicKey),
