@@ -45,17 +45,17 @@ function getByte(privateKey: Uint8Array, index: number): number {
 export const isValidPrivateKey = (privateKey: Uint8Array) => {
   /* eslint-disable no-bitwise */
   // Lowest 3 bits of the first byte must be zero
-  if (getByte(privateKey, 0) & 0b00000111) {
+  if ((getByte(privateKey, 0) & 0b00000111) !== 0) {
     return false;
   }
 
   // The highest bit of the last byte must be zero
-  if (getByte(privateKey, 31) & 0b10000000) {
+  if ((getByte(privateKey, 31) & 0b10000000) !== 0) {
     return false;
   }
 
   // The second highest bit of the last byte must be one
-  if (!(getByte(privateKey, 31) & 0b01000000)) {
+  if ((getByte(privateKey, 31) & 0b01000000) !== 0b01000000) {
     return false;
   }
   /* eslint-enable no-bitwise */
