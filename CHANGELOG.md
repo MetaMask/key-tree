@@ -8,25 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [9.1.0]
 ### Uncategorized
-- Use `ts-bridge` for building ([#175](https://github.com/MetaMask/key-tree/pull/175))
+### Added
+- Add support for Cardano key derivation according to CIP3-Icarus ([#158](https://github.com/MetaMask/key-tree/pull/158), [#170](https://github.com/MetaMask/key-tree/pull/170), [#171](https://github.com/MetaMask/key-tree/pull/171), [#172](https://github.com/MetaMask/key-tree/pull/172))
 - Export `getBIP44CoinTypeToAddressPathTuple` function ([#173](https://github.com/MetaMask/key-tree/pull/173))
-- Add 2024-04 audit report ([#174](https://github.com/MetaMask/key-tree/pull/174))
-- Validate CIP-3 master node entropy size ([#171](https://github.com/MetaMask/key-tree/pull/171))
-- Validate BIP-32-Ed25519 private keys ([#172](https://github.com/MetaMask/key-tree/pull/172))
-- Bump @metamask/utils from 8.3.0 to 8.4.0 ([#167](https://github.com/MetaMask/key-tree/pull/167))
-- Remove unneeded modular reduction in CIP-3 private key derivation ([#170](https://github.com/MetaMask/key-tree/pull/170))
-- Bump tar from 6.1.11 to 6.2.1 ([#169](https://github.com/MetaMask/key-tree/pull/169))
-- Update security code scanner file ([#166](https://github.com/MetaMask/key-tree/pull/166))
-- Support Cardano key derivation according to CIP3-Icarus ([#158](https://github.com/MetaMask/key-tree/pull/158))
-- Bump MetaMask dependencies ([#165](https://github.com/MetaMask/key-tree/pull/165))
-- Enabling security code scanner ([#164](https://github.com/MetaMask/key-tree/pull/164))
-- Bump ip from 2.0.0 to 2.0.1 ([#163](https://github.com/MetaMask/key-tree/pull/163))
-- Bump @metamask/eslint-config from 12.1.0 to 12.2.0 ([#160](https://github.com/MetaMask/key-tree/pull/160))
-- Synchronise package with module template (November 2023) ([#157](https://github.com/MetaMask/key-tree/pull/157))
-- Bump @babel/traverse from 7.22.8 to 7.23.2 ([#156](https://github.com/MetaMask/key-tree/pull/156))
+
+### Changed
 - Replace `@noble/ed25519` and `@noble/secp256k1` with `@noble/curves` ([#154](https://github.com/MetaMask/key-tree/pull/154))
-- Bump postcss from 8.4.25 to 8.4.31 ([#153](https://github.com/MetaMask/key-tree/pull/153))
-- deps: @metamask/utils@^6.0.1->^8.1.0 ([#151](https://github.com/MetaMask/key-tree/pull/151))
+- Bump several MetaMask dependencies ([#151](https://github.com/MetaMask/key-tree/pull/151), [#165](https://github.com/MetaMask/key-tree/pull/165), [#167](https://github.com/MetaMask/key-tree/pull/167))
 
 ## [9.0.0]
 ### Changed
