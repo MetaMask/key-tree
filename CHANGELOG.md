@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [9.1.0]
-### Uncategorized
 ### Added
 - Add support for Cardano key derivation according to CIP3-Icarus ([#158](https://github.com/MetaMask/key-tree/pull/158), [#170](https://github.com/MetaMask/key-tree/pull/170), [#171](https://github.com/MetaMask/key-tree/pull/171), [#172](https://github.com/MetaMask/key-tree/pull/172))
 - Export `getBIP44CoinTypeToAddressPathTuple` function ([#173](https://github.com/MetaMask/key-tree/pull/173))
