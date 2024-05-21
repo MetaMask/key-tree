@@ -96,5 +96,8 @@
     "allowScripts": {
       "@lavamoat/preinstall-always-fail": false
     }
+  },
+  "resolutions": {
+    "@ts-bridge/cli@^0.1.4": "patch:@ts-bridge/cli@npm%3A0.1.4#./.yarn/patches/@ts-bridge-cli-npm-0.1.4-7b3932d7f6.patch"
   }
 }
