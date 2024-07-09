@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [9.1.2]
-### Uncategorized
+### Changed
 - Bump `@metamask/utils` from `^8.3.0` to `^9.0.0` ([#181](https://github.com/MetaMask/key-tree/pull/181))
 
 ## [9.1.1]
