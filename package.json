@@ -1,6 +1,6 @@
 {
   "name": "@metamask/key-tree",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "description": "An interface over BIP-32 and BIP-39 key derivation paths",
   "homepage": "https://github.com/MetaMask/key-tree#readme",
   "bugs": {
@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@metamask/scure-bip39": "^2.1.1",
-    "@metamask/utils": "^8.3.0",
+    "@metamask/utils": "^9.0.0",
     "@noble/curves": "^1.2.0",
     "@noble/hashes": "^1.3.2",
     "@scure/base": "^1.0.0"
