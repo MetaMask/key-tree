@@ -45,7 +45,9 @@ export type Curve = {
  * @param curveName - The name of the curve to get.
  * @returns The curve.
  */
-export function getCurveByName(curveName: SupportedCurve): Curve {
+export function getCurveByName<CurveName extends SupportedCurve>(
+  curveName: CurveName,
+): (typeof curves)[CurveName] {
   return curves[curveName];
 }
 

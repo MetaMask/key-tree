@@ -1,3 +1,4 @@
+import type { Hex } from '@metamask/utils';
 import { assert, bytesToHex } from '@metamask/utils';
 
 import type { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
@@ -7,6 +8,7 @@ import { BYTES_KEY_LENGTH } from './constants';
 import type { SupportedCurve } from './curves';
 import { getCurveByName } from './curves';
 import { deriveKeyFromPath } from './derivation';
+import { createBip39KeyFromSeed } from './derivers';
 import { publicKeyToEthAddress } from './derivers/bip32';
 import {
   getBytes,
@@ -261,6 +263,27 @@ export class SLIP10Node implements SLIP10NodeInterface {
       depth: derivationPath.length - 1,
       curve,
     });
+  }
+
+  /**
+   * Create a new SLIP-10 node from a BIP-39 seed (not a mnemonic phrase!).
+   *
+   * @param seed - The seed to use for the node. The seed must be between 16 and
+   * 64 bytes long. It may be a hexadecimal encoded string or a `Uint8Array`.
+   * @param curve - The curve to use for the node. Note that only `secp256k1`
+   * and `ed25519` are supported.
+   * @returns A new SLIP-10 node.
+   */
+  static async fromSeed(
+    seed: Hex | Uint8Array,
+    curve: Exclude<SupportedCurve, 'ed25519Bip32'>,
+  ) {
+    validateCurve(curve);
+
+    // We don't validate the length of the seed here, because the
+    // `createBip39KeyFromSeed` function will do that for us.
+    const seedBytes = getBytesUnsafe(seed);
+    return createBip39KeyFromSeed(seedBytes, getCurveByName(curve));
   }
 
   static #constructorGuard = Symbol('SLIP10Node.constructor');

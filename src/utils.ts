@@ -314,15 +314,17 @@ export function getBytes(value: unknown, length: number): Uint8Array {
  * `Uint8Array` is not empty (i.e., all bytes are zero).
  *
  * @param value - The value to convert to a `Uint8Array`.
- * @param length - The length to validate the `Uint8Array` against.
+ * @param length - The length to validate the `Uint8Array` against. If the
+ * length is 0, the length is not validated.
  * @returns The `Uint8Array` corresponding to the hexadecimal string.
  */
-export function getBytesUnsafe(value: unknown, length: number): Uint8Array {
+export function getBytesUnsafe(value: unknown, length = 0): Uint8Array {
   if (value instanceof Uint8Array) {
     assert(
-      value.length === length,
+      length > 0 && value.length === length,
       `Invalid value: Must be a ${length}-byte byte array.`,
     );
+
     return value;
   }
 
