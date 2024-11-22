@@ -1,4 +1,5 @@
 import { bytesToHex } from '@metamask/utils';
+import { webcrypto } from 'crypto';
 
 import {
   hmacSha512,
@@ -8,6 +9,10 @@ import {
   sha256,
 } from './cryptography';
 import * as utils from './utils';
+
+// Node.js <20 doesn't have `globalThis.crypto`, so we need to define it.
+// TODO: Remove this once we drop support for Node.js <20.
+Object.defineProperty(globalThis, 'crypto', { value: webcrypto });
 
 describe('hmacSha512', () => {
   it('returns the HMAC-SHA-512 when using a custom implementation', async () => {
