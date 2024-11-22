@@ -237,12 +237,12 @@ export class SLIP10Node implements SLIP10NodeInterface {
       privateKey,
       publicKey,
       chainCode,
-      curve: curveName,
+      curve,
     } = options;
 
     const chainCodeBytes = getBytes(chainCode, BYTES_KEY_LENGTH);
 
-    validateCurve(curveName);
+    validateCurve(curve);
     validateBIP32Depth(depth);
     validateBIP32Index(index);
     validateRootIndex(index, depth);
@@ -253,7 +253,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       depth,
     );
 
-    const curveObject = getCurveByName(curveName);
+    const curveObject = getCurveByName(curve);
 
     if (privateKey) {
       const privateKeyBytes = getBytesUnsafe(
@@ -262,7 +262,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       );
       assert(
         curveObject.isValidPrivateKey(privateKeyBytes),
-        `Invalid private key: Value is not a valid ${curveName} private key.`,
+        `Invalid private key: Value is not a valid ${curve} private key.`,
       );
 
       return new SLIP10Node(
@@ -274,7 +274,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
           chainCode: chainCodeBytes,
           privateKey: privateKeyBytes,
           publicKey: await curveObject.getPublicKey(privateKeyBytes),
-          curve: curveName,
+          curve,
         },
         this.#constructorGuard,
       );
@@ -291,7 +291,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
           index,
           chainCode: chainCodeBytes,
           publicKey: publicKeyBytes,
-          curve: curveName,
+          curve,
         },
         this.#constructorGuard,
       );

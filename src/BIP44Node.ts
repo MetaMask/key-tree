@@ -156,10 +156,24 @@ export class BIP44Node implements BIP44NodeInterface {
       });
     }
 
-    validateBIP44Depth(options.depth);
+    const {
+      privateKey,
+      publicKey,
+      chainCode,
+      depth,
+      parentFingerprint,
+      index,
+    } = options;
+
+    validateBIP44Depth(depth);
 
     const node = await SLIP10Node.fromExtendedKey({
-      ...options,
+      privateKey,
+      publicKey,
+      chainCode,
+      depth,
+      parentFingerprint,
+      index,
       curve: 'secp256k1',
     });
 
