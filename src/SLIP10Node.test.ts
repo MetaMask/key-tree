@@ -41,14 +41,14 @@ describe('SLIP10Node', () => {
   describe('fromExtendedKey', () => {
     describe('using an object', () => {
       it('initializes a new node from a private key', async () => {
-        const { privateKey, chainCode } = await deriveChildKey({
+        const { privateKeyBytes, chainCodeBytes } = await deriveChildKey({
           path: fixtures.local.mnemonic,
           curve: secp256k1,
         });
 
         const node = await SLIP10Node.fromExtendedKey({
-          privateKey,
-          chainCode,
+          privateKey: privateKeyBytes,
+          chainCode: chainCodeBytes,
           depth: 0,
           parentFingerprint: 0,
           index: 0,
