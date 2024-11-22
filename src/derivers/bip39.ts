@@ -1,16 +1,58 @@
-import { mnemonicToEntropy, mnemonicToSeed } from '@metamask/scure-bip39';
+import { mnemonicToEntropy } from '@metamask/scure-bip39';
 import { wordlist as englishWordlist } from '@metamask/scure-bip39/dist/wordlists/english';
-import { assert } from '@metamask/utils';
-import { hmac } from '@noble/hashes/hmac';
-import { pbkdf2 } from '@noble/hashes/pbkdf2';
-import { sha512 } from '@noble/hashes/sha512';
+import { assert, stringToBytes } from '@metamask/utils';
 
 import type { DeriveChildKeyArgs } from '.';
 import type { BIP39StringNode } from '../constants';
 import { BYTES_KEY_LENGTH } from '../constants';
+import { hmacSha512, pbkdf2Sha512 } from '../cryptography';
 import type { Curve } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { getFingerprint } from '../utils';
+
+/**
+ * Encode a BIP-39 mnemonic phrase to a `Uint8Array` for use in seed generation.
+ * If the mnemonic is already a `Uint8Array`, it is assumed to contain the
+ * indices of the words in the wordlist.
+ *
+ * @param mnemonic - The mnemonic phrase to encode.
+ * @param wordlist - The wordlist to use.
+ * @returns The encoded mnemonic phrase.
+ */
+function encodeMnemonicPhrase(
+  mnemonic: string | Uint8Array,
+  wordlist: string[],
+) {
+  if (typeof mnemonic === 'string') {
+    return stringToBytes(mnemonic.normalize('NFKD'));
+  }
+
+  return stringToBytes(
+    Array.from(new Uint16Array(mnemonic.buffer))
+      .map((i) => wordlist[i])
+      .join(' '),
+  );
+}
+
+/**
+ * Convert a BIP-39 mnemonic phrase to a seed.
+ *
+ * @param mnemonic - The BIP-39 mnemonic phrase to convert. If the mnemonic is a
+ * `Uint8Array`, it is assumed to contain the indices of the words in the
+ * English wordlist.
+ * @param passphrase - The passphrase to use.
+ */
+export async function mnemonicToSeed(
+  mnemonic: string | Uint8Array,
+  passphrase = '',
+) {
+  return await pbkdf2Sha512(
+    encodeMnemonicPhrase(mnemonic, englishWordlist),
+    stringToBytes(`mnemonic${passphrase}`.normalize('NFKD')),
+    2048,
+    64,
+  );
+}
 
 /**
  * Convert a BIP-39 mnemonic phrase to a multi path.
@@ -36,10 +78,7 @@ export async function deriveChildKey({
 }: DeriveChildKeyArgs): Promise<SLIP10Node> {
   switch (curve.masterNodeGenerationSpec) {
     case 'slip10':
-      return createBip39KeyFromSeed(
-        await mnemonicToSeed(path, englishWordlist),
-        curve,
-      );
+      return createBip39KeyFromSeed(await mnemonicToSeed(path), curve);
     case 'cip3':
       return entropyToCip3MasterNode(
         mnemonicToEntropy(path, englishWordlist),
@@ -67,7 +106,7 @@ export async function createBip39KeyFromSeed(
     'Invalid seed: The seed must be between 16 and 64 bytes long.',
   );
 
-  const key = hmac(sha512, curve.secret, seed);
+  const key = await hmacSha512(curve.secret, seed);
   const privateKey = key.slice(0, BYTES_KEY_LENGTH);
   const chainCode = key.slice(BYTES_KEY_LENGTH);
 
@@ -111,10 +150,7 @@ export async function entropyToCip3MasterNode(
     'Invalid entropy: The entropy must be between 16 and 64 bytes long.',
   );
 
-  const rootNode = pbkdf2(sha512, curve.secret, entropy, {
-    c: 4096,
-    dkLen: 96,
-  });
+  const rootNode = await pbkdf2Sha512(curve.secret, entropy, 4096, 96);
 
   // Consistent with the Icarus derivation scheme.
   // https://github.com/cardano-foundation/CIPs/blob/09d7d8ee1bd64f7e6b20b5a6cae088039dce00cb/CIP-0003/Icarus.md

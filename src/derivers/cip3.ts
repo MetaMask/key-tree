@@ -170,7 +170,7 @@ export const derivePrivateKey = async ({
     : getKeyExtension(Z_TAGS.normal, parentNode.publicKeyBytes, childIndex);
 
   // entropy = Fcp(extension)
-  const entropy = generateEntropy({
+  const entropy = await generateEntropy({
     chainCode: parentNode.chainCodeBytes,
     extension,
   });
@@ -231,7 +231,7 @@ export const deriveChainCode = async ({
       );
 
   // entropy = Fcp(extension)
-  const entropy = generateEntropy({
+  const entropy = await generateEntropy({
     chainCode: parentNode.chainCodeBytes,
     extension,
   });
@@ -271,7 +271,7 @@ export const derivePublicKey = async ({
   );
 
   // entropy = Fcp(extension)
-  const entropy = generateEntropy({
+  const entropy = await generateEntropy({
     chainCode: parentNode.chainCodeBytes,
     extension,
   });

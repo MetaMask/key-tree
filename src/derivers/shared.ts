@@ -4,11 +4,10 @@ import {
   concatBytes,
   hexToBytes,
 } from '@metamask/utils';
-import { hmac } from '@noble/hashes/hmac';
-import { sha512 } from '@noble/hashes/sha512';
 
 import type { DeriveChildKeyArgs, DerivedKeys } from '.';
 import { BIP_32_HARDENED_OFFSET, UNPREFIXED_PATH_REGEX } from '../constants';
+import { hmacSha512 } from '../cryptography';
 import type { Curve } from '../curves';
 import { mod } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
@@ -59,7 +58,7 @@ export async function deriveChildKey(
       curve,
     });
 
-    const entropy = generateEntropy({
+    const entropy = await generateEntropy({
       chainCode: node.chainCodeBytes,
       extension: secretExtension,
     });
@@ -79,7 +78,7 @@ export async function deriveChildKey(
     childIndex,
   });
 
-  const entropy = generateEntropy({
+  const entropy = await generateEntropy({
     chainCode: node.chainCodeBytes,
     extension: publicExtension,
   });
@@ -464,8 +463,11 @@ type GenerateEntropyArgs = {
  * @param args.extension - The extension bytes.
  * @returns The generated entropy bytes.
  */
-export function generateEntropy({ chainCode, extension }: GenerateEntropyArgs) {
-  return hmac(sha512, chainCode, extension);
+export async function generateEntropy({
+  chainCode,
+  extension,
+}: GenerateEntropyArgs) {
+  return await hmacSha512(chainCode, extension);
 }
 
 /**

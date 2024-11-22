@@ -1,8 +1,8 @@
 import { assert } from '@metamask/utils';
-import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 
 import type { DeriveChildKeyArgs } from '.';
 import { BYTES_KEY_LENGTH } from '../constants';
+import { keccak256 } from '../cryptography';
 import { secp256k1 } from '../curves';
 import type { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, validateBIP32Index } from '../utils';
@@ -102,7 +102,7 @@ async function handleError(
       curve,
     });
 
-    const newEntropy = generateEntropy({
+    const newEntropy = await generateEntropy({
       chainCode,
       extension: secretExtension,
     });
@@ -119,7 +119,7 @@ async function handleError(
     childIndex: childIndex + 1,
   });
 
-  const newEntropy = generateEntropy({
+  const newEntropy = await generateEntropy({
     chainCode,
     extension: publicExtension,
   });

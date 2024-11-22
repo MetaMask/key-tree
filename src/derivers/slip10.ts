@@ -50,7 +50,7 @@ async function handleError(
   // generated as follows:
   // Key material (32 bytes), child chain code (32 bytes) =
   //   HMAC-SHA512(parent chain code, 0x01 || chain code from invalid key || index).
-  const newEntropy = generateEntropy({
+  const newEntropy = await generateEntropy({
     chainCode,
     extension: concatBytes([
       0x01,

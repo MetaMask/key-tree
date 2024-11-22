@@ -31,4 +31,4 @@ export const derivers = {
   cip3,
 };
 
-export { createBip39KeyFromSeed } from './bip39';
+export { createBip39KeyFromSeed, mnemonicToSeed } from './bip39';
