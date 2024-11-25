@@ -118,7 +118,7 @@ export async function pbkdf2Sha512(
 
   if (isWebCryptoSupported()) {
     /* eslint-disable no-restricted-globals */
-    const result = await crypto.subtle.importKey(
+    const key = await crypto.subtle.importKey(
       'raw',
       password,
       { name: 'PBKDF2' },
@@ -133,7 +133,9 @@ export async function pbkdf2Sha512(
         iterations,
         hash: { name: 'SHA-512' },
       },
-      result,
+      key,
+      // `keyLength` is the number of bytes, but `deriveBits` expects the
+      // number of bits, so we multiply by 8.
       keyLength * 8,
     );
 
