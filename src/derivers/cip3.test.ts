@@ -1,9 +1,5 @@
 import { bytesToHex, hexToBytes } from '@metamask/utils';
 
-import fixtures from '../../test/fixtures';
-import { BIP_32_HARDENED_OFFSET } from '../constants';
-import { ed25519, ed25519Bip32 } from '../curves';
-import { SLIP10Node } from '../SLIP10Node';
 import {
   add,
   bigIntToBytes,
@@ -18,6 +14,10 @@ import {
   toReversed,
   trunc28Mul8,
 } from './cip3';
+import fixtures from '../../test/fixtures';
+import { BIP_32_HARDENED_OFFSET } from '../constants';
+import { ed25519, ed25519Bip32 } from '../curves';
+import { SLIP10Node } from '../SLIP10Node';
 
 const fixtureNodeToParentNode = (
   fixtureNode: (typeof fixtures.cip3)[number]['nodes'][keyof (typeof fixtures.cip3)[number]['nodes']],

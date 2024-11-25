@@ -239,7 +239,7 @@ export class BIP44Node implements BIP44NodeInterface {
     return new BIP44Node(node);
   }
 
-  #node: SLIP10Node;
+  readonly #node: SLIP10Node;
 
   public get depth(): BIP44Depth {
     return this.#node.depth as BIP44Depth;

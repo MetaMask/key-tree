@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export default {
   // Fixtures defined and used in this package
   local: {

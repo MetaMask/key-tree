@@ -1,6 +1,5 @@
 import { bytesToHex } from '@metamask/utils';
 
-import fixtures from '../test/fixtures';
 import type { HDPathTuple, SLIP10Path } from './constants';
 import { secp256k1 } from './curves';
 import { deriveKeyFromPath, validatePathSegment } from './derivation';
@@ -8,6 +7,7 @@ import { derivers } from './derivers';
 import { privateKeyToEthAddress } from './derivers/bip32';
 import type { SLIP10Node } from './SLIP10Node';
 import { getUnhardenedBIP32NodeToken, mnemonicPhraseToBytes } from './utils';
+import fixtures from '../test/fixtures';
 
 const {
   bip32: { deriveChildKey: bip32Derive },
@@ -310,7 +310,6 @@ describe('derivation', () => {
       ];
 
       for (const input of inputs) {
-        // eslint-disable-next-line no-loop-func
         await expect(
           bip32Derive({
             path: input,

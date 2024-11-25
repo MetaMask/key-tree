@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { hexToBytes } from '@metamask/utils';
 import { webcrypto } from 'crypto';
 
+import derivationVectors from './vectors/derivation.json';
 import type { SLIP10PathTuple } from '../src';
 import { secp256k1 } from '../src';
 import type { Curve } from '../src/curves';
@@ -11,7 +11,6 @@ import {
   entropyToCip3MasterNode,
 } from '../src/derivers/bip39';
 import * as utils from '../src/utils';
-import derivationVectors from './vectors/derivation.json';
 
 // Node.js <20 doesn't have `globalThis.crypto`, so we need to define it.
 // TODO: Remove this once we drop support for Node.js <20.

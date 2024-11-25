@@ -378,7 +378,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
     );
   }
 
-  static #constructorGuard = Symbol('SLIP10Node.constructor');
+  static readonly #constructorGuard = Symbol('SLIP10Node.constructor');
 
   public readonly curve: SupportedCurve;
 
@@ -396,7 +396,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   public readonly publicKeyBytes: Uint8Array;
 
-  #cryptographicFunctions: CryptographicFunctions;
+  readonly #cryptographicFunctions: CryptographicFunctions;
 
   // eslint-disable-next-line no-restricted-syntax
   private constructor(
