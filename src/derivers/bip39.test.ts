@@ -21,6 +21,7 @@ const TEST_MNEMONIC_PHRASE =
 
 describe('mnemonicToSeed', () => {
   describe('without passphrase', () => {
+    // https://github.com/MetaMask/scure-bip39/blob/612c6952ca8aee034e32dd0dc307c1d96e325ae2/test/bip39.test.ts#L127-L132
     const seed = new Uint8Array([
       213, 198, 189, 89, 252, 121, 48, 207, 56, 105, 8, 152, 129, 116, 186, 218,
       26, 71, 225, 55, 201, 122, 153, 178, 5, 235, 40, 132, 179, 248, 166, 147,
@@ -59,6 +60,8 @@ describe('mnemonicToSeed', () => {
 
   describe('with passphrase', () => {
     const passphrase = 'passphrase';
+
+    // https://github.com/MetaMask/scure-bip39/blob/612c6952ca8aee034e32dd0dc307c1d96e325ae2/test/bip39.test.ts#L162-L167
     const seed = new Uint8Array([
       180, 211, 212, 196, 151, 216, 92, 25, 11, 35, 14, 186, 80, 80, 141, 156,
       245, 11, 25, 118, 50, 75, 80, 36, 116, 113, 11, 112, 36, 86, 70, 188, 92,
