@@ -24,7 +24,7 @@ export type CryptographicFunctions = {
    * @param password - The password to hash.
    * @param salt - The salt to use.
    * @param iterations - The number of iterations.
-   * @param keyLength - The desired key length.
+   * @param keyLength - The desired key length in bytes.
    * @returns The PBKDF2 of the password.
    */
   pbkdf2Sha512?: (

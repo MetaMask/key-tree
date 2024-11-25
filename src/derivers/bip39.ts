@@ -119,7 +119,6 @@ export async function deriveChildKey(
       );
     case 'cip3':
       return entropyToCip3MasterNode(
-        // TODO: Replace this.
         mnemonicToEntropy(path, englishWordlist),
         curve,
         cryptographicFunctions,
