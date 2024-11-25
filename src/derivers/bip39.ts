@@ -5,6 +5,7 @@ import { assert, stringToBytes } from '@metamask/utils';
 import type { DeriveChildKeyArgs } from '.';
 import type { BIP39StringNode } from '../constants';
 import { BYTES_KEY_LENGTH } from '../constants';
+import type { CryptographicFunctions } from '../cryptography';
 import { hmacSha512, pbkdf2Sha512 } from '../cryptography';
 import type { Curve } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
@@ -41,16 +42,20 @@ function encodeMnemonicPhrase(
  * `Uint8Array`, it is assumed to contain the indices of the words in the
  * English wordlist.
  * @param passphrase - The passphrase to use.
+ * @param cryptographicFunctions - The cryptographic functions to use. If
+ * provided, these will be used instead of the built-in implementations.
  */
 export async function mnemonicToSeed(
   mnemonic: string | Uint8Array,
   passphrase = '',
+  cryptographicFunctions?: CryptographicFunctions,
 ) {
   return await pbkdf2Sha512(
     encodeMnemonicPhrase(mnemonic, englishWordlist),
     stringToBytes(`mnemonic${passphrase}`.normalize('NFKD')),
     2048,
     64,
+    cryptographicFunctions,
   );
 }
 
@@ -70,19 +75,27 @@ export function bip39MnemonicToMultipath(mnemonic: string): BIP39StringNode {
  * @param options - The options for creating the node.
  * @param options.path - The multi path.
  * @param options.curve - The curve to use for derivation.
+ * @param cryptographicFunctions - The cryptographic functions to use. If
+ * provided, these will be used instead of the built-in implementations.
  * @returns The node.
  */
-export async function deriveChildKey({
-  path,
-  curve,
-}: DeriveChildKeyArgs): Promise<SLIP10Node> {
+export async function deriveChildKey(
+  { path, curve }: DeriveChildKeyArgs,
+  cryptographicFunctions?: CryptographicFunctions,
+): Promise<SLIP10Node> {
   switch (curve.masterNodeGenerationSpec) {
     case 'slip10':
-      return createBip39KeyFromSeed(await mnemonicToSeed(path), curve);
+      return createBip39KeyFromSeed(
+        await mnemonicToSeed(path, '', cryptographicFunctions),
+        curve,
+        cryptographicFunctions,
+      );
     case 'cip3':
       return entropyToCip3MasterNode(
+        // TODO: Replace this.
         mnemonicToEntropy(path, englishWordlist),
         curve,
+        cryptographicFunctions,
       );
     default:
       throw new Error('Unsupported master node generation spec.');
@@ -94,19 +107,22 @@ export async function deriveChildKey({
  *
  * @param seed - The cryptographic seed bytes.
  * @param curve - The curve to use.
+ * @param cryptographicFunctions - The cryptographic functions to use. If
+ * provided, these will be used instead of the built-in implementations.
  * @returns An object containing the corresponding BIP-39 master key and chain
  * code.
  */
 export async function createBip39KeyFromSeed(
   seed: Uint8Array,
   curve: Extract<Curve, { masterNodeGenerationSpec: 'slip10' }>,
+  cryptographicFunctions?: CryptographicFunctions,
 ): Promise<SLIP10Node> {
   assert(
     seed.length >= 16 && seed.length <= 64,
     'Invalid seed: The seed must be between 16 and 64 bytes long.',
   );
 
-  const key = await hmacSha512(curve.secret, seed);
+  const key = await hmacSha512(curve.secret, seed, cryptographicFunctions);
   const privateKey = key.slice(0, BYTES_KEY_LENGTH);
   const chainCode = key.slice(BYTES_KEY_LENGTH);
 
@@ -120,15 +136,18 @@ export async function createBip39KeyFromSeed(
     curve.compressedPublicKeyLength,
   );
 
-  return SLIP10Node.fromExtendedKey({
-    privateKey,
-    chainCode,
-    masterFingerprint,
-    depth: 0,
-    parentFingerprint: 0,
-    index: 0,
-    curve: curve.name,
-  });
+  return SLIP10Node.fromExtendedKey(
+    {
+      privateKey,
+      chainCode,
+      masterFingerprint,
+      depth: 0,
+      parentFingerprint: 0,
+      index: 0,
+      curve: curve.name,
+    },
+    cryptographicFunctions,
+  );
 }
 
 /**
@@ -139,18 +158,27 @@ export async function createBip39KeyFromSeed(
  *
  * @param entropy - The entropy value.
  * @param curve - The curve to use.
+ * @param cryptographicFunctions - The cryptographic functions to use. If
+ * provided, these will be used instead of the built-in implementations.
  * @returns The root key pair consisting of 64-byte private key and 32-byte chain code.
  */
 export async function entropyToCip3MasterNode(
   entropy: Uint8Array,
   curve: Extract<Curve, { masterNodeGenerationSpec: 'cip3' }>,
+  cryptographicFunctions?: CryptographicFunctions,
 ): Promise<SLIP10Node> {
   assert(
     entropy.length >= 16 && entropy.length <= 64,
     'Invalid entropy: The entropy must be between 16 and 64 bytes long.',
   );
 
-  const rootNode = await pbkdf2Sha512(curve.secret, entropy, 4096, 96);
+  const rootNode = await pbkdf2Sha512(
+    curve.secret,
+    entropy,
+    4096,
+    96,
+    cryptographicFunctions,
+  );
 
   // Consistent with the Icarus derivation scheme.
   // https://github.com/cardano-foundation/CIPs/blob/09d7d8ee1bd64f7e6b20b5a6cae088039dce00cb/CIP-0003/Icarus.md
@@ -170,13 +198,16 @@ export async function entropyToCip3MasterNode(
     curve.compressedPublicKeyLength,
   );
 
-  return SLIP10Node.fromExtendedKey({
-    privateKey,
-    chainCode,
-    masterFingerprint,
-    depth: 0,
-    parentFingerprint: 0,
-    index: 0,
-    curve: curve.name,
-  });
+  return SLIP10Node.fromExtendedKey(
+    {
+      privateKey,
+      chainCode,
+      masterFingerprint,
+      depth: 0,
+      parentFingerprint: 0,
+      index: 0,
+      curve: curve.name,
+    },
+    cryptographicFunctions,
+  );
 }
