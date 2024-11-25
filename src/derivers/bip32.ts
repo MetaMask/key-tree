@@ -26,7 +26,7 @@ import { isValidBytesKey, validateBIP32Index } from '../utils';
  * address.
  * @returns The Ethereum address corresponding to the given key.
  */
-export function privateKeyToEthAddress(key: Uint8Array) {
+export function privateKeyToEthAddress(key: Uint8Array): Uint8Array {
   assert(
     key instanceof Uint8Array && isValidBytesKey(key, BYTES_KEY_LENGTH),
     'Invalid key: The key must be a 32-byte, non-zero Uint8Array.',
@@ -47,7 +47,7 @@ export function privateKeyToEthAddress(key: Uint8Array) {
  * address.
  * @returns The Ethereum address corresponding to the given key.
  */
-export function publicKeyToEthAddress(key: Uint8Array) {
+export function publicKeyToEthAddress(key: Uint8Array): Uint8Array {
   assert(
     key instanceof Uint8Array &&
       isValidBytesKey(key, secp256k1.publicKeyLength),

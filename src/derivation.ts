@@ -167,7 +167,7 @@ export function validatePathSegment(
   path: SLIP10Path,
   hasKey: boolean,
   depth?: number,
-) {
+): void {
   if ((path as any).length === 0) {
     throw new Error(`Invalid HD path segment: The segment must not be empty.`);
   }
@@ -237,6 +237,6 @@ export function validatePathSegment(
  *
  * @returns The error.
  */
-function getMalformedError() {
+function getMalformedError(): Error {
   return new Error('Invalid HD path segment: The path segment is malformed.');
 }

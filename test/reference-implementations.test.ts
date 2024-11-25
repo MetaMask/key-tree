@@ -1,3 +1,4 @@
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
 import { webcrypto } from 'crypto';
 
 import fixtures from './fixtures';

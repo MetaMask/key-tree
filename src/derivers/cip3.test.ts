@@ -21,7 +21,11 @@ import { SLIP10Node } from '../SLIP10Node';
 
 const fixtureNodeToParentNode = (
   fixtureNode: (typeof fixtures.cip3)[number]['nodes'][keyof (typeof fixtures.cip3)[number]['nodes']],
-) => ({
+): {
+  privateKeyBytes: Uint8Array;
+  publicKeyBytes: Uint8Array;
+  chainCodeBytes: Uint8Array;
+} => ({
   privateKeyBytes: hexToBytes(fixtureNode.privateKey),
   publicKeyBytes: hexToBytes(fixtureNode.publicKey),
   chainCodeBytes: hexToBytes(fixtureNode.chainCode),

@@ -305,6 +305,7 @@ describe('derivation', () => {
         String(1.1),
         String(2147483649),
         String(Number.MAX_SAFE_INTEGER),
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         String({}),
         String('foo'),
       ];
