@@ -39,6 +39,22 @@ describe('mnemonicToSeed', () => {
       const generatedSeed = await mnemonicToSeed(mnemonic);
       expect(generatedSeed).toStrictEqual(seed);
     });
+
+    it('throws if the length of the mnemonic phrase is invalid', async () => {
+      await expect(mnemonicToSeed('test')).rejects.toThrow(
+        'Invalid mnemonic phrase: The mnemonic phrase must consist of 12, 15, 18, 21, or 24 words.',
+      );
+    });
+
+    it('throws if the mnemonic phrase contains invalid words', async () => {
+      await expect(
+        mnemonicToSeed(
+          'test test test test test test test test test invalid mnemonic phrase',
+        ),
+      ).rejects.toThrow(
+        'Invalid mnemonic phrase: The mnemonic phrase contains an unknown word.',
+      );
+    });
   });
 
   describe('with passphrase', () => {

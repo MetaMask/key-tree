@@ -11,6 +11,31 @@ import type { Curve } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { getFingerprint } from '../utils';
 
+const MNEMONIC_PHRASE_LENGTHS = [12, 15, 18, 21, 24];
+
+/**
+ * Validate a BIP-39 mnemonic phrase. The phrase must:
+ *
+ * - Consist of 12, 15, 18, 21, or 24 words.
+ * - Contain only words from the English wordlist.
+ *
+ * @param mnemonicPhrase - The mnemonic phrase to validate.
+ * @throws If the mnemonic phrase is invalid.
+ */
+function validateMnemonicPhrase(mnemonicPhrase: string) {
+  const words = mnemonicPhrase.split(' ');
+
+  assert(
+    MNEMONIC_PHRASE_LENGTHS.includes(words.length),
+    `Invalid mnemonic phrase: The mnemonic phrase must consist of 12, 15, 18, 21, or 24 words.`,
+  );
+
+  assert(
+    words.every((word) => englishWordlist.includes(word)),
+    'Invalid mnemonic phrase: The mnemonic phrase contains an unknown word.',
+  );
+}
+
 /**
  * Encode a BIP-39 mnemonic phrase to a `Uint8Array` for use in seed generation.
  * If the mnemonic is already a `Uint8Array`, it is assumed to contain the
@@ -25,14 +50,16 @@ function encodeMnemonicPhrase(
   wordlist: string[],
 ) {
   if (typeof mnemonic === 'string') {
+    validateMnemonicPhrase(mnemonic);
     return stringToBytes(mnemonic.normalize('NFKD'));
   }
 
-  return stringToBytes(
-    Array.from(new Uint16Array(mnemonic.buffer))
-      .map((i) => wordlist[i])
-      .join(' '),
-  );
+  const mnemonicString = Array.from(new Uint16Array(mnemonic.buffer))
+    .map((i) => wordlist[i])
+    .join(' ');
+
+  validateMnemonicPhrase(mnemonicString);
+  return stringToBytes(mnemonicString);
 }
 
 /**
