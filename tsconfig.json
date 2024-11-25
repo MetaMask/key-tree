@@ -10,7 +10,8 @@
     "noErrorTruncation": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
-    "target": "es2020"
+    "target": "es2020",
+    "resolveJsonModule": true
   },
   "exclude": ["./dist", "**/node_modules"]
 }
