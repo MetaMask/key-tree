@@ -77,9 +77,10 @@ export async function mnemonicToSeed(
   passphrase = '',
   cryptographicFunctions?: CryptographicFunctions,
 ) {
+  const salt = `mnemonic${passphrase}`.normalize('NFKD');
   return await pbkdf2Sha512(
     encodeMnemonicPhrase(mnemonic, englishWordlist),
-    stringToBytes(`mnemonic${passphrase}`.normalize('NFKD')),
+    stringToBytes(salt),
     2048,
     64,
     cryptographicFunctions,
