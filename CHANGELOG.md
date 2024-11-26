@@ -9,16 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.0.0]
 
-### Uncategorized
+### Added
 
-- Add network property ([#200](https://github.com/MetaMask/key-tree/pull/200))
-- chore!: Synchronize package with module template (Nov 2024) ([#198](https://github.com/MetaMask/key-tree/pull/198))
-- Add cryptographic functions with option to specify custom functions ([#197](https://github.com/MetaMask/key-tree/pull/197))
-- Add extended key property to `SLIP10Node` ([#196](https://github.com/MetaMask/key-tree/pull/196))
-- Bump @metamask/utils from 9.0.0 to 9.3.0 ([#191](https://github.com/MetaMask/key-tree/pull/191))
-- Bump cross-spawn from 7.0.3 to 7.0.6 in the npm_and_yarn group ([#193](https://github.com/MetaMask/key-tree/pull/193))
-- Bump micromatch from 4.0.5 to 4.0.8 in the npm_and_yarn group ([#192](https://github.com/MetaMask/key-tree/pull/192))
-- Bump braces in the npm_and_yarn group across 1 directory ([#180](https://github.com/MetaMask/key-tree/pull/180))
+- Add network property to `SLIP10Node`, `BIP44Node`, and `BIP44CoinTypeNode` ([#200](https://github.com/MetaMask/key-tree/pull/200))
+  - The network property is only used to determine which BIP-32 extended key version to use.
+  - For backwards compatibility, the property is optional, and defaults to `mainnet`.
+- Add option for custom cryptographic functions ([#197](https://github.com/MetaMask/key-tree/pull/197))
+  - It's now possible to specify custom functions (`hmacSha512` and `pbkdf2Sha512`) to improve performance.
+- Add `extendedKey` property to `SLIP10Node` ([#196](https://github.com/MetaMask/key-tree/pull/196))
+  - This property can only be accessed on `SLIP10Node`s using `secp256k1`.
+
+### Changed
+
+- **BREAKING:** Bump minimum Node version to `18.20` ([#198](https://github.com/MetaMask/key-tree/pull/198))
+- Use WebCrypto API if available ([#197](https://github.com/MetaMask/key-tree/pull/197))
+- Bump `@metamask/utils` from `9.0.0` to `9.3.0` ([#191](https://github.com/MetaMask/key-tree/pull/191))
 
 ## [9.1.2]
 
