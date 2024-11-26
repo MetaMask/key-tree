@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.0.0]
+
+### Uncategorized
+
+- Add network property ([#200](https://github.com/MetaMask/key-tree/pull/200))
+- chore!: Synchronize package with module template (Nov 2024) ([#198](https://github.com/MetaMask/key-tree/pull/198))
+- Add cryptographic functions with option to specify custom functions ([#197](https://github.com/MetaMask/key-tree/pull/197))
+- Add extended key property to `SLIP10Node` ([#196](https://github.com/MetaMask/key-tree/pull/196))
+- Bump @metamask/utils from 9.0.0 to 9.3.0 ([#191](https://github.com/MetaMask/key-tree/pull/191))
+- Bump cross-spawn from 7.0.3 to 7.0.6 in the npm_and_yarn group ([#193](https://github.com/MetaMask/key-tree/pull/193))
+- Bump micromatch from 4.0.5 to 4.0.8 in the npm_and_yarn group ([#192](https://github.com/MetaMask/key-tree/pull/192))
+- Bump braces in the npm_and_yarn group across 1 directory ([#180](https://github.com/MetaMask/key-tree/pull/180))
+
 ## [9.1.2]
 
 ### Changed
@@ -221,7 +234,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v9.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v10.0.0...HEAD
+[10.0.0]: https://github.com/MetaMask/key-tree/compare/v9.1.2...v10.0.0
 [9.1.2]: https://github.com/MetaMask/key-tree/compare/v9.1.1...v9.1.2
 [9.1.1]: https://github.com/MetaMask/key-tree/compare/v9.1.0...v9.1.1
 [9.1.0]: https://github.com/MetaMask/key-tree/compare/v9.0.0...v9.1.0
