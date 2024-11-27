@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.0.1]
 
-### Uncategorized
+### Fixed
 
 - Export `CryptographicFunctions` type ([#202](https://github.com/MetaMask/key-tree/pull/202))
 
