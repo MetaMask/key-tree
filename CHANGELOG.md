@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.0.2]
+
+### Uncategorized
+
+- Bump `@metamask/utils` from `^10.0.1` to `^11.0.1` ([#205](https://github.com/MetaMask/key-tree/pull/205))
+- Bump nanoid from 3.3.6 to 3.3.8 in the npm_and_yarn group ([#204](https://github.com/MetaMask/key-tree/pull/204))
+
 ## [10.0.1]
 
 ### Fixed
@@ -245,7 +252,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v10.0.1...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v10.0.2...HEAD
+[10.0.2]: https://github.com/MetaMask/key-tree/compare/v10.0.1...v10.0.2
 [10.0.1]: https://github.com/MetaMask/key-tree/compare/v10.0.0...v10.0.1
 [10.0.0]: https://github.com/MetaMask/key-tree/compare/v9.1.2...v10.0.0
 [9.1.2]: https://github.com/MetaMask/key-tree/compare/v9.1.1...v9.1.2
