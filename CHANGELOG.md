@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.0.2]
 
-### Uncategorized
+### Changed
 
 - Bump `@metamask/utils` from `^10.0.1` to `^11.0.1` ([#205](https://github.com/MetaMask/key-tree/pull/205))
-- Bump nanoid from 3.3.6 to 3.3.8 in the npm_and_yarn group ([#204](https://github.com/MetaMask/key-tree/pull/204))
 
 ## [10.0.1]
 
