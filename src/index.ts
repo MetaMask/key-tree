@@ -14,6 +14,7 @@ export type {
 } from './SLIP10Node';
 export { SLIP10Node } from './SLIP10Node';
 export type { CryptographicFunctions } from './cryptography';
+export { hmacSha512, pbkdf2Sha512 } from './cryptography';
 export type { SupportedCurve } from './curves';
 export { secp256k1, ed25519, ed25519Bip32 } from './curves';
 export type {
