@@ -18,7 +18,10 @@ export const deriveUnhardenedKeys = false;
 
 export const publicKeyLength = 33;
 
-const getGetPublicKey = (): ((privateKey: Uint8Array) => Uint8Array) => {
+const getGetPublicKey = (): ((
+  privateKey: Uint8Array,
+  _compressed?: boolean,
+) => Uint8Array) => {
   let hasSetWindowSize = false;
 
   const getPublicKey = (
