@@ -18,15 +18,25 @@ export const deriveUnhardenedKeys = false;
 
 export const publicKeyLength = 33;
 
-ed25519.ExtendedPoint.BASE._setWindowSize(4);
+const getGetPublicKey = (): ((privateKey: Uint8Array) => Uint8Array) => {
+  let hasSetWindowSize = false;
 
-export const getPublicKey = (
-  privateKey: Uint8Array,
-  _compressed?: boolean,
-): Uint8Array => {
-  const publicKey = ed25519.getPublicKey(privateKey);
-  return concatBytes([new Uint8Array([0]), publicKey]);
+  const getPublicKey = (
+    privateKey: Uint8Array,
+    _compressed?: boolean,
+  ): Uint8Array => {
+    if (!hasSetWindowSize) {
+      ed25519.ExtendedPoint.BASE._setWindowSize(4);
+      hasSetWindowSize = true;
+    }
+    const publicKey = ed25519.getPublicKey(privateKey);
+    return concatBytes([new Uint8Array([0]), publicKey]);
+  };
+
+  return getPublicKey;
 };
+
+export const getPublicKey = getGetPublicKey();
 
 export const publicAdd = (
   _publicKey: Uint8Array,
