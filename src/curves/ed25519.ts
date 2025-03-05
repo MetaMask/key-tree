@@ -18,6 +18,9 @@ export const deriveUnhardenedKeys = false;
 
 export const publicKeyLength = 33;
 
+// @ts-expect-error Missing types.
+ed25519.ExtendedPoint.BASE._setWindowSize(4);
+
 export const getPublicKey = (
   privateKey: Uint8Array,
   _compressed?: boolean,
