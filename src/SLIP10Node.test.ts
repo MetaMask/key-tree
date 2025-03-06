@@ -5,12 +5,7 @@ import type { CryptographicFunctions } from './cryptography';
 import { pbkdf2Sha512, hmacSha512 } from './cryptography';
 import { ed25519, secp256k1 } from './curves';
 import { compressPublicKey } from './curves/secp256k1';
-import {
-  createBip39KeyFromSeed,
-  deriveChildKey,
-  mnemonicToSeed,
-  multipathToBip39Mnemonic,
-} from './derivers/bip39';
+import { createBip39KeyFromSeed, deriveChildKey } from './derivers/bip39';
 import { encodeExtendedKey } from './extended-keys';
 import { SLIP10Node } from './SLIP10Node';
 import { hexStringToBytes, mnemonicPhraseToBytes } from './utils';

@@ -166,7 +166,7 @@ export async function getDerivationPathWithSeed(
 
     /* istanbul ignore next */
     default:
-      assertExhaustive(curve);
+      return assertExhaustive(curve);
   }
 }
 

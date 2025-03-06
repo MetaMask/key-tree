@@ -1,4 +1,3 @@
-import { mnemonicToSeed } from '@metamask/scure-bip39';
 import { bytesToHex } from '@metamask/utils';
 
 import { BIP44Node, BIP44PurposeNodeToken, secp256k1 } from '.';

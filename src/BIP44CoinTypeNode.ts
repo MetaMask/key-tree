@@ -1,5 +1,3 @@
-import { assert } from '@metamask/utils';
-
 import type { BIP44NodeInterface, JsonBIP44Node } from './BIP44Node';
 import { BIP44Node } from './BIP44Node';
 import type {
