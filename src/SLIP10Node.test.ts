@@ -1122,7 +1122,7 @@ describe('SLIP10Node', () => {
 
       const { publicKey, ...json } = baseNode.toJSON();
 
-      const spy = jest.spyOn(secp256k1, 'getPublicKey');
+      const spy = vi.spyOn(secp256k1, 'getPublicKey');
 
       const node = await SLIP10Node.fromExtendedKey(json);
       expect(spy).not.toHaveBeenCalled();

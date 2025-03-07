@@ -32,6 +32,7 @@
     "dist"
   ],
   "scripts": {
+    "benchmark": "vitest bench",
     "build": "ts-bridge --project tsconfig.build.json --clean",
     "build:docs": "typedoc",
     "generate-vectors": "ts-node scripts/generate-vectors.ts > ./test/vectors/derivation.json",
