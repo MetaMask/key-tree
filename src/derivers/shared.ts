@@ -17,7 +17,7 @@ import { hmacSha512 } from '../cryptography';
 import type { Curve } from '../curves';
 import { mod } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
-import { isValidBytesKey, numberToUint32 } from '../utils';
+import { isValidBytesKey, numberToUint32, validateBytes } from '../utils';
 
 type ErrorHandler = (
   error: unknown,
@@ -69,6 +69,7 @@ export async function deriveChildKey(
       publicKey: node.compressedPublicKeyBytes,
       childIndex,
       isHardened,
+      curve,
     });
 
     const entropy = await generateEntropy(
@@ -144,6 +145,7 @@ type DeriveSecretExtensionArgs = {
   publicKey: Uint8Array;
   childIndex: number;
   isHardened: boolean;
+  curve: Curve;
 };
 
 /**
@@ -231,6 +233,7 @@ async function deriveNode(
  * @param options.publicKey - The parent public key bytes.
  * @param options.childIndex - The child index to derive.
  * @param options.isHardened - Whether the child index is hardened.
+ * @param options.curve - The curve to use for derivation.
  * @returns The secret extension bytes.
  */
 export async function deriveSecretExtension({
@@ -238,6 +241,7 @@ export async function deriveSecretExtension({
   publicKey,
   childIndex,
   isHardened,
+  curve,
 }: DeriveSecretExtensionArgs): Promise<Uint8Array> {
   if (isHardened) {
     // Hardened child
@@ -249,6 +253,7 @@ export async function deriveSecretExtension({
   }
 
   // Normal child
+  validateBytes(publicKey, curve.compressedPublicKeyLength);
   return derivePublicExtension({ parentPublicKey: publicKey, childIndex });
 }
 

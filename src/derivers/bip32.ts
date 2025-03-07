@@ -107,6 +107,7 @@ async function handleError(
       publicKey: curve.compressPublicKey(publicKey),
       childIndex: childIndex + 1,
       isHardened,
+      curve,
     });
 
     const newEntropy = await generateEntropy(
