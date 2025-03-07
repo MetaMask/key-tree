@@ -10,11 +10,12 @@ import type {
   RootedSLIP10PathTuple,
   RootedSLIP10SeedPathTuple,
 } from '../constants';
-import { BYTES_KEY_LENGTH, PUBLIC_KEY_GUARD } from '../constants';
+import { BYTES_KEY_LENGTH } from '../constants';
 import type { CryptographicFunctions } from '../cryptography';
 import { hmacSha512, pbkdf2Sha512 } from '../cryptography';
 import type { Curve, SupportedCurve } from '../curves';
 import { getCurveByName } from '../curves';
+import { PUBLIC_KEY_GUARD } from '../guard';
 import { SLIP10Node } from '../SLIP10Node';
 import { getFingerprint } from '../utils';
 

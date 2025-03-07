@@ -7,15 +7,12 @@ import {
 
 import type { DeriveChildKeyArgs, DerivedKeys } from '.';
 import type { Network } from '../constants';
-import {
-  BIP_32_HARDENED_OFFSET,
-  PUBLIC_KEY_GUARD,
-  UNPREFIXED_PATH_REGEX,
-} from '../constants';
+import { BIP_32_HARDENED_OFFSET, UNPREFIXED_PATH_REGEX } from '../constants';
 import type { CryptographicFunctions } from '../cryptography';
 import { hmacSha512 } from '../cryptography';
 import type { Curve } from '../curves';
 import { mod } from '../curves';
+import { PUBLIC_KEY_GUARD } from '../guard';
 import { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, numberToUint32, validateBytes } from '../utils';
 

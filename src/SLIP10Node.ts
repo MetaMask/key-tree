@@ -2,7 +2,7 @@ import { assert, bytesToHex } from '@metamask/utils';
 
 import type { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
 import type { BIP44Node } from './BIP44Node';
-import { BYTES_KEY_LENGTH, PUBLIC_KEY_GUARD } from './constants';
+import { BYTES_KEY_LENGTH } from './constants';
 import type {
   Network,
   RootedSLIP10PathTuple,
@@ -15,6 +15,7 @@ import { deriveKeyFromPath } from './derivation';
 import { publicKeyToEthAddress } from './derivers/bip32';
 import { getDerivationPathWithSeed } from './derivers/bip39';
 import { decodeExtendedKey, encodeExtendedKey } from './extended-keys';
+import { PUBLIC_KEY_GUARD } from './guard';
 import {
   getBytes,
   getBytesUnsafe,
@@ -328,7 +329,10 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
       const trustedPublicKey =
         guard === PUBLIC_KEY_GUARD && publicKey
-          ? getBytes(publicKey, curveObject.publicKeyLength)
+          ? // `publicKey` is typed as `string | Uint8Array`, but we know it's
+            // a `Uint8Array` because of the guard. We use `getBytes` to ensure
+            // the type is correct.
+            getBytes(publicKey, curveObject.publicKeyLength)
           : undefined;
 
       return new SLIP10Node(
