@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { createBip39KeyFromSeed, mnemonicToSeed } from '.';
 
 describe('index', () => {

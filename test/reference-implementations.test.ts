@@ -1,5 +1,6 @@
 // eslint-disable-next-line n/no-unsupported-features/node-builtins
 import { webcrypto } from 'crypto';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import fixtures from './fixtures';
 import type { SLIP10Node, HDPathTuple } from '../src';
@@ -23,7 +24,7 @@ Object.defineProperty(globalThis, 'crypto', { value: webcrypto });
 describe('reference implementation tests', () => {
   describe('using web crypto API', () => {
     beforeEach(() => {
-      jest.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(false);
+      vi.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(false);
     });
 
     describe('local', () => {
@@ -343,7 +344,7 @@ describe('reference implementation tests', () => {
 
   describe('using built-in cryptography functions', () => {
     beforeEach(() => {
-      jest.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(false);
+      vi.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(false);
     });
 
     describe('local', () => {

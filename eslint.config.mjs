@@ -1,7 +1,7 @@
 import base, { createConfig } from '@metamask/eslint-config';
-import jest from '@metamask/eslint-config-jest';
 import nodejs from '@metamask/eslint-config-nodejs';
 import typescript from '@metamask/eslint-config-typescript';
+import vitest from '@metamask/eslint-config-vitest';
 
 const config = createConfig([
   {
@@ -92,11 +92,7 @@ const config = createConfig([
 
   {
     files: ['**/*.test.ts', '**/*.test.js'],
-    extends: [jest, nodejs],
-
-    rules: {
-      'jest/no-conditional-in-test': 'off',
-    },
+    extends: [vitest, nodejs],
   },
 ]);
 

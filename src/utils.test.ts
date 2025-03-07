@@ -1,6 +1,7 @@
 import { mnemonicToSeed } from '@metamask/scure-bip39';
 import { wordlist } from '@metamask/scure-bip39/dist/wordlists/english';
 import { hexToBytes, stringToBytes } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import { BIP44Node } from './BIP44Node';
 import {

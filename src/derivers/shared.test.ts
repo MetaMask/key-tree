@@ -1,4 +1,5 @@
 import { hexToBytes } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import { privateAdd } from './shared';
 import fixtures from '../../test/fixtures';

@@ -1,4 +1,5 @@
 import { hexToBytes } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import type { ExtendedKey } from './extended-keys';
 import { decodeExtendedKey, encodeExtendedKey } from './extended-keys';

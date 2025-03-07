@@ -1,6 +1,7 @@
 import { mnemonicToEntropy } from '@metamask/scure-bip39';
 import { wordlist } from '@metamask/scure-bip39/dist/wordlists/english';
 import { bytesToHex } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import type { RootedHDPathTuple, SLIP10Path } from './constants';
 import { secp256k1 } from './curves';

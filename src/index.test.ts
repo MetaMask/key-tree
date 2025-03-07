@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import {
   MAX_BIP_44_DEPTH,
   MIN_BIP_44_DEPTH,

@@ -1,4 +1,5 @@
 import { bytesToHex, hexToBytes } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import { curve, getPublicKey, isValidPrivateKey, publicAdd } from './secp256k1';
 import fixtures from '../../test/fixtures';
