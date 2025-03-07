@@ -227,7 +227,7 @@ async function deriveNode(
  *
  * @param options - The options for deriving a secret extension.
  * @param options.privateKey - The parent private key bytes.
- * @param options.publicKey - The parent public key bytes.
+ * @param options.publicKey - The parent compressed public key bytes.
  * @param options.childIndex - The child index to derive.
  * @param options.isHardened - Whether the child index is hardened.
  * @param options.curve - The curve to use for derivation.
