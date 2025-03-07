@@ -2,12 +2,12 @@ import { assert, bytesToHex } from '@metamask/utils';
 
 import type { BIP44CoinTypeNode } from './BIP44CoinTypeNode';
 import type { BIP44Node } from './BIP44Node';
+import { BYTES_KEY_LENGTH, PUBLIC_KEY_GUARD } from './constants';
 import type {
   Network,
   RootedSLIP10PathTuple,
   SLIP10PathTuple,
 } from './constants';
-import { BYTES_KEY_LENGTH } from './constants';
 import type { CryptographicFunctions } from './cryptography';
 import type { SupportedCurve } from './curves';
 import { getCurveByName } from './curves';
@@ -99,17 +99,31 @@ export type SLIP10NodeInterface = JsonSLIP10Node & {
   toJSON(): JsonSLIP10Node;
 };
 
-export type SLIP10NodeConstructorOptions = {
+type BaseSLIP10NodeConstructorOptions = {
   readonly depth: number;
   readonly masterFingerprint?: number | undefined;
   readonly parentFingerprint: number;
   readonly index: number;
   readonly network?: Network | undefined;
   readonly chainCode: Uint8Array;
-  readonly privateKey?: Uint8Array | undefined;
-  readonly publicKey: Uint8Array;
   readonly curve: SupportedCurve;
 };
+
+type SLIP10NodePrivateKeyConstructorOptions =
+  BaseSLIP10NodeConstructorOptions & {
+    readonly privateKey: Uint8Array;
+    readonly publicKey?: Uint8Array | undefined;
+  };
+
+type SLIP10NodePublicKeyConstructorOptions =
+  BaseSLIP10NodeConstructorOptions & {
+    readonly privateKey?: Uint8Array | undefined;
+    readonly publicKey: Uint8Array;
+  };
+
+export type SLIP10NodeConstructorOptions =
+  | SLIP10NodePrivateKeyConstructorOptions
+  | SLIP10NodePublicKeyConstructorOptions;
 
 export type SLIP10ExtendedKeyOptions = {
   readonly depth: number;
@@ -121,6 +135,12 @@ export type SLIP10ExtendedKeyOptions = {
   readonly privateKey?: string | Uint8Array | undefined;
   readonly publicKey?: string | Uint8Array | undefined;
   readonly curve: SupportedCurve;
+
+  /**
+   * For internal use only. This is used to ensure the public key provided to
+   * the constructor is trusted.
+   */
+  readonly guard?: typeof PUBLIC_KEY_GUARD;
 };
 
 export type SLIP10DerivationPathOptions = {
@@ -276,6 +296,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
       publicKey,
       chainCode,
       curve,
+      guard,
     } = options;
 
     const chainCodeBytes = getBytes(chainCode, BYTES_KEY_LENGTH);
@@ -299,10 +320,16 @@ export class SLIP10Node implements SLIP10NodeInterface {
         privateKey,
         curveObject.privateKeyLength,
       );
+
       assert(
         curveObject.isValidPrivateKey(privateKeyBytes),
         `Invalid private key: Value is not a valid ${curve} private key.`,
       );
+
+      const trustedPublicKey =
+        guard === PUBLIC_KEY_GUARD && publicKey
+          ? getBytes(publicKey, curveObject.publicKeyLength)
+          : undefined;
 
       return new SLIP10Node(
         {
@@ -313,7 +340,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
           network,
           chainCode: chainCodeBytes,
           privateKey: privateKeyBytes,
-          publicKey: await curveObject.getPublicKey(privateKeyBytes),
+          publicKey: trustedPublicKey,
           curve,
         },
         cryptographicFunctions,
@@ -478,7 +505,7 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   public readonly privateKeyBytes?: Uint8Array | undefined;
 
-  public readonly publicKeyBytes: Uint8Array;
+  #publicKeyBytes: Uint8Array | undefined;
 
   readonly #cryptographicFunctions: CryptographicFunctions;
 
@@ -503,6 +530,11 @@ export class SLIP10Node implements SLIP10NodeInterface {
       'SLIP10Node can only be constructed using `SLIP10Node.fromJSON`, `SLIP10Node.fromExtendedKey`, `SLIP10Node.fromDerivationPath`, or `SLIP10Node.fromSeed`.',
     );
 
+    assert(
+      privateKey !== undefined || publicKey !== undefined,
+      'SLIP10Node requires either a private key or a public key to be set.',
+    );
+
     this.depth = depth;
     this.masterFingerprint = masterFingerprint;
     this.parentFingerprint = parentFingerprint;
@@ -510,8 +542,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
     this.network = network;
     this.chainCodeBytes = chainCode;
     this.privateKeyBytes = privateKey;
-    this.publicKeyBytes = publicKey;
     this.curve = curve;
+    this.#publicKeyBytes = publicKey;
     this.#cryptographicFunctions = cryptographicFunctions;
 
     Object.freeze(this);
@@ -531,6 +563,31 @@ export class SLIP10Node implements SLIP10NodeInterface {
 
   public get publicKey(): string {
     return bytesToHex(this.publicKeyBytes);
+  }
+
+  /**
+   * Get the public key bytes. This will lazily derive the public key from the
+   * private key if it is not already set.
+   *
+   * @returns The public key bytes.
+   */
+  public get publicKeyBytes(): Uint8Array {
+    if (this.#publicKeyBytes !== undefined) {
+      return this.#publicKeyBytes;
+    }
+
+    // This assertion is mainly for type safety, as `SLIP10Node` requires either
+    // a private key or a public key to always be set.
+    assert(
+      this.privateKeyBytes,
+      'Either a private key or public key is required.',
+    );
+
+    this.#publicKeyBytes = getCurveByName(this.curve).getPublicKey(
+      this.privateKeyBytes,
+    );
+
+    return this.#publicKeyBytes;
   }
 
   public get compressedPublicKeyBytes(): Uint8Array {

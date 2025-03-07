@@ -96,17 +96,16 @@ async function handleError(
   options: DeriveNodeArgs,
   cryptographicFunctions?: CryptographicFunctions,
 ): Promise<DeriveNodeArgs> {
-  const { childIndex, privateKey, publicKey, isHardened, curve, chainCode } =
-    options;
+  const { childIndex, privateKey, publicKey, isHardened, chainCode } = options;
 
   validateBIP32Index(childIndex + 1);
 
   if (privateKey) {
     const secretExtension = await deriveSecretExtension({
       privateKey,
+      publicKey,
       childIndex: childIndex + 1,
       isHardened,
-      curve,
     });
 
     const newEntropy = await generateEntropy(

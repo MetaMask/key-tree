@@ -6,6 +6,14 @@ export const MAX_BIP_44_DEPTH = 5;
 export const MAX_UNHARDENED_BIP_32_INDEX = 0x7fffffff; // 2^31 - 1
 export const MAX_BIP_32_INDEX = 0xffffffff; // 2^32 - 1
 
+/**
+ * A guard symbol to prevent untrusted public keys from being passed to
+ * `SLIP10Node` constructors.
+ */
+export const PUBLIC_KEY_GUARD = Symbol(
+  'Public key guard. Do not export this from the module.',
+);
+
 export type MinBIP44Depth = typeof MIN_BIP_44_DEPTH;
 export type MaxBIP44Depth = typeof MAX_BIP_44_DEPTH;
 export type BIP44Depth = MinBIP44Depth | 1 | 2 | 3 | 4 | MaxBIP44Depth;

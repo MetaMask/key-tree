@@ -7,7 +7,11 @@ import {
 
 import type { DeriveChildKeyArgs, DerivedKeys } from '.';
 import type { Network } from '../constants';
-import { BIP_32_HARDENED_OFFSET, UNPREFIXED_PATH_REGEX } from '../constants';
+import {
+  BIP_32_HARDENED_OFFSET,
+  PUBLIC_KEY_GUARD,
+  UNPREFIXED_PATH_REGEX,
+} from '../constants';
 import type { CryptographicFunctions } from '../cryptography';
 import { hmacSha512 } from '../cryptography';
 import type { Curve } from '../curves';
@@ -62,9 +66,9 @@ export async function deriveChildKey(
   if (node.privateKeyBytes) {
     const secretExtension = await deriveSecretExtension({
       privateKey: node.privateKeyBytes,
+      publicKey: node.compressedPublicKeyBytes,
       childIndex,
       isHardened,
-      curve,
     });
 
     const entropy = await generateEntropy(
@@ -78,6 +82,7 @@ export async function deriveChildKey(
     return await deriveNode(
       {
         privateKey: node.privateKeyBytes,
+        publicKey: node.publicKeyBytes,
         entropy,
         ...args,
       },
@@ -124,7 +129,7 @@ type BaseDeriveNodeArgs = {
 
 type DerivePrivateKeyArgs = BaseDeriveNodeArgs & {
   privateKey: Uint8Array;
-  publicKey?: never | undefined;
+  publicKey: Uint8Array;
 };
 
 type DerivePublicKeyArgs = BaseDeriveNodeArgs & {
@@ -136,9 +141,9 @@ export type DeriveNodeArgs = DerivePrivateKeyArgs | DerivePublicKeyArgs;
 
 type DeriveSecretExtensionArgs = {
   privateKey: Uint8Array;
+  publicKey: Uint8Array;
   childIndex: number;
   isHardened: boolean;
-  curve: Curve;
 };
 
 /**
@@ -223,16 +228,16 @@ async function deriveNode(
  *
  * @param options - The options for deriving a secret extension.
  * @param options.privateKey - The parent private key bytes.
+ * @param options.publicKey - The parent public key bytes.
  * @param options.childIndex - The child index to derive.
  * @param options.isHardened - Whether the child index is hardened.
- * @param options.curve - The curve to use for derivation.
  * @returns The secret extension bytes.
  */
 export async function deriveSecretExtension({
   privateKey,
+  publicKey,
   childIndex,
   isHardened,
-  curve,
 }: DeriveSecretExtensionArgs): Promise<Uint8Array> {
   if (isHardened) {
     // Hardened child
@@ -244,8 +249,7 @@ export async function deriveSecretExtension({
   }
 
   // Normal child
-  const parentPublicKey = await curve.getPublicKey(privateKey, true);
-  return derivePublicExtension({ parentPublicKey, childIndex });
+  return derivePublicExtension({ parentPublicKey: publicKey, childIndex });
 }
 
 type DerivePublicExtensionArgs = {
@@ -283,23 +287,23 @@ type GenerateKeyArgs = {
  * @param options.curve - The curve to use for derivation.
  * @returns The derived key.
  */
-async function generateKey({
+function generateKey({
   privateKey,
   entropy,
   curve,
-}: GenerateKeyArgs): Promise<DerivedKeys & { privateKey: Uint8Array }> {
+}: GenerateKeyArgs): DerivedKeys & { privateKey: Uint8Array } {
   const keyMaterial = entropy.slice(0, 32);
   const childChainCode = entropy.slice(32);
 
   // If curve is ed25519: The returned child key ki is parse256(IL).
   // https://github.com/satoshilabs/slips/blob/133ea52a8e43d338b98be208907e144277e44c0e/slip-0010.md#private-parent-key--private-child-key
   if (curve.name === 'ed25519') {
-    const publicKey = await curve.getPublicKey(keyMaterial);
+    const publicKey = curve.getPublicKey(keyMaterial);
     return { privateKey: keyMaterial, publicKey, chainCode: childChainCode };
   }
 
   const childPrivateKey = privateAdd(privateKey, keyMaterial, curve);
-  const publicKey = await curve.getPublicKey(childPrivateKey);
+  const publicKey = curve.getPublicKey(childPrivateKey);
 
   return { privateKey: childPrivateKey, publicKey, chainCode: childChainCode };
 }
@@ -351,16 +355,20 @@ async function derivePrivateChildKey(
   const actualChildIndex =
     childIndex + (isHardened ? BIP_32_HARDENED_OFFSET : 0);
 
-  const { privateKey: childPrivateKey, chainCode: childChainCode } =
-    await generateKey({
-      privateKey,
-      entropy,
-      curve,
-    });
+  const {
+    privateKey: childPrivateKey,
+    publicKey: childPublicKey,
+    chainCode: childChainCode,
+  } = generateKey({
+    privateKey,
+    entropy,
+    curve,
+  });
 
   return await SLIP10Node.fromExtendedKey(
     {
       privateKey: childPrivateKey,
+      publicKey: childPublicKey,
       chainCode: childChainCode,
       depth: depth + 1,
       masterFingerprint,
@@ -368,6 +376,7 @@ async function derivePrivateChildKey(
       index: actualChildIndex,
       curve: curve.name,
       network,
+      guard: PUBLIC_KEY_GUARD,
     },
     cryptographicFunctions,
   );

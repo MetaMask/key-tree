@@ -10,7 +10,7 @@ import type {
   RootedSLIP10PathTuple,
   RootedSLIP10SeedPathTuple,
 } from '../constants';
-import { BYTES_KEY_LENGTH } from '../constants';
+import { BYTES_KEY_LENGTH, PUBLIC_KEY_GUARD } from '../constants';
 import type { CryptographicFunctions } from '../cryptography';
 import { hmacSha512, pbkdf2Sha512 } from '../cryptography';
 import type { Curve, SupportedCurve } from '../curves';
@@ -244,14 +244,16 @@ export async function createBip39KeyFromSeed(
     'Invalid private key: The private key must greater than 0 and less than the curve order.',
   );
 
+  const publicKey = curve.getPublicKey(privateKey, false);
   const masterFingerprint = getFingerprint(
-    await curve.getPublicKey(privateKey, true),
+    curve.compressPublicKey(publicKey),
     curve.compressedPublicKeyLength,
   );
 
   return SLIP10Node.fromExtendedKey(
     {
       privateKey,
+      publicKey,
       chainCode,
       masterFingerprint,
       network,
@@ -259,6 +261,7 @@ export async function createBip39KeyFromSeed(
       parentFingerprint: 0,
       index: 0,
       curve: curve.name,
+      guard: PUBLIC_KEY_GUARD,
     },
     cryptographicFunctions,
   );
@@ -311,7 +314,7 @@ export async function entropyToCip3MasterNode(
   assert(curve.isValidPrivateKey(privateKey), 'Invalid private key.');
 
   const masterFingerprint = getFingerprint(
-    await curve.getPublicKey(privateKey),
+    curve.getPublicKey(privateKey),
     curve.compressedPublicKeyLength,
   );
 
