@@ -1,6 +1,7 @@
 import { hexToBytes } from '@metamask/utils';
 // eslint-disable-next-line n/no-unsupported-features/node-builtins
 import { webcrypto } from 'crypto';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import derivationVectors from './vectors/derivation.json';
 import type { SLIP10Node, SLIP10PathTuple } from '../src';
@@ -125,7 +126,7 @@ function generateTests(
 describe('vectors', () => {
   describe('using web crypto API', () => {
     beforeEach(() => {
-      jest.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(true);
+      vi.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(true);
     });
 
     describe('bip32', () => {
@@ -208,7 +209,7 @@ describe('vectors', () => {
 
   describe('using built-in cryptography functions', () => {
     beforeEach(() => {
-      jest.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(false);
+      vi.spyOn(utils, 'isWebCryptoSupported').mockReturnValue(false);
     });
 
     describe('bip32', () => {

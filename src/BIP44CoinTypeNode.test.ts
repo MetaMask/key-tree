@@ -1,4 +1,5 @@
 import { bytesToHex } from '@metamask/utils';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   BIP_44_COIN_TYPE_DEPTH,
@@ -25,8 +26,8 @@ const defaultBip39BytesToken = mnemonicPhraseToBytes(fixtures.local.mnemonic);
  * @returns The mock cryptographic functions.
  */
 function getMockFunctions(): CryptographicFunctions {
-  const mockHmacSha512 = jest.fn().mockImplementation(hmacSha512);
-  const mockPbkdf2Sha512 = jest.fn().mockImplementation(pbkdf2Sha512);
+  const mockHmacSha512 = vi.fn().mockImplementation(hmacSha512);
+  const mockPbkdf2Sha512 = vi.fn().mockImplementation(pbkdf2Sha512);
 
   return {
     hmacSha512: mockHmacSha512,

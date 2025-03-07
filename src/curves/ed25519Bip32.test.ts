@@ -1,4 +1,5 @@
 import { bytesToHex, hexToBytes } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import { ed25519Bip32 } from '.';
 import {

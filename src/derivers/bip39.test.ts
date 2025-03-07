@@ -6,6 +6,7 @@ import {
   concatBytes,
   hexToBytes,
 } from '@metamask/utils';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   entropyToCip3MasterNode,
@@ -166,9 +167,9 @@ describe('createBip39KeyFromSeed', () => {
 
   it('throws if the private key is zero', async () => {
     // Mock the hmac function to return a zero private key.
-    jest
-      .spyOn(cryptography, 'hmacSha512')
-      .mockResolvedValueOnce(new Uint8Array(64));
+    vi.spyOn(cryptography, 'hmacSha512').mockResolvedValueOnce(
+      new Uint8Array(64),
+    );
 
     await expect(
       createBip39KeyFromSeed(RANDOM_SEED, secp256k1),
@@ -187,9 +188,9 @@ describe('createBip39KeyFromSeed', () => {
       assert(privateKey.length === 32);
 
       // Mock the hmac function to return a private key larger than the curve order.
-      jest
-        .spyOn(cryptography, 'hmacSha512')
-        .mockResolvedValueOnce(concatBytes([privateKey, new Uint8Array(32)]));
+      vi.spyOn(cryptography, 'hmacSha512').mockResolvedValueOnce(
+        concatBytes([privateKey, new Uint8Array(32)]),
+      );
 
       await expect(
         createBip39KeyFromSeed(RANDOM_SEED, secp256k1),

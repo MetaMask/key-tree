@@ -1,4 +1,5 @@
 import { hexToBytes, bytesToHex } from '@metamask/utils';
+import { describe, expect, it } from 'vitest';
 
 import {
   compressPublicKey,
