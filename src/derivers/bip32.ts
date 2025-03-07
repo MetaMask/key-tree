@@ -96,14 +96,15 @@ async function handleError(
   options: DeriveNodeArgs,
   cryptographicFunctions?: CryptographicFunctions,
 ): Promise<DeriveNodeArgs> {
-  const { childIndex, privateKey, publicKey, isHardened, chainCode } = options;
+  const { childIndex, privateKey, publicKey, isHardened, chainCode, curve } =
+    options;
 
   validateBIP32Index(childIndex + 1);
 
   if (privateKey) {
     const secretExtension = await deriveSecretExtension({
       privateKey,
-      publicKey,
+      publicKey: curve.compressPublicKey(publicKey),
       childIndex: childIndex + 1,
       isHardened,
     });

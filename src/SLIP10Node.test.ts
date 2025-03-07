@@ -875,23 +875,23 @@ describe('SLIP10Node', () => {
       });
 
       // getter
-      expect(() => (node.privateKey = 'foo')).toThrow(
-        /^Cannot set property privateKey of .+ which has only a getter/iu,
-      );
+      ['privateKey', 'publicKeyBytes'].forEach((property) => {
+        expect(() => (node[property] = 'foo')).toThrow(
+          /^Cannot set property .+ of .+ which has only a getter/iu,
+        );
+      });
 
       // frozen / readonly
-      ['depth', 'privateKeyBytes', 'publicKeyBytes', 'chainCodeBytes'].forEach(
-        (property) => {
-          expect(() => (node[property] = new Uint8Array(64).fill(1))).toThrow(
-            expect.objectContaining({
-              name: 'TypeError',
-              message: expect.stringMatching(
-                `Cannot assign to read only property '${property}' of object`,
-              ),
-            }),
-          );
-        },
-      );
+      ['depth', 'privateKeyBytes', 'chainCodeBytes'].forEach((property) => {
+        expect(() => (node[property] = new Uint8Array(64).fill(1))).toThrow(
+          expect.objectContaining({
+            name: 'TypeError',
+            message: expect.stringMatching(
+              `Cannot assign to read only property '${property}' of object`,
+            ),
+          }),
+        );
+      });
     });
 
     it('throws an error if no curve is specified', async () => {
