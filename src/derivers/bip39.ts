@@ -314,14 +314,16 @@ export async function entropyToCip3MasterNode(
 
   assert(curve.isValidPrivateKey(privateKey), 'Invalid private key.');
 
+  const publicKey = curve.getPublicKey(privateKey, false);
   const masterFingerprint = getFingerprint(
-    curve.getPublicKey(privateKey),
+    curve.compressPublicKey(publicKey),
     curve.compressedPublicKeyLength,
   );
 
   return SLIP10Node.fromExtendedKey(
     {
       privateKey,
+      publicKey,
       chainCode,
       masterFingerprint,
       network,
@@ -329,6 +331,7 @@ export async function entropyToCip3MasterNode(
       parentFingerprint: 0,
       index: 0,
       curve: curve.name,
+      guard: PUBLIC_KEY_GUARD,
     },
     cryptographicFunctions,
   );
