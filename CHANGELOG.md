@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Optimise performance of getting public keys ([#213](https://github.com/MetaMask/key-tree/pull/213))
-  - Public keys are now re-used when possible, or lazily computated otherwise.
+  - Public keys are now re-used when possible, or lazily computed otherwise.
 - Tweak precompute window size for `ed25519` ([#209](https://github.com/MetaMask/key-tree/pull/209))
   - This can improve performance on some devices.
 
