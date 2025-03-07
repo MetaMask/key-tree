@@ -174,7 +174,8 @@ export async function getDerivationPathWithSeed(
  * Create a {@link SLIP10Node} from a BIP-39 seed.
  *
  * @param options - The options for creating the node.
- * @param options.path - The multi path.
+ * @param options.path - The multi path. This is expected to be the BIP-39 seed,
+ * or the entropy in the case of CIP-3, not the mnemonic phrase itself.
  * @param options.curve - The curve to use for derivation.
  * @param options.network - The network for the node. This is only used for
  * extended keys, and defaults to `mainnet`.
