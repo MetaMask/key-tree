@@ -39,7 +39,6 @@ const getGetPublicKey = (): ((
   return getPublicKey;
 };
 
-
 export const getPublicKey = getGetPublicKey();
 
 export const publicAdd = (
