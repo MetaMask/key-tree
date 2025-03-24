@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.1.1]
+
+### Uncategorized
+
+- perf: Optimize performance of getting public keys further ([#218](https://github.com/MetaMask/key-tree/pull/218))
+- perf: Tweak precompute window size for secp256k1 ([#217](https://github.com/MetaMask/key-tree/pull/217))
+- Update workflows to use `MetaMask/action-checkout-and-setup` ([#216](https://github.com/MetaMask/key-tree/pull/216))
+
 ## [10.1.0]
 
 ### Added
@@ -265,7 +273,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/key-tree/compare/v10.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/key-tree/compare/v10.1.1...HEAD
+[10.1.1]: https://github.com/MetaMask/key-tree/compare/v10.1.0...v10.1.1
 [10.1.0]: https://github.com/MetaMask/key-tree/compare/v10.0.2...v10.1.0
 [10.0.2]: https://github.com/MetaMask/key-tree/compare/v10.0.1...v10.0.2
 [10.0.1]: https://github.com/MetaMask/key-tree/compare/v10.0.0...v10.0.1
