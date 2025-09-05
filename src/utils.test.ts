@@ -24,6 +24,7 @@ import {
   getBytesUnsafe,
   isValidBIP32PathSegment,
   validateNetwork,
+  areUint8ArraysEqual,
 } from './utils';
 import fixtures from '../test/fixtures';
 
@@ -450,5 +451,19 @@ describe('validateNetwork', () => {
     expect(() => validateNetwork('foo')).toThrow(
       'Invalid network: Must be either "mainnet" or "testnet" if specified.',
     );
+  });
+});
+
+describe('areUint8ArraysEqual', () => {
+  it('returns true if the Uint8Arrays are equal', () => {
+    expect(areUint8ArraysEqual(new Uint8Array(32).fill(1), new Uint8Array(32).fill(1))).toBe(true);
+  });
+
+  it('returns false if the Uint8Arrays are not equal', () => {
+    expect(areUint8ArraysEqual(new Uint8Array(32).fill(1), new Uint8Array(32).fill(2))).toBe(false);
+  });
+
+  it('returns false if the Uint8Arrays length is different', () => {
+    expect(areUint8ArraysEqual(new Uint8Array(32).fill(1), new Uint8Array(31).fill(1))).toBe(false);
   });
 });
