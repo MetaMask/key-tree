@@ -544,7 +544,7 @@ export function areUint8ArraysEqual(a: Uint8Array, b: Uint8Array): boolean {
   let diff = 0;
 
   for (let i = 0; i < a.byteLength; i++) {
-    diff |= viewA.getUint8(i) ^ viewB.getUint8(i);
+    diff += viewA.getUint8(i) === viewB.getUint8(i) ? 0 : 1;
   }
 
   return diff === 0;
