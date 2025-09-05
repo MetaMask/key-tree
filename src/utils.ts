@@ -527,6 +527,13 @@ export function getBIP44CoinType(
   return value;
 }
 
+/**
+ * Compares two Uint8Arrays in a timing-safe manner.
+ *
+ * @param a - The first Uint8Array to compare.
+ * @param b - The second Uint8Array to compare.
+ * @returns Whether the Uint8Arrays are equal.
+ */
 export function areUint8ArraysEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.byteLength !== b.byteLength) {
     return false;
