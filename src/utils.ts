@@ -26,7 +26,6 @@ import {
 import { ripemd160, sha256 } from './cryptography';
 import type { SupportedCurve } from './curves';
 import { curves } from './curves';
-import { timingSafeEqual } from 'crypto';
 
 /**
  * Gets a string representation of a BIP-44 path of depth 2, i.e.:
