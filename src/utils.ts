@@ -538,5 +538,15 @@ export function areUint8ArraysEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.byteLength !== b.byteLength) {
     return false;
   }
-  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
-};
+
+  const viewA = new DataView(a.buffer, a.byteOffset, a.byteLength);
+  const viewB = new DataView(b.buffer, b.byteOffset, b.byteLength);
+
+  let diff = 0;
+
+  for (let i = 0; i < a.byteLength; i++) {
+    diff |= viewA.getUint8(i) ^ viewB.getUint8(i);
+  }
+
+  return diff === 0;
+}
