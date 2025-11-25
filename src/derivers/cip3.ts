@@ -4,6 +4,7 @@ import type { DeriveChildKeyArgs } from '.';
 import { generateEntropy, getValidatedPath, validateNode } from './shared';
 import { BIP_32_HARDENED_OFFSET } from '../constants';
 import type { CryptographicFunctions } from '../cryptography';
+import { getPublicKeyForCurve } from '../cryptography';
 import { type Curve, mod } from '../curves';
 import { SLIP10Node } from '../SLIP10Node';
 import { numberToUint32 } from '../utils';
@@ -302,7 +303,8 @@ export const derivePublicKey = async (
   const zl = entropy.slice(0, 32);
 
   // right = [8ZL] * B
-  const right = curve.getPublicKey(
+  const right = getPublicKeyForCurve(
+    curve.name,
     // [8ZL]
     trunc28Mul8(zl),
   );

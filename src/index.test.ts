@@ -10,6 +10,12 @@ import {
   ed25519Bip32,
   getBIP44CoinTypeToAddressPathTuple,
   mnemonicToSeed,
+  hmacSha512,
+  keccak256,
+  pbkdf2Sha512,
+  ripemd160,
+  sha256,
+  getPublicKeyForCurve,
 } from '.';
 import * as index from '.';
 import * as guard from './guard';
@@ -29,6 +35,12 @@ describe('index', () => {
     expect(mnemonicPhraseToBytes).toBeDefined();
     expect(getBIP44CoinTypeToAddressPathTuple).toBeDefined();
     expect(mnemonicToSeed).toBeDefined();
+    expect(hmacSha512).toBeDefined();
+    expect(keccak256).toBeDefined();
+    expect(pbkdf2Sha512).toBeDefined();
+    expect(ripemd160).toBeDefined();
+    expect(sha256).toBeDefined();
+    expect(getPublicKeyForCurve).toBeDefined();
   });
 
   it.each(Object.keys(guard))('does not export %s', (property) => {

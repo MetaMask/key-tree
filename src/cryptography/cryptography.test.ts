@@ -3,13 +3,14 @@ import { bytesToHex } from '@metamask/utils';
 import { webcrypto } from 'crypto';
 
 import {
+  getPublicKeyForCurve,
   hmacSha512,
   keccak256,
   pbkdf2Sha512,
   ripemd160,
   sha256,
-} from './cryptography';
-import * as utils from './utils';
+} from '.';
+import * as utils from '../utils';
 
 // Node.js <20 doesn't have `globalThis.crypto`, so we need to define it.
 // TODO: Remove this once we drop support for Node.js <20.
@@ -132,5 +133,40 @@ describe('sha256', () => {
     expect(bytesToHex(hash)).toBe(
       '0x72cd6e8422c407fb6d098690f1130b7ded7ec2f7f5e1d30bd9d521f015363793',
     );
+  });
+});
+
+describe('getPublicKeyForCurve', () => {
+  const privateKey = new Uint8Array(32).fill(1);
+
+  it('returns the public key for ed25519', () => {
+    const publicKey = getPublicKeyForCurve('ed25519', privateKey);
+    expect(publicKey).toBeInstanceOf(Uint8Array);
+    expect(publicKey).toHaveLength(33);
+  });
+
+  it('returns the public key for secp256k1', () => {
+    const publicKey = getPublicKeyForCurve('secp256k1', privateKey);
+    expect(publicKey).toBeInstanceOf(Uint8Array);
+    expect(publicKey).toHaveLength(65);
+  });
+
+  it('returns the compressed public key for secp256k1', () => {
+    const publicKey = getPublicKeyForCurve('secp256k1', privateKey, true);
+    expect(publicKey).toBeInstanceOf(Uint8Array);
+    expect(publicKey).toHaveLength(33);
+  });
+
+  it('returns the public key for ed25519Bip32', () => {
+    const publicKey = getPublicKeyForCurve('ed25519Bip32', privateKey);
+    expect(publicKey).toBeInstanceOf(Uint8Array);
+    expect(publicKey).toHaveLength(32);
+  });
+
+  it('throws for unsupported curves', () => {
+    expect(() =>
+      // @ts-expect-error Testing invalid curve
+      getPublicKeyForCurve('unsupported', privateKey),
+    ).toThrow('Unsupported curve: unsupported');
   });
 });

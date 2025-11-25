@@ -5,35 +5,15 @@ import { sha256 as nobleSha256 } from '@noble/hashes/sha256';
 import { keccak_256 as nobleKeccak256 } from '@noble/hashes/sha3';
 import { sha512 as nobleSha512 } from '@noble/hashes/sha512';
 
-import { isWebCryptoSupported } from './utils';
-
-export type CryptographicFunctions = {
-  /**
-   * Compute the HMAC-SHA-512 of the given data using the given key.
-   *
-   * @param key - The key to use.
-   * @param data - The data to hash.
-   * @returns The HMAC-SHA-512 of the data.
-   */
-  hmacSha512?: (key: Uint8Array, data: Uint8Array) => Promise<Uint8Array>;
-
-  /**
-   * Compute the PBKDF2 of the given password, salt, iterations, and key length.
-   * The hash function used is SHA-512.
-   *
-   * @param password - The password to hash.
-   * @param salt - The salt to use.
-   * @param iterations - The number of iterations.
-   * @param keyLength - The desired key length in bytes.
-   * @returns The PBKDF2 of the password.
-   */
-  pbkdf2Sha512?: (
-    password: Uint8Array,
-    salt: Uint8Array,
-    iterations: number,
-    keyLength: number,
-  ) => Promise<Uint8Array>;
-};
+import type {
+  CryptographicFunctionsBase,
+  CryptographicFunctions,
+} from './cryptography.types';
+import type { SupportedCurve } from '../curves/curve';
+import * as ed25519Curve from '../curves/ed25519';
+import * as ed25519Bip32Curve from '../curves/ed25519Bip32';
+import * as secp256k1Curve from '../curves/secp256k1';
+import { isWebCryptoSupported } from '../utils';
 
 /**
  * Compute the HMAC-SHA-512 of the given data using the given key.
@@ -57,7 +37,6 @@ export async function hmacSha512(
   }
 
   if (isWebCryptoSupported()) {
-    /* eslint-disable no-restricted-globals */
     const subtleKey = await crypto.subtle.importKey(
       'raw',
       key,
@@ -68,7 +47,6 @@ export async function hmacSha512(
 
     const result = await crypto.subtle.sign('HMAC', subtleKey, data);
     return new Uint8Array(result);
-    /* eslint-enable no-restricted-globals */
   }
 
   return nobleHmac(nobleSha512, key, data);
@@ -117,7 +95,6 @@ export async function pbkdf2Sha512(
   }
 
   if (isWebCryptoSupported()) {
-    /* eslint-disable no-restricted-globals */
     const key = await crypto.subtle.importKey(
       'raw',
       password,
@@ -140,7 +117,6 @@ export async function pbkdf2Sha512(
     );
 
     return new Uint8Array(derivedBits);
-    /* eslint-enable no-restricted-globals */
   }
 
   return await noblePbkdf2(nobleSha512, password, salt, {
@@ -176,3 +152,39 @@ export function ripemd160(data: Uint8Array): Uint8Array {
 export function sha256(data: Uint8Array): Uint8Array {
   return nobleSha256(data);
 }
+
+/**
+ * Get the public key for a given private key using the specified curve.
+ *
+ * @param curveName - The name of the curve to use ('ed25519' or 'secp256k1').
+ * @param privateKey - The private key.
+ * @param compressed - Whether the public key should be compressed (only applies to secp256k1).
+ * @returns The public key.
+ */
+export function getPublicKeyForCurve(
+  curveName: SupportedCurve,
+  privateKey: Uint8Array,
+  compressed?: boolean,
+): Uint8Array {
+  switch (curveName) {
+    case 'ed25519':
+      return ed25519Curve.getPublicKey(privateKey);
+    case 'secp256k1':
+      return secp256k1Curve.getPublicKey(privateKey, compressed);
+    case 'ed25519Bip32':
+      return ed25519Bip32Curve.getPublicKey(privateKey);
+    default:
+      // eslint-disable-next-line
+      curveName as never;
+      throw new Error(`Unsupported curve: ${String(curveName)}`);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _cryptographicFunctions: CryptographicFunctionsBase = {
+  hmacSha512,
+  pbkdf2Sha512,
+  sha256,
+  keccak256,
+  getPublicKeyForCurve,
+};

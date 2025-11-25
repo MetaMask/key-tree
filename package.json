@@ -62,6 +62,7 @@
     "@metamask/eslint-config-jest": "^14.0.0",
     "@metamask/eslint-config-nodejs": "^14.0.0",
     "@metamask/eslint-config-typescript": "^14.0.0",
+    "@metamask/native-utils": "^0.7.0",
     "@ts-bridge/cli": "^0.6.0",
     "@types/jest": "^28.1.6",
     "@types/node": "^18.18",
@@ -81,11 +82,24 @@
     "jest-it-up": "^2.0.2",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.3.0",
+    "react-native-quick-crypto": "^0.7.17",
     "ts-jest": "^28.0.7",
     "ts-node": "^10.9.1",
     "typedoc": "^0.26.11",
     "typescript": "~5.4.5",
     "typescript-eslint": "^8.6.0"
+  },
+  "peerDependencies": {
+    "@metamask/native-utils": "*",
+    "react-native-quick-crypto": "*"
+  },
+  "peerDependenciesMeta": {
+    "@metamask/native-utils": {
+      "optional": true
+    },
+    "react-native-quick-crypto": {
+      "optional": true
+    }
   },
   "packageManager": "yarn@4.1.1",
   "engines": {

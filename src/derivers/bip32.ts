@@ -10,7 +10,7 @@ import {
 } from './shared';
 import { BYTES_KEY_LENGTH } from '../constants';
 import type { CryptographicFunctions } from '../cryptography';
-import { keccak256 } from '../cryptography';
+import { getPublicKeyForCurve, keccak256 } from '../cryptography';
 import { secp256k1 } from '../curves';
 import type { SLIP10Node } from '../SLIP10Node';
 import { isValidBytesKey, validateBIP32Index } from '../utils';
@@ -32,7 +32,7 @@ export function privateKeyToEthAddress(key: Uint8Array): Uint8Array {
     'Invalid key: The key must be a 32-byte, non-zero Uint8Array.',
   );
 
-  const publicKey = secp256k1.getPublicKey(key, false);
+  const publicKey = getPublicKeyForCurve('secp256k1', key, false);
   return publicKeyToEthAddress(publicKey);
 }
 
@@ -45,9 +45,14 @@ export function privateKeyToEthAddress(key: Uint8Array): Uint8Array {
  *
  * @param key - The `address_index` public key bytes to convert to an Ethereum
  * address.
+ * @param _cryptographicFunctions - Optional cryptographic functions (unused,
+ * kept for API consistency).
  * @returns The Ethereum address corresponding to the given key.
  */
-export function publicKeyToEthAddress(key: Uint8Array): Uint8Array {
+export function publicKeyToEthAddress(
+  key: Uint8Array,
+  _cryptographicFunctions?: CryptographicFunctions,
+): Uint8Array {
   assert(
     key instanceof Uint8Array &&
       isValidBytesKey(key, secp256k1.publicKeyLength),
