@@ -23,6 +23,7 @@ import {
   MAX_UNHARDENED_BIP_32_INDEX,
   UNPREFIXED_BIP_32_PATH_REGEX,
 } from './constants';
+import type { CryptographicFunctions } from './cryptography';
 import { ripemd160, sha256 } from './cryptography';
 import type { SupportedCurve } from './curves';
 import { curves } from './curves';
@@ -382,11 +383,14 @@ export const encodeBase58check = (value: Uint8Array): string => {
  *
  * @param publicKey - The compressed public key to get the fingerprint for.
  * @param compressedPublicKeyLength - The length of the compressed public key.
+ * @param _cryptographicFunctions - Optional cryptographic functions (unused,
+ * kept for API consistency).
  * @returns The fingerprint of the public key.
  */
 export const getFingerprint = (
   publicKey: Uint8Array,
   compressedPublicKeyLength: number,
+  _cryptographicFunctions: CryptographicFunctions = {},
 ): number => {
   if (!isValidBytesKey(publicKey, compressedPublicKeyLength)) {
     throw new Error(

@@ -9,6 +9,7 @@ import type {
   SLIP10PathTuple,
 } from './constants';
 import type { CryptographicFunctions } from './cryptography';
+import { getPublicKeyForCurve } from './cryptography';
 import type { SupportedCurve } from './curves';
 import { getCurveByName } from './curves';
 import { deriveKeyFromPath } from './derivation';
@@ -587,7 +588,8 @@ export class SLIP10Node implements SLIP10NodeInterface {
       'Either a private key or public key is required.',
     );
 
-    this.#publicKeyBytes = getCurveByName(this.curve).getPublicKey(
+    this.#publicKeyBytes = getPublicKeyForCurve(
+      this.curve,
       this.privateKeyBytes,
     );
 
@@ -609,13 +611,16 @@ export class SLIP10Node implements SLIP10NodeInterface {
       );
     }
 
-    return bytesToHex(publicKeyToEthAddress(this.publicKeyBytes));
+    return bytesToHex(
+      publicKeyToEthAddress(this.publicKeyBytes, this.#cryptographicFunctions),
+    );
   }
 
   public get fingerprint(): number {
     return getFingerprint(
       this.compressedPublicKeyBytes,
       getCurveByName(this.curve).compressedPublicKeyLength,
+      this.#cryptographicFunctions,
     );
   }
 
