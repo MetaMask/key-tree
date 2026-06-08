@@ -46,6 +46,9 @@
     "test": "jest && jest-it-up && attw --pack",
     "test:watch": "jest --watch"
   },
+  "resolutions": {
+    "fflate": "0.8.2"
+  },
   "dependencies": {
     "@metamask/scure-bip39": "^2.1.1",
     "@metamask/utils": "^11.0.1",
